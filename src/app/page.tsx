@@ -1,103 +1,276 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { 
+  IconBrandKakoTalk,
+ 
+  IconBrandTelegram, 
+  IconBrandWhatsapp, 
+  IconLanguage, 
+  IconLayoutDashboard 
+} from "@tabler/icons-react"
+
+import { AppSidebar } from "@/components/app-sidebar"
+import { SessionHistoryTable } from "@/components/session-history-table"
+import { SessionNotesForm } from "@/components/session-notes-form"
+import { SessionScheduler } from "@/components/session-scheduler"
+import { SiteHeader } from "@/components/site-header"
+import { UserProgressChart } from "@/components/user-progress-chart"
+import { AnimatedCard } from "@/components/ui/animated-card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Toggle } from "@/components/ui/toggle"
+
+// Import session data
+import sessionData from "@/app/data.json"
+
+
+export default function HomePage() {
+  const [language, setLanguage] = useState<"english" | "korean">("english")
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader>
+          <div className="flex items-center gap-2">
+            <IconLayoutDashboard className="h-5 w-5" />
+            <h1 className="text-xl font-semibold">
+              {language === "english" ? "Coaching Dashboard" : "코칭 대시보드"}
+            </h1>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <Toggle
+              aria-label="Toggle language"
+              pressed={language === "korean"}
+              onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+            >
+              <IconLanguage className="h-4 w-4 mr-2" />
+              {language === "english" ? "English" : "한국어"}
+            </Toggle>
+          </div>
+        </SiteHeader>
+        
+        <div className="flex flex-1 flex-col p-4 md:p-6 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <AnimatedCard>
+              <CardHeader className="pb-2">
+                <CardDescription>
+                  {language === "english" ? "Total Users" : "전체 사용자"}
+                </CardDescription>
+                <CardTitle className="text-2xl">42</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  {language === "english" ? "+12% from last month" : "지난 달 대비 +12%"}
+                </div>
+              </CardContent>
+            </AnimatedCard>
+            
+            <AnimatedCard>
+              <CardHeader className="pb-2">
+                <CardDescription>
+                  {language === "english" ? "Active Sessions" : "활성 세션"}
+                </CardDescription>
+                <CardTitle className="text-2xl">18</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  {language === "english" ? "5 sessions today" : "오늘 5개 세션"}
+                </div>
+              </CardContent>
+            </AnimatedCard>
+            
+            <AnimatedCard>
+              <CardHeader className="pb-2">
+                <CardDescription>
+                  {language === "english" ? "Completed Sessions" : "완료된 세션"}
+                </CardDescription>
+                <CardTitle className="text-2xl">156</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  {language === "english" ? "+24% from last month" : "지난 달 대비 +24%"}
+                </div>
+              </CardContent>
+            </AnimatedCard>
+            
+            <AnimatedCard>
+              <CardHeader className="pb-2">
+                <CardDescription>
+                  {language === "english" ? "Avg. Progress" : "평균 진행률"}
+                </CardDescription>
+                <CardTitle className="text-2xl">68%</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  {language === "english" ? "+8% from last month" : "지난 달 대비 +8%"}
+                </div>
+              </CardContent>
+            </AnimatedCard>
+          </div>
+          
+          <Tabs defaultValue="sessions" className="w-full">
+            <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-4">
+              <TabsTrigger value="sessions">
+                {language === "english" ? "Session Management" : "세션 관리"}
+              </TabsTrigger>
+              <TabsTrigger value="progress">
+                {language === "english" ? "User Progress" : "사용자 진행 상황"}
+              </TabsTrigger>
+              <TabsTrigger value="schedule">
+                {language === "english" ? "Session Scheduling" : "세션 일정"}
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="sessions" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <SessionNotesForm />
+                <AnimatedCard>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === "english" ? "Chatbot Integration" : "챗봇 통합"}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === "english"
+                        ? "Connect your AI coach with popular messaging platforms"
+                        : "AI 코치를 인기 있는 메시징 플랫폼과 연결하세요"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <IconBrandKakoTalk className="size-5 text-primary" />
+                          <span>KakaoTalk</span>
+                        </div>
+                        <Badge variant="outline" className="bg-primary/10 text-primary">
+                          {language === "english" ? "Connected" : "연결됨"}
+                        </Badge>
+                      </div>
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <IconBrandWhatsapp className="size-5 text-muted-foreground" />
+                          <span>WhatsApp</span>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          {language === "english" ? "Connect" : "연결"}
+                        </Button>
+                      </div>
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <IconBrandTelegram className="size-5 text-muted-foreground" />
+                          <span>Telegram</span>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          {language === "english" ? "Connect" : "연결"}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </AnimatedCard>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-6">
+                <SessionHistoryTable data={sessionData} />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="progress" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <AnimatedCard>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === "english" ? "User Progress Chart" : "사용자 진행 차트"}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === "english"
+                        ? "Track user progress over time"
+                        : "시간 경과에 따른 사용자 진행 상황 추적"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <UserProgressChart />
+                  </CardContent>
+                </AnimatedCard>
+                
+                <AnimatedCard>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === "english" ? "Progress Metrics" : "진행 지표"}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === "english"
+                        ? "Key performance indicators for user progress"
+                        : "사용자 진행 상황에 대한 주요 성과 지표"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">
+                            {language === "english" ? "Completion Rate" : "완료율"}
+                          </div>
+                          <div className="text-2xl font-bold">78%</div>
+                          <div className="text-xs text-muted-foreground">
+                            {language === "english" ? "+5% from last month" : "지난 달 대비 +5%"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">
+                            {language === "english" ? "Engagement" : "참여도"}
+                          </div>
+                          <div className="text-2xl font-bold">92%</div>
+                          <div className="text-xs text-muted-foreground">
+                            {language === "english" ? "+8% from last month" : "지난 달 대비 +8%"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </AnimatedCard>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="schedule" className="space-y-6">
+              <div className="grid grid-cols-1 gap-6">
+                <AnimatedCard>
+                  <CardHeader>
+                    <CardTitle>
+                      {language === "english" ? "Session Scheduler" : "세션 스케줄러"}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === "english"
+                        ? "Schedule and manage coaching sessions"
+                        : "코칭 세션 예약 및 관리"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <SessionScheduler />
+                  </CardContent>
+                </AnimatedCard>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
