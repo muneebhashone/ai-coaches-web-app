@@ -3,7 +3,6 @@
 import * as React from "react"
 import Link from "next/link"
 import {
-  IconBrandKakoTalk,
   IconChartBar,
   IconDashboard,
   IconHistory,
@@ -21,44 +20,45 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation"
 
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/",
-      icon: IconDashboard,
-      isActive: true,
-    },
-    {
-      title: "Session Notes",
-      url: "/session-notes",
-      icon: IconNotebook,
-    },
-    {
-      title: "Chat History",
-      url: "/chat-history",
-      icon: IconHistory,
-    },
-    {
-      title: "User Progress",
-      url: "/user-progress",
-      icon: IconChartBar,
-    },
-    {
-      title: "Coaching Sessions",
-      url: "/coaching",
-      icon: IconUsers,
-    },
-    {
-      title: "KakaoTalk Integration",
-      url: "/kakao",
-      icon: IconBrandKakoTalk,
-    },
-  ],
-}
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const data = {
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "/",
+        icon: IconDashboard,
+        isActive: usePathname() === "/",
+      },
+      {
+        title: "Knowledge Base",
+        url: "/knowledge-base",
+        icon: IconNotebook,
+        isActive: usePathname() === "/knowledge-base",
+      },
+      {
+        title: "Sessions",
+        url: "/sessions",
+        icon: IconHistory,
+        isActive: usePathname() === "/sessions",
+      },
+      {
+        title: "Integrations",
+        url: "/integrations",
+        icon: IconChartBar,
+        isActive: usePathname() === "/integrations",
+      },
+      {
+        title: "Settings",
+        url: "/settings",
+        icon: IconUsers,
+        isActive: usePathname() === "/settings",
+      },
+    ],
+  }
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="pb-2">
