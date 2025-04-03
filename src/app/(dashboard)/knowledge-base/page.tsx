@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   IconBook,
   IconLanguage,
@@ -10,17 +10,22 @@ import {
   IconFolder,
   IconFile,
   IconFileCertificate,
-  IconFileText
-} from "@tabler/icons-react"
+  IconFileText,
+} from "@tabler/icons-react";
 
-import { AnimatedCard } from "@/components/ui/animated-card"
-import { Button } from "@/components/ui/button"
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Toggle } from "@/components/ui/toggle"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { AnimatedCard } from "@/components/ui/animated-card";
+import { Button } from "@/components/ui/button";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Toggle } from "@/components/ui/toggle";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 // Mock data for documents
 const documents = [
@@ -64,7 +69,7 @@ const documents = [
     category: "Guides",
     updated: "4 days ago",
   },
-]
+];
 
 // Mock data for categories
 const categories = [
@@ -72,17 +77,17 @@ const categories = [
   { id: 2, name: "Templates", count: 5 },
   { id: 3, name: "Scripts", count: 3 },
   { id: 4, name: "References", count: 2 },
-]
+];
 
 export default function KnowledgeBasePage() {
-  const [language, setLanguage] = useState<"english" | "korean">("english")
-  const [searchQuery, setSearchQuery] = useState("")
+  const [language, setLanguage] = useState<"english" | "korean">("english");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <IconBook className="h-5 w-5" />
-        <h1 className="text-xl font-semibold">
+      <div className="page-heading">
+        <IconBook className="h-5 w-5 page-heading-icon" />
+        <h1 className="page-heading-text">
           {language === "english" ? "Knowledge Base" : "지식 베이스"}
         </h1>
       </div>
@@ -90,7 +95,9 @@ export default function KnowledgeBasePage() {
         <Toggle
           aria-label="Toggle language"
           pressed={language === "korean"}
-          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+          onPressedChange={(pressed) =>
+            setLanguage(pressed ? "korean" : "english")
+          }
         >
           <IconLanguage className="h-4 w-4 mr-2" />
           {language === "english" ? "English" : "한국어"}
@@ -101,7 +108,9 @@ export default function KnowledgeBasePage() {
         <div className="relative w-full max-w-sm">
           <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={language === "english" ? "Search documents..." : "문서 검색..."}
+            placeholder={
+              language === "english" ? "Search documents..." : "문서 검색..."
+            }
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -144,7 +153,10 @@ export default function KnowledgeBasePage() {
                 <CardContent>
                   <div className="space-y-2">
                     {categories.map((category) => (
-                      <div key={category.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer">
+                      <div
+                        key={category.id}
+                        className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer"
+                      >
                         <div className="flex items-center">
                           <IconFolder className="h-4 w-4 mr-2 text-primary" />
                           <span>{category.name}</span>
@@ -185,7 +197,10 @@ export default function KnowledgeBasePage() {
                             <div>
                               <div className="font-medium">{doc.name}</div>
                               <div className="text-xs text-muted-foreground">
-                                {doc.type} • {doc.size} • {language === "english" ? `Updated ${doc.updated}` : `${doc.updated} 업데이트됨`}
+                                {doc.type} • {doc.size} •{" "}
+                                {language === "english"
+                                  ? `Updated ${doc.updated}`
+                                  : `${doc.updated} 업데이트됨`}
                               </div>
                             </div>
                           </div>
@@ -224,7 +239,10 @@ export default function KnowledgeBasePage() {
                         <div>
                           <div className="font-medium">{doc.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            {doc.type} • {doc.size} • {language === "english" ? `Updated ${doc.updated}` : `${doc.updated} 업데이트됨`}
+                            {doc.type} • {doc.size} •{" "}
+                            {language === "english"
+                              ? `Updated ${doc.updated}`
+                              : `${doc.updated} 업데이트됨`}
                           </div>
                         </div>
                       </div>
@@ -261,7 +279,10 @@ export default function KnowledgeBasePage() {
                         <div>
                           <div className="font-medium">{doc.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            {doc.type} • {doc.size} • {language === "english" ? `Updated ${doc.updated}` : `${doc.updated} 업데이트됨`}
+                            {doc.type} • {doc.size} •{" "}
+                            {language === "english"
+                              ? `Updated ${doc.updated}`
+                              : `${doc.updated} 업데이트됨`}
                           </div>
                         </div>
                       </div>
@@ -276,5 +297,5 @@ export default function KnowledgeBasePage() {
         </TabsContent>
       </Tabs>
     </>
-  )
-} 
+  );
+}

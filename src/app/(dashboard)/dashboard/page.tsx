@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { IconDashboard, IconLanguage } from "@tabler/icons-react"
+import Link from "next/link"
 
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,8 +15,8 @@ export default function DashboardPage() {
   return (
     <>
       <div className="flex items-center gap-2">
-        <IconDashboard className="h-5 w-5" />
-        <h1 className="text-xl font-semibold">
+        <IconDashboard className="h-5 w-5 page-heading-icon" />
+        <h1 className="page-heading-text">
           {language === "english" ? "Dashboard" : "대시보드"}
         </h1>
       </div>
@@ -106,8 +107,10 @@ export default function DashboardPage() {
                 ? "Configure your AI coach assistant, train it with your coaching style, and monitor its performance."
                 : "AI 코치 어시스턴트를 구성하고, 귀하의 코칭 스타일로 학습시키고, 성능을 모니터링하세요."}
             </p>
-            <Button>
-              {language === "english" ? "View" : "보기"}
+            <Button asChild>
+              <Link href="/chatbot">
+                {language === "english" ? "View" : "보기"}
+              </Link>
             </Button>
           </CardContent>
         </AnimatedCard>
@@ -115,7 +118,7 @@ export default function DashboardPage() {
         <AnimatedCard>
           <CardHeader>
             <CardTitle>
-              {language === "english" ? "Interactions" : "상호작용"}
+              {language === "english" ? "Sessions" : "세션"}
             </CardTitle>
             <CardDescription>
               {language === "english"
@@ -129,8 +132,10 @@ export default function DashboardPage() {
                 ? "Track how users are engaging with your AI coach, review conversation histories, and analyze user behavior patterns."
                 : "사용자가 AI 코치와 어떻게 상호작용하는지 추적하고, 대화 기록을 검토하고, 사용자 행동 패턴을 분석하세요."}
             </p>
-            <Button>
-              {language === "english" ? "View" : "보기"}
+            <Button asChild>
+              <Link href="/sessions">
+                {language === "english" ? "View" : "보기"}
+              </Link>
             </Button>
           </CardContent>
         </AnimatedCard>
@@ -152,8 +157,10 @@ export default function DashboardPage() {
                 ? "Create and manage the knowledge base that powers your AI coach. Upload documents, create articles, and organize content."
                 : "AI 코치를 지원하는 지식 베이스를 생성하고 관리하세요. 문서 업로드, 아티클 작성 및 콘텐츠 구성이 가능합니다."}
             </p>
-            <Button>
-              {language === "english" ? "View" : "보기"}
+            <Button asChild>
+              <Link href="/knowledge-base">
+                {language === "english" ? "View" : "보기"}
+              </Link>
             </Button>
           </CardContent>
         </AnimatedCard>
@@ -161,26 +168,53 @@ export default function DashboardPage() {
         <AnimatedCard>
           <CardHeader>
             <CardTitle>
-              {language === "english" ? "Users" : "사용자"}
+              {language === "english" ? "Integrations" : "통합"}
             </CardTitle>
             <CardDescription>
               {language === "english"
-                ? "Manage users and access"
-                : "사용자 및 액세스 관리"}
+                ? "Manage external connections"
+                : "외부 연결 관리"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
               {language === "english"
-                ? "Add, edit, and remove users from your platform. Set permissions and manage access controls."
-                : "플랫폼에서 사용자를 추가, 편집 및 제거합니다. 권한을 설정하고 액세스 제어를 관리하세요."}
+                ? "Connect your AI coach with external tools and services. Set up data sources and manage API integrations."
+                : "AI 코치를 외부 도구 및 서비스와 연결하세요. 데이터 소스를 설정하고 API 통합을 관리하세요."}
             </p>
-            <Button>
-              {language === "english" ? "View" : "보기"}
+            <Button asChild>
+              <Link href="/integrations">
+                {language === "english" ? "View" : "보기"}
+              </Link>
+            </Button>
+          </CardContent>
+        </AnimatedCard>
+        
+        <AnimatedCard>
+          <CardHeader>
+            <CardTitle>
+              {language === "english" ? "Settings" : "설정"}
+            </CardTitle>
+            <CardDescription>
+              {language === "english"
+                ? "Configure platform settings"
+                : "플랫폼 설정 구성"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              {language === "english"
+                ? "Customize your AI coaching platform settings, manage preferences, and configure system options."
+                : "AI 코칭 플랫폼 설정을 사용자 지정하고, 환경 설정을 관리하고, 시스템 옵션을 구성하세요."}
+            </p>
+            <Button asChild>
+              <Link href="/settings">
+                {language === "english" ? "View" : "보기"}
+              </Link>
             </Button>
           </CardContent>
         </AnimatedCard>
       </div>
     </>
   )
-} 
+}

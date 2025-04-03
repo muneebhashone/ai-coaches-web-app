@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   IconHistory,
   IconLanguage,
@@ -8,16 +8,21 @@ import {
   IconMessageCircle,
   IconSearch,
   IconUserCircle,
-  IconStar
-} from "@tabler/icons-react"
+  IconStar,
+} from "@tabler/icons-react";
 
-import { UserProgressChart } from "@/components/user-progress-chart"
-import { AnimatedCard } from "@/components/ui/animated-card"
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Toggle } from "@/components/ui/toggle"
-import { Badge } from "@/components/ui/badge"
+import { UserProgressChart } from "@/components/user-progress-chart";
+import { AnimatedCard } from "@/components/ui/animated-card";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Toggle } from "@/components/ui/toggle";
+import { Badge } from "@/components/ui/badge";
 
 // Mock feedback data
 const feedbackItems = [
@@ -26,7 +31,8 @@ const feedbackItems = [
     user: "Sarah Kim",
     date: "April 2, 2023",
     rating: 5,
-    message: "The AI coaching sessions have been tremendously helpful. I feel like I'm making real progress.",
+    message:
+      "The AI coaching sessions have been tremendously helpful. I feel like I'm making real progress.",
     type: "User Feedback",
   },
   {
@@ -34,7 +40,8 @@ const feedbackItems = [
     user: "James Wong",
     date: "April 1, 2023",
     rating: 4,
-    message: "Good experience overall. The AI coach could use more variety in its responses, but the guidance is solid.",
+    message:
+      "Good experience overall. The AI coach could use more variety in its responses, but the guidance is solid.",
     type: "User Feedback",
   },
   {
@@ -42,7 +49,8 @@ const feedbackItems = [
     user: "Minho Park",
     date: "March 30, 2023",
     rating: 5,
-    message: "I'm impressed with how personalized the coaching feels. The AI remembered details from our previous sessions.",
+    message:
+      "I'm impressed with how personalized the coaching feels. The AI remembered details from our previous sessions.",
     type: "User Feedback",
   },
   {
@@ -50,22 +58,23 @@ const feedbackItems = [
     user: "System",
     date: "March 29, 2023",
     rating: null,
-    message: "Performance report: 93% user engagement rate, average session duration 8.5 minutes, 87% completion rate.",
+    message:
+      "Performance report: 93% user engagement rate, average session duration 8.5 minutes, 87% completion rate.",
     type: "System Analytics",
   },
-]
+];
 
 // Define status badge variants
 const statusVariants = {
-  'Completed': 'default',
-  'In Progress': 'outline',
-  'Scheduled': 'secondary'
+  Completed: "default",
+  "In Progress": "outline",
+  Scheduled: "secondary",
 } as const;
 
 // Instead of using SessionHistoryTable with mock data, we'll render a simpler table
 export default function SessionsPage() {
-  const [language, setLanguage] = useState<"english" | "korean">("english")
-  const [searchQuery, setSearchQuery] = useState("")
+  const [language, setLanguage] = useState<"english" | "korean">("english");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
@@ -79,15 +88,17 @@ export default function SessionsPage() {
         <Toggle
           aria-label="Toggle language"
           pressed={language === "korean"}
-          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+          onPressedChange={(pressed) =>
+            setLanguage(pressed ? "korean" : "english")
+          }
         >
           <IconLanguage className="h-4 w-4 mr-2" />
           {language === "english" ? "English" : "한국어"}
         </Toggle>
       </div>
 
-      <Tabs defaultValue="history" className="w-full">
-        <TabsList className="mb-6 grid w-full grid-cols-1 md:grid-cols-3">
+      <Tabs defaultValue="history">
+        <TabsList className="mb-6 grid grid-cols-1 md:grid-cols-3 w-fit">
           <TabsTrigger value="history">
             <IconHistory className="h-4 w-4 mr-2" />
             {language === "english" ? "History" : "히스토리"}
@@ -107,7 +118,9 @@ export default function SessionsPage() {
             <div className="relative w-full max-w-sm">
               <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder={language === "english" ? "Search sessions..." : "세션 검색..."}
+                placeholder={
+                  language === "english" ? "Search sessions..." : "세션 검색..."
+                }
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -146,21 +159,33 @@ export default function SessionsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array(6).fill(null).map((_, i) => {
-                      const status = ["Completed", "In Progress", "Scheduled"][i % 3] as keyof typeof statusVariants;
-                      return (
-                        <tr key={i} className="border-b">
-                          <td className="p-3">User {i + 1}</td>
-                          <td className="p-3">{new Date(Date.now() - (i * 24 * 60 * 60 * 1000)).toLocaleDateString()}</td>
-                          <td className="p-3">{`${Math.floor(Math.random() * 20) + 5} min`}</td>
-                          <td className="p-3">
-                            <Badge variant={statusVariants[status]}>
-                              {status}
-                            </Badge>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {Array(6)
+                      .fill(null)
+                      .map((_, i) => {
+                        const status = [
+                          "Completed",
+                          "In Progress",
+                          "Scheduled",
+                        ][i % 3] as keyof typeof statusVariants;
+                        return (
+                          <tr key={i} className="border-b">
+                            <td className="p-3">User {i + 1}</td>
+                            <td className="p-3">
+                              {new Date(
+                                Date.now() - i * 24 * 60 * 60 * 1000
+                              ).toLocaleDateString()}
+                            </td>
+                            <td className="p-3">{`${
+                              Math.floor(Math.random() * 20) + 5
+                            } min`}</td>
+                            <td className="p-3">
+                              <Badge variant={statusVariants[status]}>
+                                {status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
@@ -179,7 +204,9 @@ export default function SessionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-xs text-muted-foreground">
-                  {language === "english" ? "+24% from last month" : "지난 달 대비 +24%"}
+                  {language === "english"
+                    ? "+24% from last month"
+                    : "지난 달 대비 +24%"}
                 </div>
               </CardContent>
             </AnimatedCard>
@@ -193,7 +220,9 @@ export default function SessionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-xs text-muted-foreground">
-                  {language === "english" ? "+2.1 min from last month" : "지난 달 대비 +2.1분"}
+                  {language === "english"
+                    ? "+2.1 min from last month"
+                    : "지난 달 대비 +2.1분"}
                 </div>
               </CardContent>
             </AnimatedCard>
@@ -207,7 +236,9 @@ export default function SessionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-xs text-muted-foreground">
-                  {language === "english" ? "+0.3 from last month" : "지난 달 대비 +0.3"}
+                  {language === "english"
+                    ? "+0.3 from last month"
+                    : "지난 달 대비 +0.3"}
                 </div>
               </CardContent>
             </AnimatedCard>
@@ -266,7 +297,9 @@ export default function SessionsPage() {
             <AnimatedCard>
               <CardHeader>
                 <CardTitle>
-                  {language === "english" ? "Platform Distribution" : "플랫폼 분포"}
+                  {language === "english"
+                    ? "Platform Distribution"
+                    : "플랫폼 분포"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -313,28 +346,45 @@ export default function SessionsPage() {
             <CardContent>
               <div className="space-y-6">
                 {feedbackItems.map((item) => (
-                  <div key={item.id} className="border border-border rounded-lg p-4">
+                  <div
+                    key={item.id}
+                    className="border border-border rounded-lg p-4"
+                  >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center">
                         <IconUserCircle className="h-10 w-10 text-muted-foreground mr-3" />
                         <div>
                           <div className="font-medium">{item.user}</div>
-                          <div className="text-xs text-muted-foreground">{item.date}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {item.date}
+                          </div>
                         </div>
                       </div>
-                      <Badge variant={item.type === "System Analytics" ? "outline" : "default"}>
+                      <Badge
+                        variant={
+                          item.type === "System Analytics"
+                            ? "outline"
+                            : "default"
+                        }
+                      >
                         {item.type}
                       </Badge>
                     </div>
 
                     {item.rating && (
                       <div className="flex mb-2">
-                        {Array(5).fill(0).map((_, i) => (
-                          <IconStar
-                            key={i}
-                            className={`h-4 w-4 ${i < item.rating ? "text-yellow-500" : "text-muted-foreground"}`}
-                          />
-                        ))}
+                        {Array(5)
+                          .fill(0)
+                          .map((_, i) => (
+                            <IconStar
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < item.rating
+                                  ? "text-yellow-500"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          ))}
                       </div>
                     )}
 
@@ -347,5 +397,5 @@ export default function SessionsPage() {
         </TabsContent>
       </Tabs>
     </>
-  )
-} 
+  );
+}
