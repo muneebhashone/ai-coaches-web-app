@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  IconSettings, 
+import {
+  IconSettings,
   IconLanguage,
   IconUser,
   IconBell,
@@ -16,7 +16,6 @@ import {
   IconSun
 } from "@tabler/icons-react"
 
-import { SiteHeader } from "@/components/site-header"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { Button } from "@/components/ui/button"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,24 +31,22 @@ export default function SettingsPage() {
 
   return (
     <>
-      <SiteHeader>
-        <div className="flex items-center gap-2">
-          <IconSettings className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">
-            {language === "english" ? "Settings" : "설정"}
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            aria-label="Toggle language"
-            pressed={language === "korean"}
-            onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
-          >
-            <IconLanguage className="h-4 w-4 mr-2" />
-            {language === "english" ? "English" : "한국어"}
-          </Toggle>
-        </div>
-      </SiteHeader>
+      <div className="flex items-center gap-2">
+        <IconSettings className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">
+          {language === "english" ? "Settings" : "설정"}
+        </h1>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          aria-label="Toggle language"
+          pressed={language === "korean"}
+          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+        >
+          <IconLanguage className="h-4 w-4 mr-2" />
+          {language === "english" ? "English" : "한국어"}
+        </Toggle>
+      </div>
 
       <Tabs defaultValue="account" className="w-full">
         <TabsList className="mb-6">
@@ -82,8 +79,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Profile" : "프로필"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Manage your account information" 
+                {language === "english"
+                  ? "Manage your account information"
                   : "계정 정보 관리"}
               </CardDescription>
             </CardHeader>
@@ -99,8 +96,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Change Avatar" : "아바타 변경"}
                     </Button>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "JPG, GIF or PNG. 1MB max." 
+                      {language === "english"
+                        ? "JPG, GIF or PNG. 1MB max."
                         : "JPG, GIF 또는 PNG. 최대 1MB."}
                     </p>
                   </div>
@@ -150,8 +147,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Preferences" : "환경설정"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Customize your coaching dashboard experience" 
+                {language === "english"
+                  ? "Customize your coaching dashboard experience"
                   : "코칭 대시보드 경험 사용자 정의"}
               </CardDescription>
             </CardHeader>
@@ -163,8 +160,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Language" : "언어"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Select your preferred language" 
+                      {language === "english"
+                        ? "Select your preferred language"
                         : "선호하는 언어 선택"}
                     </p>
                   </div>
@@ -185,8 +182,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Time Zone" : "시간대"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Set your local time zone" 
+                      {language === "english"
+                        ? "Set your local time zone"
                         : "로컬 시간대 설정"}
                     </p>
                   </div>
@@ -208,8 +205,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Theme" : "테마"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Customize the appearance of the dashboard" 
+                {language === "english"
+                  ? "Customize the appearance of the dashboard"
                   : "대시보드의 모양 사용자 정의"}
               </CardDescription>
             </CardHeader>
@@ -221,8 +218,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Dark Mode" : "다크 모드"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Toggle between light and dark theme" 
+                      {language === "english"
+                        ? "Toggle between light and dark theme"
                         : "라이트 및 다크 테마 전환"}
                     </p>
                   </div>
@@ -232,8 +229,8 @@ export default function SettingsPage() {
                     onPressedChange={setDarkMode}
                     className="data-[state=on]:bg-primary"
                   >
-                    {darkMode 
-                      ? <IconMoon className="h-4 w-4" /> 
+                    {darkMode
+                      ? <IconMoon className="h-4 w-4" />
                       : <IconSun className="h-4 w-4" />
                     }
                   </Toggle>
@@ -247,7 +244,7 @@ export default function SettingsPage() {
                   </label>
                   <div className="grid grid-cols-5 gap-2">
                     {["#0ea5e9", "#8b5cf6", "#10b981", "#f97316", "#ef4444"].map((color) => (
-                      <div 
+                      <div
                         key={color}
                         className="w-full aspect-square rounded-md cursor-pointer hover:ring-2 hover:ring-primary"
                         style={{ backgroundColor: color }}
@@ -269,8 +266,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Layout" : "레이아웃"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Customize the dashboard layout" 
+                {language === "english"
+                  ? "Customize the dashboard layout"
                   : "대시보드 레이아웃 사용자 정의"}
               </CardDescription>
             </CardHeader>
@@ -282,8 +279,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Compact Mode" : "컴팩트 모드"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Reduce spacing and size of elements" 
+                      {language === "english"
+                        ? "Reduce spacing and size of elements"
                         : "요소의 간격 및 크기 축소"}
                     </p>
                   </div>
@@ -298,8 +295,8 @@ export default function SettingsPage() {
                       {language === "english" ? "Sidebar Collapsed by Default" : "기본적으로 사이드바 축소"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Start with a collapsed sidebar" 
+                      {language === "english"
+                        ? "Start with a collapsed sidebar"
                         : "축소된 사이드바로 시작"}
                     </p>
                   </div>
@@ -317,8 +314,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Notification Settings" : "알림 설정"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Configure when and how you receive notifications" 
+                {language === "english"
+                  ? "Configure when and how you receive notifications"
                   : "알림을 받는 시기와 방법 구성"}
               </CardDescription>
             </CardHeader>
@@ -328,7 +325,7 @@ export default function SettingsPage() {
                   <h3 className="text-sm font-medium">
                     {language === "english" ? "Email Notifications" : "이메일 알림"}
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
@@ -336,21 +333,21 @@ export default function SettingsPage() {
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "Session Reminders" : "세션 알림"}
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "User Feedback" : "사용자 피드백"}
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "System Updates" : "시스템 업데이트"}
@@ -366,7 +363,7 @@ export default function SettingsPage() {
                   <h3 className="text-sm font-medium">
                     {language === "english" ? "In-App Notifications" : "앱 내 알림"}
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
@@ -374,14 +371,14 @@ export default function SettingsPage() {
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "Session Status Changes" : "세션 상태 변경"}
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "System Alerts" : "시스템 경고"}
@@ -406,8 +403,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Password" : "비밀번호"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Update your password" 
+                {language === "english"
+                  ? "Update your password"
                   : "비밀번호 업데이트"}
               </CardDescription>
             </CardHeader>
@@ -419,21 +416,21 @@ export default function SettingsPage() {
                   </label>
                   <Input type="password" />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
                     {language === "english" ? "New Password" : "새 비밀번호"}
                   </label>
                   <Input type="password" />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
                     {language === "english" ? "Confirm New Password" : "새 비밀번호 확인"}
                   </label>
                   <Input type="password" />
                 </div>
-                
+
                 <Button>
                   {language === "english" ? "Update Password" : "비밀번호 업데이트"}
                 </Button>
@@ -447,8 +444,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Two-Factor Authentication" : "이중 인증"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Add an extra layer of security to your account" 
+                {language === "english"
+                  ? "Add an extra layer of security to your account"
                   : "계정에 추가 보안 레이어 추가"}
               </CardDescription>
             </CardHeader>
@@ -460,14 +457,14 @@ export default function SettingsPage() {
                       {language === "english" ? "Enable Two-Factor Authentication" : "이중 인증 활성화"}
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      {language === "english" 
-                        ? "Secure your account with 2FA" 
+                      {language === "english"
+                        ? "Secure your account with 2FA"
                         : "2FA로 계정 보안 유지"}
                     </p>
                   </div>
                   <Toggle />
                 </div>
-                
+
                 <Button variant="outline" className="w-full">
                   <IconKey className="h-4 w-4 mr-2" />
                   {language === "english" ? "Setup Two-Factor Authentication" : "이중 인증 설정"}
@@ -482,8 +479,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Sessions" : "세션"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Manage your active sessions" 
+                {language === "english"
+                  ? "Manage your active sessions"
                   : "활성 세션 관리"}
               </CardDescription>
             </CardHeader>
@@ -502,7 +499,7 @@ export default function SettingsPage() {
                       {language === "english" ? "Current" : "현재"}
                     </Button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-2 border rounded-md">
                     <div className="flex items-center">
                       <IconDeviceDesktop className="h-5 w-5 mr-3 text-muted-foreground" />
@@ -516,7 +513,7 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <Button variant="outline" className="w-full">
                   {language === "english" ? "Log Out All Other Sessions" : "다른 모든 세션 로그아웃"}
                 </Button>
@@ -532,8 +529,8 @@ export default function SettingsPage() {
                 {language === "english" ? "Connected Services" : "연결된 서비스"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Manage services connected to your account" 
+                {language === "english"
+                  ? "Manage services connected to your account"
                   : "계정에 연결된 서비스 관리"}
               </CardDescription>
             </CardHeader>
@@ -545,8 +542,8 @@ export default function SettingsPage() {
                     <div>
                       <div className="font-medium">KakaoTalk</div>
                       <div className="text-xs text-muted-foreground">
-                        {language === "english" 
-                          ? "Connected on April 2, 2023" 
+                        {language === "english"
+                          ? "Connected on April 2, 2023"
                           : "2023년 4월 2일에 연결됨"}
                       </div>
                     </div>
@@ -555,7 +552,7 @@ export default function SettingsPage() {
                     {language === "english" ? "Disconnect" : "연결 해제"}
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-md">
                   <div className="flex items-center">
                     <IconWorld className="h-8 w-8 mr-4 text-muted-foreground" />
@@ -580,8 +577,8 @@ export default function SettingsPage() {
                 {language === "english" ? "API Access" : "API 액세스"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Manage API tokens for your account" 
+                {language === "english"
+                  ? "Manage API tokens for your account"
                   : "계정의 API 토큰 관리"}
               </CardDescription>
             </CardHeader>
@@ -603,7 +600,7 @@ export default function SettingsPage() {
                     •••••••••••••••••••••••••••••
                   </div>
                 </div>
-                
+
                 <Button variant="outline">
                   {language === "english" ? "Generate New API Token" : "새 API 토큰 생성"}
                 </Button>

@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  IconMessageChatbot, 
-  IconLanguage, 
+import {
+  IconMessageChatbot,
+  IconLanguage,
   IconSend,
   IconSettings,
   IconMessageCircle,
@@ -13,7 +13,6 @@ import {
   IconForms
 } from "@tabler/icons-react"
 
-import { SiteHeader } from "@/components/site-header"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { Button } from "@/components/ui/button"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -61,17 +60,17 @@ export default function ChatbotPage() {
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
-    
+
     // Add user message
     const userMessage = {
       role: "user",
       content: newMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
-    
+
     setMessages([...messages, userMessage]);
     setNewMessage("");
-    
+
     // Simulate AI response after a short delay
     setTimeout(() => {
       const aiResponse = {
@@ -85,24 +84,22 @@ export default function ChatbotPage() {
 
   return (
     <>
-      <SiteHeader>
-        <div className="flex items-center gap-2">
-          <IconMessageChatbot className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">
-            {language === "english" ? "Chatbot" : "챗봇"}
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            aria-label="Toggle language"
-            pressed={language === "korean"}
-            onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
-          >
-            <IconLanguage className="h-4 w-4 mr-2" />
-            {language === "english" ? "English" : "한국어"}
-          </Toggle>
-        </div>
-      </SiteHeader>
+      <div className="flex items-center gap-2">
+        <IconMessageChatbot className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">
+          {language === "english" ? "Chatbot" : "챗봇"}
+        </h1>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          aria-label="Toggle language"
+          pressed={language === "korean"}
+          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+        >
+          <IconLanguage className="h-4 w-4 mr-2" />
+          {language === "english" ? "English" : "한국어"}
+        </Toggle>
+      </div>
 
       <Tabs defaultValue="preview" className="w-full">
         <TabsList className="mb-6">
@@ -133,33 +130,33 @@ export default function ChatbotPage() {
                     {language === "english" ? "Chatbot Preview" : "챗봇 미리보기"}
                   </CardTitle>
                   <CardDescription>
-                    {language === "english" 
-                      ? "This is how your chatbot will appear to users" 
+                    {language === "english"
+                      ? "This is how your chatbot will appear to users"
                       : "사용자에게 보여질 챗봇 모습입니다"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg overflow-hidden shadow-md max-w-md mx-auto">
                     {/* Chat header */}
-                    <div 
-                      className="p-4 flex items-center" 
+                    <div
+                      className="p-4 flex items-center"
                       style={{ backgroundColor: primaryColor }}
                     >
                       <IconRobot className="h-6 w-6 mr-2 text-white" />
                       <span className="text-white font-medium">{chatbotName}</span>
                     </div>
-                    
+
                     {/* Chat messages */}
                     <div className="bg-muted/20 h-96 overflow-y-auto p-4 flex flex-col gap-3">
                       {messages.map((message, i) => (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                         >
-                          <div 
+                          <div
                             className={`
                               max-w-[80%] rounded-lg p-3 
-                              ${message.role === "user" 
+                              ${message.role === "user"
                                 ? "bg-primary text-primary-foreground ml-auto"
                                 : "bg-muted"
                               }
@@ -181,7 +178,7 @@ export default function ChatbotPage() {
                         </div>
                       ))}
                     </div>
-                    
+
                     {/* Chat input */}
                     <div className="p-3 border-t flex gap-2">
                       <Input
@@ -195,7 +192,7 @@ export default function ChatbotPage() {
                         }}
                         className="flex-1"
                       />
-                      <Button 
+                      <Button
                         size="icon"
                         onClick={handleSendMessage}
                         style={{ backgroundColor: primaryColor }}
@@ -215,8 +212,8 @@ export default function ChatbotPage() {
                     {language === "english" ? "Quick Settings" : "빠른 설정"}
                   </CardTitle>
                   <CardDescription>
-                    {language === "english" 
-                      ? "Adjust basic chatbot settings" 
+                    {language === "english"
+                      ? "Adjust basic chatbot settings"
                       : "기본 챗봇 설정 조정"}
                   </CardDescription>
                 </CardHeader>
@@ -226,45 +223,45 @@ export default function ChatbotPage() {
                       <label className="text-sm font-medium mb-2 block">
                         {language === "english" ? "Chatbot Name" : "챗봇 이름"}
                       </label>
-                      <Input 
-                        value={chatbotName} 
+                      <Input
+                        value={chatbotName}
                         onChange={(e) => setChatbotName(e.target.value)}
                         placeholder="Coach Assistant"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium mb-2 block">
                         {language === "english" ? "Welcome Message" : "환영 메시지"}
                       </label>
-                      <Input 
-                        value={welcomeMessage} 
+                      <Input
+                        value={welcomeMessage}
                         onChange={(e) => setWelcomeMessage(e.target.value)}
                         placeholder="Hello! How can I help you today?"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium mb-2 block">
                         {language === "english" ? "Primary Color" : "주요 색상"}
                       </label>
                       <div className="flex items-center gap-3">
-                        <input 
-                          type="color" 
+                        <input
+                          type="color"
                           value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
                           className="w-10 h-10 p-1 border rounded cursor-pointer"
                         />
-                        <Input 
-                          value={primaryColor} 
+                        <Input
+                          value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
                           className="flex-1"
                         />
                       </div>
                     </div>
-                    
+
                     <Separator />
-                    
+
                     <div>
                       <Button>
                         {language === "english" ? "Save Changes" : "변경사항 저장"}
@@ -284,8 +281,8 @@ export default function ChatbotPage() {
                 {language === "english" ? "Appearance Settings" : "외관 설정"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Customize the look and feel of your chatbot" 
+                {language === "english"
+                  ? "Customize the look and feel of your chatbot"
                   : "챗봇의 모양과 느낌을 사용자 정의"}
               </CardDescription>
             </CardHeader>
@@ -298,7 +295,7 @@ export default function ChatbotPage() {
                     </label>
                     <div className="grid grid-cols-5 gap-2">
                       {["#0ea5e9", "#8b5cf6", "#10b981", "#f97316", "#ef4444"].map((color) => (
-                        <div 
+                        <div
                           key={color}
                           className={`w-full aspect-square rounded-md cursor-pointer transition-all ${primaryColor === color ? "ring-2 ring-offset-2 ring-primary" : ""}`}
                           style={{ backgroundColor: color }}
@@ -307,29 +304,29 @@ export default function ChatbotPage() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Custom Color" : "사용자 정의 색상"}
                     </label>
                     <div className="flex items-center gap-3">
-                      <input 
-                        type="color" 
+                      <input
+                        type="color"
                         value={primaryColor}
                         onChange={(e) => setPrimaryColor(e.target.value)}
                         className="w-12 h-12 p-1 border rounded cursor-pointer"
                       />
-                      <Input 
-                        value={primaryColor} 
+                      <Input
+                        value={primaryColor}
                         onChange={(e) => setPrimaryColor(e.target.value)}
                         className="flex-1"
                       />
                     </div>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
@@ -344,7 +341,7 @@ export default function ChatbotPage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Button Icon" : "버튼 아이콘"}
@@ -362,7 +359,7 @@ export default function ChatbotPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <Button>
                   {language === "english" ? "Save Appearance" : "외관 저장"}
                 </Button>
@@ -378,8 +375,8 @@ export default function ChatbotPage() {
                 {language === "english" ? "Behavior Settings" : "동작 설정"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Configure how your chatbot interacts with users" 
+                {language === "english"
+                  ? "Configure how your chatbot interacts with users"
                   : "챗봇이 사용자와 상호작용하는 방식 구성"}
               </CardDescription>
             </CardHeader>
@@ -390,28 +387,28 @@ export default function ChatbotPage() {
                     <label className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Welcome Message" : "환영 메시지"}
                     </label>
-                    <Input 
-                      value={welcomeMessage} 
+                    <Input
+                      value={welcomeMessage}
                       onChange={(e) => setWelcomeMessage(e.target.value)}
                       placeholder="Hello! How can I help you today?"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Offline Message" : "오프라인 메시지"}
                     </label>
-                    <Input 
-                      placeholder={language === "english" 
-                        ? "Sorry, I'm offline right now. Please try again later." 
+                    <Input
+                      placeholder={language === "english"
+                        ? "Sorry, I'm offline right now. Please try again later."
                         : "죄송합니다. 현재 오프라인입니다. 나중에 다시 시도해주세요."
                       }
                     />
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <label className="text-sm font-medium mb-2 block">
                     {language === "english" ? "Chatbot Availability" : "챗봇 가용성"}
@@ -428,14 +425,14 @@ export default function ChatbotPage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">
                     {language === "english" ? "Conversation Options" : "대화 옵션"}
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
@@ -443,14 +440,14 @@ export default function ChatbotPage() {
                       </label>
                       <Toggle />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "Show Typing Indicator" : "입력 표시기 표시"}
                       </label>
                       <Toggle defaultPressed />
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
                         {language === "english" ? "Allow File Attachments" : "파일 첨부 허용"}
@@ -459,7 +456,7 @@ export default function ChatbotPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <Button>
                   {language === "english" ? "Save Behavior" : "동작 저장"}
                 </Button>
@@ -475,8 +472,8 @@ export default function ChatbotPage() {
                 {language === "english" ? "Embed Your Chatbot" : "챗봇 임베드"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Add your chatbot to your website or application" 
+                {language === "english"
+                  ? "Add your chatbot to your website or application"
                   : "웹사이트나 애플리케이션에 챗봇 추가"}
               </CardDescription>
             </CardHeader>
@@ -500,27 +497,27 @@ export default function ChatbotPage() {
                     </pre>
                   </div>
                 </div>
-                
+
                 <Button variant="outline">
                   {language === "english" ? "Copy Code" : "코드 복사"}
                 </Button>
-                
+
                 <Separator />
-                
+
                 <div>
                   <CardTitle className="text-lg mb-2">
                     {language === "english" ? "Direct Link" : "직접 링크"}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground mb-4">
-                    {language === "english" 
-                      ? "Share this link to allow anyone to chat with your AI coach" 
+                    {language === "english"
+                      ? "Share this link to allow anyone to chat with your AI coach"
                       : "이 링크를 공유하여 누구나 AI 코치와 채팅할 수 있도록 허용"}
                   </p>
                   <div className="bg-muted/50 p-4 rounded-md">
                     <p className="break-all text-sm">https://ai-coach.example.com/chat/{`coach-${Math.random().toString(36).substring(2, 8)}`}</p>
                   </div>
                 </div>
-                
+
                 <Button variant="outline">
                   {language === "english" ? "Copy Link" : "링크 복사"}
                 </Button>

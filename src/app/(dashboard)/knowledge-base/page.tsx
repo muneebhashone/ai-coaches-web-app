@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  IconBook, 
-  IconLanguage, 
+import {
+  IconBook,
+  IconLanguage,
   IconSearch,
   IconUpload,
   IconPlus,
@@ -13,7 +13,6 @@ import {
   IconFileText
 } from "@tabler/icons-react"
 
-import { SiteHeader } from "@/components/site-header"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { Button } from "@/components/ui/button"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -81,24 +80,22 @@ export default function KnowledgeBasePage() {
 
   return (
     <>
-      <SiteHeader>
-        <div className="flex items-center gap-2">
-          <IconBook className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">
-            {language === "english" ? "Knowledge Base" : "지식 베이스"}
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            aria-label="Toggle language"
-            pressed={language === "korean"}
-            onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
-          >
-            <IconLanguage className="h-4 w-4 mr-2" />
-            {language === "english" ? "English" : "한국어"}
-          </Toggle>
-        </div>
-      </SiteHeader>
+      <div className="flex items-center gap-2">
+        <IconBook className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">
+          {language === "english" ? "Knowledge Base" : "지식 베이스"}
+        </h1>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          aria-label="Toggle language"
+          pressed={language === "korean"}
+          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+        >
+          <IconLanguage className="h-4 w-4 mr-2" />
+          {language === "english" ? "English" : "한국어"}
+        </Toggle>
+      </div>
 
       <div className="flex items-center justify-between mb-6">
         <div className="relative w-full max-w-sm">
@@ -167,8 +164,8 @@ export default function KnowledgeBasePage() {
                     {language === "english" ? "Documents" : "문서"}
                   </CardTitle>
                   <CardDescription>
-                    {language === "english" 
-                      ? "Manage your knowledge base documents" 
+                    {language === "english"
+                      ? "Manage your knowledge base documents"
                       : "지식 베이스 문서 관리"}
                   </CardDescription>
                 </CardHeader>
@@ -208,8 +205,8 @@ export default function KnowledgeBasePage() {
           <AnimatedCard>
             <CardContent className="pt-6">
               <p className="text-muted-foreground">
-                {language === "english" 
-                  ? "Showing your recently viewed or edited documents." 
+                {language === "english"
+                  ? "Showing your recently viewed or edited documents."
                   : "최근에 보거나 편집한 문서를 표시합니다."}
               </p>
               <div className="mt-4 space-y-2">
@@ -245,8 +242,8 @@ export default function KnowledgeBasePage() {
           <AnimatedCard>
             <CardContent className="pt-6">
               <p className="text-muted-foreground">
-                {language === "english" 
-                  ? "Your favorite documents for quick access." 
+                {language === "english"
+                  ? "Your favorite documents for quick access."
                   : "빠른 액세스를 위한 즐겨찾기 문서입니다."}
               </p>
               <div className="mt-4 space-y-2">

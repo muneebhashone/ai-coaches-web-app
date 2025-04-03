@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  IconHistory, 
-  IconLanguage, 
+import {
+  IconHistory,
+  IconLanguage,
   IconChartBar,
   IconMessageCircle,
   IconSearch,
@@ -11,7 +11,6 @@ import {
   IconStar
 } from "@tabler/icons-react"
 
-import { SiteHeader } from "@/components/site-header"
 import { UserProgressChart } from "@/components/user-progress-chart"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -70,24 +69,22 @@ export default function SessionsPage() {
 
   return (
     <>
-      <SiteHeader>
-        <div className="flex items-center gap-2">
-          <IconHistory className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">
-            {language === "english" ? "Sessions" : "세션"}
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            aria-label="Toggle language"
-            pressed={language === "korean"}
-            onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
-          >
-            <IconLanguage className="h-4 w-4 mr-2" />
-            {language === "english" ? "English" : "한국어"}
-          </Toggle>
-        </div>
-      </SiteHeader>
+      <div className="flex items-center gap-2">
+        <IconHistory className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">
+          {language === "english" ? "Sessions" : "세션"}
+        </h1>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          aria-label="Toggle language"
+          pressed={language === "korean"}
+          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+        >
+          <IconLanguage className="h-4 w-4 mr-2" />
+          {language === "english" ? "English" : "한국어"}
+        </Toggle>
+      </div>
 
       <Tabs defaultValue="history" className="w-full">
         <TabsList className="mb-6 grid w-full grid-cols-1 md:grid-cols-3">
@@ -124,8 +121,8 @@ export default function SessionsPage() {
                 {language === "english" ? "Session History" : "세션 기록"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "View and manage all coaching sessions" 
+                {language === "english"
+                  ? "View and manage all coaching sessions"
                   : "모든 코칭 세션 보기 및 관리"}
               </CardDescription>
             </CardHeader>
@@ -186,7 +183,7 @@ export default function SessionsPage() {
                 </div>
               </CardContent>
             </AnimatedCard>
-            
+
             <AnimatedCard>
               <CardHeader className="pb-2">
                 <CardDescription>
@@ -200,7 +197,7 @@ export default function SessionsPage() {
                 </div>
               </CardContent>
             </AnimatedCard>
-            
+
             <AnimatedCard>
               <CardHeader className="pb-2">
                 <CardDescription>
@@ -222,8 +219,8 @@ export default function SessionsPage() {
                 {language === "english" ? "Session Metrics" : "세션 지표"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Performance analysis over time" 
+                {language === "english"
+                  ? "Performance analysis over time"
                   : "시간에 따른 성능 분석"}
               </CardDescription>
             </CardHeader>
@@ -308,8 +305,8 @@ export default function SessionsPage() {
                 {language === "english" ? "User Feedback" : "사용자 피드백"}
               </CardTitle>
               <CardDescription>
-                {language === "english" 
-                  ? "Feedback from users about their coaching experience" 
+                {language === "english"
+                  ? "Feedback from users about their coaching experience"
                   : "코칭 경험에 대한 사용자의 피드백"}
               </CardDescription>
             </CardHeader>
@@ -329,18 +326,18 @@ export default function SessionsPage() {
                         {item.type}
                       </Badge>
                     </div>
-                    
+
                     {item.rating && (
                       <div className="flex mb-2">
                         {Array(5).fill(0).map((_, i) => (
-                          <IconStar 
+                          <IconStar
                             key={i}
-                            className={`h-4 w-4 ${i < item.rating ? "text-yellow-500" : "text-muted-foreground"}`} 
+                            className={`h-4 w-4 ${i < item.rating ? "text-yellow-500" : "text-muted-foreground"}`}
                           />
                         ))}
                       </div>
                     )}
-                    
+
                     <p className="text-sm">{item.message}</p>
                   </div>
                 ))}

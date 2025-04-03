@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
 import {
   IconDashboard,
@@ -11,7 +10,6 @@ import {
   IconBook,
 } from "@tabler/icons-react"
 
-import { NavMain } from "@/components/nav-main"
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 // Note: The NavMain component will need to be modified to support nested menu items
@@ -58,26 +57,29 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "floating" | "inset" }) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="pb-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-3.5 bg-primary/10 hover:bg-primary/20 transition-all duration-200"
-            >
-              <Link href="/dashboard" className="flex items-center gap-3">
-                <IconMessageChatbot className="size-8 text-primary" />
-                <span className="text-2xl font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Coach</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+    <Sidebar variant={variant}>
+      <SidebarHeader className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold">Coaches</span>
+          {/* <SidebarTrigger /> */}
+        </div>
+
       </SidebarHeader>
-      <SidebarContent className="pt-4">
-        <NavMain items={data.navMain} />
+      <SidebarContent>
+        <SidebarMenu>
+          {data.navMain.map((item) => (
+            <SidebarMenuItem key={item.url}>
+              <SidebarMenuButton asChild isActive={item.isActive}>
+                <Link href={item.url}>
+                  <item.icon className="size-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
     </Sidebar>
   )

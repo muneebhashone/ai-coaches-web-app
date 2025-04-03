@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { IconDashboard, IconLanguage } from "@tabler/icons-react"
 
-import { SiteHeader } from "@/components/site-header"
 import { AnimatedCard } from "@/components/ui/animated-card"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Toggle } from "@/components/ui/toggle"
@@ -14,24 +13,22 @@ export default function DashboardPage() {
 
   return (
     <>
-      <SiteHeader>
-        <div className="flex items-center gap-2">
-          <IconDashboard className="h-5 w-5" />
-          <h1 className="text-xl font-semibold">
-            {language === "english" ? "Dashboard" : "대시보드"}
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Toggle
-            aria-label="Toggle language"
-            pressed={language === "korean"}
-            onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
-          >
-            <IconLanguage className="h-4 w-4 mr-2" />
-            {language === "english" ? "English" : "한국어"}
-          </Toggle>
-        </div>
-      </SiteHeader>
+      <div className="flex items-center gap-2">
+        <IconDashboard className="h-5 w-5" />
+        <h1 className="text-xl font-semibold">
+          {language === "english" ? "Dashboard" : "대시보드"}
+        </h1>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <Toggle
+          aria-label="Toggle language"
+          pressed={language === "korean"}
+          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+        >
+          <IconLanguage className="h-4 w-4 mr-2" />
+          {language === "english" ? "English" : "한국어"}
+        </Toggle>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <AnimatedCard>
@@ -47,7 +44,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </AnimatedCard>
-        
+
         <AnimatedCard>
           <CardHeader className="pb-2">
             <CardDescription>
@@ -61,7 +58,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </AnimatedCard>
-        
+
         <AnimatedCard>
           <CardHeader className="pb-2">
             <CardDescription>
@@ -75,7 +72,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </AnimatedCard>
-        
+
         <AnimatedCard>
           <CardHeader className="pb-2">
             <CardDescription>
@@ -98,8 +95,8 @@ export default function DashboardPage() {
               {language === "english" ? "Manage Chatbot" : "챗봇 관리"}
             </CardTitle>
             <CardDescription>
-              {language === "english" 
-                ? "Administer your AI-based chatbot" 
+              {language === "english"
+                ? "Administer your AI-based chatbot"
                 : "AI 기반 챗봇 관리"}
             </CardDescription>
           </CardHeader>
@@ -121,8 +118,8 @@ export default function DashboardPage() {
               {language === "english" ? "Interactions" : "상호작용"}
             </CardTitle>
             <CardDescription>
-              {language === "english" 
-                ? "Monitor and analyze interactions" 
+              {language === "english"
+                ? "Monitor and analyze interactions"
                 : "상호작용 모니터링 및 분석"}
             </CardDescription>
           </CardHeader>
@@ -144,8 +141,8 @@ export default function DashboardPage() {
               {language === "english" ? "Knowledge Base" : "지식 베이스"}
             </CardTitle>
             <CardDescription>
-              {language === "english" 
-                ? "Organize information and resources" 
+              {language === "english"
+                ? "Organize information and resources"
                 : "정보 및 리소스 구성"}
             </CardDescription>
           </CardHeader>
@@ -167,8 +164,8 @@ export default function DashboardPage() {
               {language === "english" ? "Users" : "사용자"}
             </CardTitle>
             <CardDescription>
-              {language === "english" 
-                ? "Manage users and access" 
+              {language === "english"
+                ? "Manage users and access"
                 : "사용자 및 액세스 관리"}
             </CardDescription>
           </CardHeader>
