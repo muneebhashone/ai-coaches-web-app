@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Always use the command "npx shadcn@latest add [component] --force" for installing any shadcn component
