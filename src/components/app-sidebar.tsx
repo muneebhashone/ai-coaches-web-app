@@ -20,6 +20,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+import { usePathname } from "next/navigation"
+
 // Note: The NavMain component will need to be modified to support nested menu items
 const data = {
   navMain: [
@@ -58,6 +60,8 @@ const data = {
 }
 
 export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "floating" | "inset" }) {
+  const pathname = usePathname()
+
   return (
     <Sidebar variant={variant}>
       <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-border/50">
@@ -72,7 +76,7 @@ export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "flo
             <SidebarMenuItem key={item.url}>
               <SidebarMenuButton
                 asChild
-                isActive={item.isActive}
+                isActive={pathname === item.url}
                 className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5 transition-all duration-200"
               >
                 <Link href={item.url}>
