@@ -60,18 +60,21 @@ const data = {
 export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "floating" | "inset" }) {
   return (
     <Sidebar variant={variant}>
-      <SidebarHeader className="flex items-center justify-between px-4 py-3">
+      <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold">Coaches</span>
-          {/* <SidebarTrigger /> */}
+          <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">AI Coaches</span>
         </div>
-
+        <SidebarTrigger />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {data.navMain.map((item) => (
             <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
+              <SidebarMenuButton
+                asChild
+                isActive={item.isActive}
+                className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5 transition-all duration-200"
+              >
                 <Link href={item.url}>
                   <item.icon className="size-4" />
                   <span>{item.title}</span>
