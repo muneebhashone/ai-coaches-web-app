@@ -571,7 +571,7 @@ export default function SettingsPage() {
             </CardContent>
           </AnimatedCard>
 
-          <AnimatedCard>
+          {/* <AnimatedCard>
             <CardHeader>
               <CardTitle>
                 {language === "english" ? "API Access" : "API 액세스"}
@@ -606,7 +606,7 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </CardContent>
-          </AnimatedCard>
+          </AnimatedCard> */}
         </TabsContent>
       </Tabs>
     </>

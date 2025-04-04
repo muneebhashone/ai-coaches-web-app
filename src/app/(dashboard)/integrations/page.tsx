@@ -265,7 +265,7 @@ export default function IntegrationsPage() {
 
       <Separator className="my-8" />
 
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <CardTitle className="mb-4">
           {language === "english" ? "API Access" : "API 접근"}
         </CardTitle>
@@ -312,7 +312,7 @@ export default function IntegrationsPage() {
             </div>
           </CardContent>
         </AnimatedCard>
-      </div>
+      </div> */}
     </>
   )
 } 
