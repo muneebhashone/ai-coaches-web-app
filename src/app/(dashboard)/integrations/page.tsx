@@ -32,22 +32,22 @@ const messagingIntegrations = [
     status: "connected",
     lastSync: "2 hours ago",
   },
-  {
-    id: 2,
-    name: "WhatsApp",
-    description: "Connect your AI coach with WhatsApp messaging platform",
-    icon: IconBrandWhatsapp,
-    status: "disconnected",
-    lastSync: null,
-  },
-  {
-    id: 3,
-    name: "Telegram",
-    description: "Connect your AI coach with Telegram messaging platform",
-    icon: IconBrandTelegram,
-    status: "disconnected",
-    lastSync: null,
-  },
+  // {
+  //   id: 2,
+  //   name: "WhatsApp",
+  //   description: "Connect your AI coach with WhatsApp messaging platform",
+  //   icon: IconBrandWhatsapp,
+  //   status: "disconnected",
+  //   lastSync: null,
+  // },
+  // {
+  //   id: 3,
+  //   name: "Telegram",
+  //   description: "Connect your AI coach with Telegram messaging platform",
+  //   icon: IconBrandTelegram,
+  //   status: "disconnected",
+  //   lastSync: null,
+  // },
 ]
 
 const calendarIntegrations = [
@@ -78,22 +78,22 @@ const dataIntegrations = [
     status: "available",
     lastSync: null,
   },
-  {
-    id: 2,
-    name: "Database",
-    description: "Connect to your custom databases",
-    icon: IconDatabase,
-    status: "available",
-    lastSync: null,
-  },
-  {
-    id: 3,
-    name: "Cloud Storage",
-    description: "Connect to cloud storage services",
-    icon: IconCloud,
-    status: "coming-soon",
-    lastSync: null,
-  },
+  // {
+  //   id: 2,
+  //   name: "Database",
+  //   description: "Connect to your custom databases",
+  //   icon: IconDatabase,
+  //   status: "available",
+  //   lastSync: null,
+  // },
+  // {
+  //   id: 3,
+  //   name: "Cloud Storage",
+  //   description: "Connect to cloud storage services",
+  //   icon: IconCloud,
+  //   status: "coming-soon",
+  //   lastSync: null,
+  // },
 ]
 
 export default function IntegrationsPage() {
