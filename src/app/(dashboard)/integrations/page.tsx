@@ -5,13 +5,13 @@ import {
   IconPlugConnected,
   IconLanguage,
   IconBrandKakoTalk,
-  IconBrandWhatsapp,
-  IconBrandTelegram,
+  // IconBrandWhatsapp,
+  // IconBrandTelegram,
   IconCalendar,
   IconBrandZoom,
   IconFile,
-  IconDatabase,
-  IconCloud
+  // IconDatabase,
+  // IconCloud
 } from "@tabler/icons-react"
 
 import { AnimatedCard } from "@/components/ui/animated-card"
