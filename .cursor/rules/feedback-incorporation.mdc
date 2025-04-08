@@ -1,0 +1,10 @@
+---
+description: When incorporating feedbacks
+globs: 
+alwaysApply: false
+---
+When you are incorporating feedback, first carefully analyze the current implementation and take a deep look into it
+
+Divide large-med tasks into sub-task and then start implementation
+
+to understand the feedbacks more you can read and analyze the scope of the project by going to documentation folder in the current project.
