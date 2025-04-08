@@ -1,6 +1,8 @@
 ---
-description: 
+description: Installing shadcn components
 globs: 
 alwaysApply: false
 ---
 Always use the command "npx shadcn@latest add [component] --force" for installing any shadcn component
+
+First check components/ui directory for component and then install if not found.

@@ -8,6 +8,7 @@ import { AnimatedCard } from "@/components/ui/animated-card"
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Toggle } from "@/components/ui/toggle"
 import { Button } from "@/components/ui/button"
+import { MetricDetailsDialog } from "@/components/dashboard/metric-details-dialog"
 
 export default function DashboardPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english")
@@ -32,61 +33,137 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AnimatedCard>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              {language === "english" ? "Total Users" : "전체 사용자"}
-            </CardDescription>
-            <CardTitle className="text-2xl">42</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              {language === "english" ? "+12% from last month" : "지난 달 대비 +12%"}
-            </div>
-          </CardContent>
-        </AnimatedCard>
+        <MetricDetailsDialog
+          title={language === "english" ? "Total Users" : "전체 사용자"}
+          value={42}
+          description={language === "english" ? "Detailed user statistics and demographics" : "상세 사용자 통계 및 인구 통계"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Active users this week" : "이번 주 활성 사용자",
+              value: 75,
+              change: 12
+            },
+            goals: {
+              label: language === "english" ? "User retention rate" : "사용자 유지율",
+              value: 82,
+              change: 8
+            }
+          }}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Total Users" : "전체 사용자"}
+              </CardDescription>
+              <CardTitle className="text-2xl">42</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "+12% from last month" : "지난 달 대비 +12%"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
 
-        <AnimatedCard>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              {language === "english" ? "Active Sessions" : "활성 세션"}
-            </CardDescription>
-            <CardTitle className="text-2xl">18</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              {language === "english" ? "5 sessions today" : "오늘 5개 세션"}
-            </div>
-          </CardContent>
-        </AnimatedCard>
+        <MetricDetailsDialog
+          title={language === "english" ? "Active Sessions" : "활성 세션"}
+          value={18}
+          description={language === "english" ? "Current active session details and engagement metrics" : "현재 활성 세션 세부 정보 및 참여 지표"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Session completion rate" : "세션 완료율",
+              value: 68,
+              change: 5
+            },
+            goals: {
+              label: language === "english" ? "Goal achievement rate" : "목표 달성률",
+              value: 72,
+              change: 15
+            }
+          }}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Active Sessions" : "활성 세션"}
+              </CardDescription>
+              <CardTitle className="text-2xl">18</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "5 sessions today" : "오늘 5개 세션"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
 
-        <AnimatedCard>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              {language === "english" ? "Completed Sessions" : "완료된 세션"}
-            </CardDescription>
-            <CardTitle className="text-2xl">156</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              {language === "english" ? "+24% from last month" : "지난 달 대비 +24%"}
-            </div>
-          </CardContent>
-        </AnimatedCard>
+        <MetricDetailsDialog
+          title={language === "english" ? "Completed Sessions" : "완료된 세션"}
+          value={156}
+          description={language === "english" ? "Historical session data and completion analytics" : "과거 세션 데이터 및 완료 분석"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Average session duration" : "평균 세션 시간",
+              value: 85,
+              change: 24
+            },
+            goals: {
+              label: language === "english" ? "Success rate" : "성공률",
+              value: 78,
+              change: 10
+            }
+          }}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Completed Sessions" : "완료된 세션"}
+              </CardDescription>
+              <CardTitle className="text-2xl">156</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "+24% from last month" : "지난 달 대비 +24%"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
 
-        <AnimatedCard>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              {language === "english" ? "Avg. Progress" : "평균 진행률"}
-            </CardDescription>
-            <CardTitle className="text-2xl">68%</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              {language === "english" ? "+8% from last month" : "지난 달 대비 +8%"}
-            </div>
-          </CardContent>
-        </AnimatedCard>
+        <MetricDetailsDialog
+          title={language === "english" ? "Average Progress" : "평균 진행률"}
+          value="68%"
+          description={language === "english" ? "Overall progress metrics and goal achievement statistics" : "전체 진행 지표 및 목표 달성 통계"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Session progress rate" : "세션 진행률",
+              value: 68,
+              change: 8
+            },
+            goals: {
+              label: language === "english" ? "Goal completion rate" : "목표 완료율",
+              value: 75,
+              change: 12
+            }
+          }}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Avg. Progress" : "평균 진행률"}
+              </CardDescription>
+              <CardTitle className="text-2xl">68%</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "+8% from last month" : "지난 달 대비 +8%"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -189,7 +266,7 @@ export default function DashboardPage() {
             </Button>
           </CardContent>
         </AnimatedCard>
-        
+
         <AnimatedCard>
           <CardHeader>
             <CardTitle>

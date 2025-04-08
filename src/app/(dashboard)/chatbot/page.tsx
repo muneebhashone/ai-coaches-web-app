@@ -10,7 +10,8 @@ import {
   IconUser,
   IconRobot,
   IconPalette,
-  IconForms
+  IconForms,
+  IconBrain,
 } from "@tabler/icons-react"
 
 import { AnimatedCard } from "@/components/ui/animated-card"
@@ -20,6 +21,10 @@ import { Input } from "@/components/ui/input"
 import { Toggle } from "@/components/ui/toggle"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { TrainingStatusDashboard } from "@/components/chatbot/training-status-dashboard"
+import { IntegrationStatus } from "@/components/knowledge-base/integration-status"
+import { CoachInstructionsDialog } from "@/components/chatbot/coach-instructions-dialog"
+import type { CoachInstructionsData } from "@/components/chatbot/coach-instructions-form"
 
 // Mock chat messages
 const initialMessages = [
@@ -50,6 +55,55 @@ const initialMessages = [
   },
 ]
 
+// Mock training status data
+const mockTrainingStatus = {
+  status: "training" as const,
+  lastUpdated: new Date().toLocaleString(),
+  metrics: {
+    accuracy: {
+      name: "Accuracy",
+      value: 85,
+      change: 2.5,
+      target: 95
+    },
+    responseTime: {
+      name: "Response Time",
+      value: 250,
+      change: -50,
+      target: 200
+    },
+    consistency: {
+      name: "Consistency",
+      value: 90,
+      change: 5,
+      target: 95
+    }
+  }
+}
+
+// Mock integration items
+const mockIntegrationItems = [
+  {
+    id: "1",
+    name: "Coaching Methodology Guide",
+    type: "guide" as const,
+    status: "integrated" as const
+  },
+  {
+    id: "2",
+    name: "Communication Techniques",
+    type: "document" as const,
+    status: "integrating" as const,
+    progress: 75
+  },
+  {
+    id: "3",
+    name: "Goal Setting Framework",
+    type: "article" as const,
+    status: "integrated" as const
+  }
+]
+
 export default function ChatbotPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english")
   const [messages, setMessages] = useState(initialMessages)
@@ -57,6 +111,7 @@ export default function ChatbotPage() {
   const [primaryColor, setPrimaryColor] = useState("#0ea5e9")
   const [chatbotName, setChatbotName] = useState("Coach Assistant")
   const [welcomeMessage, setWelcomeMessage] = useState("Hello! I'm your AI coaching assistant. How can I help you today?")
+  const [instructionsOpen, setInstructionsOpen] = useState(false)
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -81,6 +136,11 @@ export default function ChatbotPage() {
       setMessages(prev => [...prev, aiResponse]);
     }, 1000);
   };
+
+  const handleInstructionsSubmit = (data: CoachInstructionsData) => {
+    console.log("Coach instructions submitted:", data)
+    setInstructionsOpen(false)
+  }
 
   return (
     <>
@@ -114,6 +174,10 @@ export default function ChatbotPage() {
           <TabsTrigger value="behavior">
             <IconSettings className="h-4 w-4 mr-2" />
             {language === "english" ? "Behavior" : "동작"}
+          </TabsTrigger>
+          <TabsTrigger value="training">
+            <IconBrain className="h-4 w-4 mr-2" />
+            {language === "english" ? "Training" : "학습"}
           </TabsTrigger>
           <TabsTrigger value="embed">
             <IconForms className="h-4 w-4 mr-2" />
@@ -220,10 +284,11 @@ export default function ChatbotPage() {
                 <CardContent>
                   <div className="space-y-6">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">
+                      <label htmlFor="chatbotName" className="text-sm font-medium mb-2 block">
                         {language === "english" ? "Chatbot Name" : "챗봇 이름"}
                       </label>
                       <Input
+                        id="chatbotName"
                         value={chatbotName}
                         onChange={(e) => setChatbotName(e.target.value)}
                         placeholder="Coach Assistant"
@@ -231,32 +296,156 @@ export default function ChatbotPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        {language === "english" ? "Welcome Message" : "환영 메시지"}
+                      <label htmlFor="primaryColor" className="text-sm font-medium mb-2 block">
+                        {language === "english" ? "Primary Color" : "주요 색상"}
                       </label>
                       <Input
-                        value={welcomeMessage}
-                        onChange={(e) => setWelcomeMessage(e.target.value)}
-                        placeholder="Hello! How can I help you today?"
+                        id="primaryColor"
+                        type="color"
+                        value={primaryColor}
+                        onChange={(e) => setPrimaryColor(e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        {language === "english" ? "Primary Color" : "주요 색상"}
+                      <label htmlFor="chatInput" className="sr-only">
+                        {language === "english" ? "Chat input" : "채팅 입력"}
                       </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="w-10 h-10 p-1 border rounded cursor-pointer"
-                        />
-                        <Input
-                          value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="flex-1"
-                        />
+                      <Input
+                        id="chatInput"
+                        placeholder={language === "english" ? "Type your message..." : "메시지 입력..."}
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSendMessage();
+                          }
+                        }}
+                        className="flex-1"
+                      />
+                      <Button
+                        size="icon"
+                        onClick={handleSendMessage}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSendMessage();
+                          }
+                        }}
+                        style={{ backgroundColor: primaryColor }}
+                      >
+                        <IconSend className="h-5 w-5" />
+                      </Button>
+                    </div>
+
+                    <div>
+                      <label htmlFor="chatAvailability" className="text-sm font-medium mb-2 block">
+                        {language === "english" ? "Chatbot Availability" : "챗봇 가용성"}
+                      </label>
+                      <div id="chatAvailability" className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle availability selection
+                            }
+                          }}
+                        >
+                          {language === "english" ? "Always Online" : "항상 온라인"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle availability selection
+                            }
+                          }}
+                        >
+                          {language === "english" ? "Business Hours Only" : "영업 시간만"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle availability selection
+                            }
+                          }}
+                        >
+                          {language === "english" ? "Custom Schedule" : "사용자 정의 일정"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="windowPosition" className="text-sm font-medium mb-2 block">
+                        {language === "english" ? "Chat Window Position" : "채팅 창 위치"}
+                      </label>
+                      <div id="windowPosition" className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle position selection
+                            }
+                          }}
+                        >
+                          {language === "english" ? "Bottom Right" : "오른쪽 하단"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-start"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle position selection
+                            }
+                          }}
+                        >
+                          {language === "english" ? "Bottom Left" : "왼쪽 하단"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="buttonIcon" className="text-sm font-medium mb-2 block">
+                        {language === "english" ? "Button Icon" : "버튼 아이콘"}
+                      </label>
+                      <div id="buttonIcon" className="grid grid-cols-3 gap-2">
+                        <Button
+                          variant="outline"
+                          className="justify-center"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle icon selection
+                            }
+                          }}
+                        >
+                          <IconMessageCircle className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-center"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle icon selection
+                            }
+                          }}
+                        >
+                          <IconRobot className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="justify-center"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle icon selection
+                            }
+                          }}
+                        >
+                          <IconUser className="h-5 w-5" />
+                        </Button>
                       </div>
                     </div>
 
@@ -384,10 +573,11 @@ export default function ChatbotPage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
+                    <label htmlFor="welcomeMessage" className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Welcome Message" : "환영 메시지"}
                     </label>
                     <Input
+                      id="welcomeMessage"
                       value={welcomeMessage}
                       onChange={(e) => setWelcomeMessage(e.target.value)}
                       placeholder="Hello! How can I help you today?"
@@ -395,16 +585,39 @@ export default function ChatbotPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
+                    <label htmlFor="offlineMessage" className="text-sm font-medium mb-2 block">
                       {language === "english" ? "Offline Message" : "오프라인 메시지"}
                     </label>
                     <Input
+                      id="offlineMessage"
                       placeholder={language === "english"
                         ? "Sorry, I'm offline right now. Please try again later."
                         : "죄송합니다. 현재 오프라인입니다. 나중에 다시 시도해주세요."
                       }
                     />
                   </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <h3 className="text-sm font-medium mb-4">
+                    {language === "english" ? "User-Specific Instructions" : "사용자별 지침"}
+                  </h3>
+                  <Button
+                    variant="outline"
+                    onClick={() => setInstructionsOpen(true)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setInstructionsOpen(true)
+                      }
+                    }}
+                    className="w-full"
+                  >
+                    {language === "english"
+                      ? "Configure User Instructions"
+                      : "사용자 지침 구성"}
+                  </Button>
                 </div>
 
                 <Separator />
@@ -461,6 +674,46 @@ export default function ChatbotPage() {
                   {language === "english" ? "Save Behavior" : "동작 저장"}
                 </Button>
               </div>
+            </CardContent>
+          </AnimatedCard>
+        </TabsContent>
+
+        <TabsContent value="training" className="space-y-6">
+          <AnimatedCard>
+            <CardHeader>
+              <CardTitle>
+                {language === "english" ? "Training Status" : "학습 상태"}
+              </CardTitle>
+              <CardDescription>
+                {language === "english"
+                  ? "Monitor your chatbot's training progress and performance"
+                  : "챗봇의 학습 진행 상황과 성능을 모니터링하세요"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TrainingStatusDashboard
+                status={mockTrainingStatus}
+                language={language}
+              />
+            </CardContent>
+          </AnimatedCard>
+
+          <AnimatedCard>
+            <CardHeader>
+              <CardTitle>
+                {language === "english" ? "Knowledge Integration" : "지식 통합"}
+              </CardTitle>
+              <CardDescription>
+                {language === "english"
+                  ? "Track the integration status of your knowledge base materials"
+                  : "지식 베이스 자료의 통합 상태를 추적하세요"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <IntegrationStatus
+                items={mockIntegrationItems}
+                language={language}
+              />
             </CardContent>
           </AnimatedCard>
         </TabsContent>
@@ -526,6 +779,13 @@ export default function ChatbotPage() {
           </AnimatedCard>
         </TabsContent>
       </Tabs>
+
+      <CoachInstructionsDialog
+        open={instructionsOpen}
+        onOpenChange={setInstructionsOpen}
+        language={language}
+        onSubmit={handleInstructionsSubmit}
+      />
     </>
   )
 } 
