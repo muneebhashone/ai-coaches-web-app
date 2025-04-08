@@ -2,10 +2,10 @@
 
 ## Dashboard Enhancements
 
-- [ ] Make metrics clickable to reveal detailed user insights
-- [ ] Add user profile collection during initial chatbot interaction
-- [ ] Implement dual progress tracking (sessions and goal achievement rate)
-- [ ] Add post-session Likert scale questions with visualization
+- [x] Make metrics clickable to reveal detailed user insights
+- [x] Add user profile collection during initial chatbot interaction
+- [x] Implement dual progress tracking (sessions and goal achievement rate)
+- [x] Add post-session Likert scale questions with visualization
 
 ## Chatbot Management
 
@@ -15,19 +15,19 @@
 
 ## Session & Summary Features
 
-- [ ] Enhance session view with full chat log, summary, and download options
-- [ ] Implement automated summary generation with:
+- [x] Enhance session view with full chat log, summary, and download options
+- [x] Implement automated summary generation with:
   - Key discussion topics
   - Coach reference notes
   - Action item status
-- [ ] Add audio upload feature for session recordings
-- [ ] Add alert icons for missing updates between sessions
+- [x] Add audio upload feature for session recordings
+- [x] Add alert icons for missing updates between sessions
 
 ## Analysis & Visualization
 
-- [ ] Implement weekly progress and satisfaction trend graphs
-- [ ] Add user auto-segmentation visualization
-- [ ] Create chatbot-to-coach feedback report interface
+- [x] Implement weekly progress and satisfaction trend graphs
+- [x] Add user auto-segmentation visualization
+- [x] Create chatbot-to-coach feedback report interface
 
 ## Integration Features
 

@@ -9,9 +9,15 @@ import {
   IconSearch,
   IconUserCircle,
   IconStar,
+  IconDownload,
+  IconFileText,
+  IconMicrophone,
+  IconAlertCircle,
+  IconCheck,
+  IconX,
+  IconMaximize,
 } from "@tabler/icons-react";
 
-import { UserProgressChart } from "@/components/user-progress-chart";
 import { AnimatedCard } from "@/components/ui/animated-card";
 import {
   CardContent,
@@ -23,6 +29,15 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { SessionAnalysis } from "./components/SessionAnalysis";
 
 // Mock feedback data
 const feedbackItems = [
@@ -64,6 +79,32 @@ const feedbackItems = [
   },
 ];
 
+// Mock session summary data
+const sessionSummaries = [
+  {
+    id: 1,
+    topics: ["Goal Setting", "Time Management", "Work-Life Balance"],
+    coachNotes: "Client shows strong motivation but needs help with prioritization",
+    actionItems: [
+      { task: "Create daily schedule", status: "completed" },
+      { task: "Set SMART goals", status: "pending" },
+    ],
+    hasAudio: true,
+    needsUpdate: false,
+  },
+  {
+    id: 2,
+    topics: ["Career Development", "Leadership Skills"],
+    coachNotes: "Focus on developing delegation skills and team management",
+    actionItems: [
+      { task: "Read recommended leadership book", status: "pending" },
+      { task: "Practice delegation exercise", status: "pending" },
+    ],
+    hasAudio: false,
+    needsUpdate: true,
+  },
+];
+
 // Define status badge variants
 const statusVariants = {
   Completed: "default",
@@ -71,10 +112,227 @@ const statusVariants = {
   Scheduled: "secondary",
 } as const;
 
-// Instead of using SessionHistoryTable with mock data, we'll render a simpler table
+// Mock chat data
+const mockChatLog = [
+  {
+    id: 1,
+    role: "user",
+    message: "I've been struggling with time management lately.",
+    timestamp: "2024-04-08T10:00:00Z",
+  },
+  {
+    id: 2,
+    role: "assistant",
+    message: "I understand. Let's break down your daily schedule and identify areas where we can improve efficiency. What does your typical day look like?",
+    timestamp: "2024-04-08T10:00:30Z",
+  },
+  {
+    id: 3,
+    role: "user",
+    message: "I usually start work at 9 AM, but I find myself getting distracted by emails and meetings throughout the day.",
+    timestamp: "2024-04-08T10:01:00Z",
+  },
+  {
+    id: 4,
+    role: "assistant",
+    message: "That's a common challenge. Have you tried time-blocking or the Pomodoro technique? These methods can help structure your day better.",
+    timestamp: "2024-04-08T10:01:30Z",
+  },
+];
+
+interface SessionDetailsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  sessionId: string;
+  language: "english" | "korean";
+}
+
+function SessionDetailsDialog({ open, onOpenChange, sessionId, language }: SessionDetailsDialogProps) {
+  const [activeTab, setActiveTab] = useState<"chat" | "summary">("chat");
+
+  const handleDownload = (type: "chat" | "summary") => {
+    console.log(`Downloading ${type} for session ${sessionId}`);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>
+            {language === "english" ? "Session Details" : "세션 상세"} #{sessionId}
+          </DialogTitle>
+          <DialogDescription>
+            {language === "english"
+              ? "View complete session information including chat log and summary"
+              : "채팅 로그 및 요약을 포함한 전체 세션 정보 보기"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex border-b">
+          <button
+            type="button"
+            className={`px-4 py-2 font-medium ${activeTab === "chat"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+              }`}
+            onClick={() => setActiveTab("chat")}
+          >
+            {language === "english" ? "Chat Log" : "채팅 로그"}
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-2 font-medium ${activeTab === "summary"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+              }`}
+            onClick={() => setActiveTab("summary")}
+          >
+            {language === "english" ? "Summary" : "요약"}
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === "chat" ? (
+            <div className="space-y-4 p-4">
+              {mockChatLog.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
+                      }`}
+                  >
+                    <p className="text-sm">{message.message}</p>
+                    <p className="text-xs mt-1 opacity-70">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 space-y-6">
+              <div>
+                <h4 className="font-medium mb-2">
+                  {language === "english" ? "Key Topics" : "주요 주제"}
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {sessionSummaries[0].topics.map((topic) => (
+                    <Badge key={topic} variant="secondary">
+                      {topic}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">
+                  {language === "english" ? "Coach Notes" : "코치 노트"}
+                </h4>
+                <div className="bg-muted rounded-lg p-4">
+                  <p className="text-sm">{sessionSummaries[0].coachNotes}</p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">
+                  {language === "english" ? "Action Items" : "실행 항목"}
+                </h4>
+                <div className="bg-muted rounded-lg p-4">
+                  <ul className="space-y-3">
+                    {sessionSummaries[0].actionItems.map((item) => (
+                      <li key={item.task} className="flex items-center gap-2">
+                        {item.status === "completed" ? (
+                          <IconCheck className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
+                        )}
+                        <span className="text-sm">{item.task}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">
+                  {language === "english" ? "Key Metrics" : "주요 지표"}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-muted rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      {language === "english" ? "Duration" : "기간"}
+                    </p>
+                    <p className="text-lg font-medium">45 minutes</p>
+                  </div>
+                  <div className="bg-muted rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      {language === "english" ? "Engagement Score" : "참여도"}
+                    </p>
+                    <p className="text-lg font-medium">85%</p>
+                  </div>
+                  <div className="bg-muted rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      {language === "english" ? "Progress Made" : "진행 상황"}
+                    </p>
+                    <p className="text-lg font-medium">Good</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center border-t p-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            <IconX className="h-4 w-4 mr-2" />
+            {language === "english" ? "Close" : "닫기"}
+          </Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.open(`/sessions/${sessionId}`, '_blank')}
+            >
+              <IconMaximize className="h-4 w-4 mr-2" />
+              {language === "english" ? "Open in New Tab" : "새 탭에서 열기"}
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => handleDownload(activeTab === "chat" ? "chat" : "summary")}
+            >
+              <IconDownload className="h-4 w-4 mr-2" />
+              {language === "english" ? "Download" : "다운로드"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function SessionsPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+
+  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle audio file upload
+    console.log("Audio file uploaded:", event.target.files?.[0]);
+  };
+
+  const handleDownload = (type: string) => {
+    console.log(`Downloading ${type}`);
+  };
 
   return (
     <>
@@ -98,7 +356,7 @@ export default function SessionsPage() {
       </div>
 
       <Tabs defaultValue="history">
-        <TabsList className="mb-6 grid grid-cols-1 md:grid-cols-3 w-fit">
+        <TabsList className="mb-6 grid grid-cols-1 md:grid-cols-4 w-fit">
           <TabsTrigger value="history">
             <IconHistory className="h-4 w-4 mr-2" />
             {language === "english" ? "History" : "히스토리"}
@@ -110,6 +368,10 @@ export default function SessionsPage() {
           <TabsTrigger value="feedback">
             <IconMessageCircle className="h-4 w-4 mr-2" />
             {language === "english" ? "Feedback" : "피드백"}
+          </TabsTrigger>
+          <TabsTrigger value="summaries">
+            <IconFileText className="h-4 w-4 mr-2" />
+            {language === "english" ? "Summaries" : "요약"}
           </TabsTrigger>
         </TabsList>
 
@@ -156,32 +418,55 @@ export default function SessionsPage() {
                       <th className="p-3 text-left font-medium">
                         {language === "english" ? "Status" : "상태"}
                       </th>
+                      <th className="p-3 text-left font-medium">
+                        {language === "english" ? "Actions" : "작업"}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {Array(6)
                       .fill(null)
-                      .map((_, i) => {
-                        const status = [
-                          "Completed",
-                          "In Progress",
-                          "Scheduled",
-                        ][i % 3] as keyof typeof statusVariants;
+                      .map((_, index) => {
+                        const status = ["Completed", "In Progress", "Scheduled"][index % 3] as keyof typeof statusVariants;
+                        const needsUpdate = index % 3 === 1;
+                        const sessionId = `session-${index}`;
+                        const date = new Date(Date.now() - index * 24 * 60 * 60 * 1000);
                         return (
-                          <tr key={i} className="border-b">
-                            <td className="p-3">User {i + 1}</td>
-                            <td className="p-3">
-                              {new Date(
-                                Date.now() - i * 24 * 60 * 60 * 1000
-                              ).toLocaleDateString()}
-                            </td>
-                            <td className="p-3">{`${
-                              Math.floor(Math.random() * 20) + 5
-                            } min`}</td>
+                          <tr key={sessionId} className="border-b">
+                            <td className="p-3">User {index + 1}</td>
+                            <td className="p-3">{date.toLocaleDateString()}</td>
+                            <td className="p-3">{`${Math.floor(Math.random() * 20) + 5} min`}</td>
                             <td className="p-3">
                               <Badge variant={statusVariants[status]}>
                                 {status}
                               </Badge>
+                              {needsUpdate && (
+                                <IconAlertCircle className="h-4 w-4 text-yellow-500 inline ml-2" />
+                              )}
+                            </td>
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedSession(sessionId)}
+                                  className="text-muted-foreground hover:text-foreground"
+                                  title={language === "english" ? "View details" : "상세 보기"}
+                                >
+                                  <IconFileText className="h-4 w-4" />
+                                </button>
+                                <label
+                                  className="cursor-pointer text-muted-foreground hover:text-foreground"
+                                  title={language === "english" ? "Upload audio" : "오디오 업로드"}
+                                >
+                                  <IconMicrophone className="h-4 w-4" />
+                                  <input
+                                    type="file"
+                                    accept="audio/*"
+                                    className="hidden"
+                                    onChange={handleAudioUpload}
+                                  />
+                                </label>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -194,141 +479,7 @@ export default function SessionsPage() {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <AnimatedCard>
-              <CardHeader className="pb-2">
-                <CardDescription>
-                  {language === "english" ? "Total Sessions" : "전체 세션"}
-                </CardDescription>
-                <CardTitle className="text-2xl">156</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  {language === "english"
-                    ? "+24% from last month"
-                    : "지난 달 대비 +24%"}
-                </div>
-              </CardContent>
-            </AnimatedCard>
-
-            <AnimatedCard>
-              <CardHeader className="pb-2">
-                <CardDescription>
-                  {language === "english" ? "Avg. Duration" : "평균 기간"}
-                </CardDescription>
-                <CardTitle className="text-2xl">8.5 min</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  {language === "english"
-                    ? "+2.1 min from last month"
-                    : "지난 달 대비 +2.1분"}
-                </div>
-              </CardContent>
-            </AnimatedCard>
-
-            <AnimatedCard>
-              <CardHeader className="pb-2">
-                <CardDescription>
-                  {language === "english" ? "Satisfaction" : "만족도"}
-                </CardDescription>
-                <CardTitle className="text-2xl">4.7/5.0</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  {language === "english"
-                    ? "+0.3 from last month"
-                    : "지난 달 대비 +0.3"}
-                </div>
-              </CardContent>
-            </AnimatedCard>
-          </div>
-
-          <AnimatedCard>
-            <CardHeader>
-              <CardTitle>
-                {language === "english" ? "Session Metrics" : "세션 지표"}
-              </CardTitle>
-              <CardDescription>
-                {language === "english"
-                  ? "Performance analysis over time"
-                  : "시간에 따른 성능 분석"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UserProgressChart />
-            </CardContent>
-          </AnimatedCard>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AnimatedCard>
-              <CardHeader>
-                <CardTitle>
-                  {language === "english" ? "Session Types" : "세션 유형"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-primary mr-2"></div>
-                      <span>AI Coaching</span>
-                    </div>
-                    <span className="font-medium">68%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                      <span>Human Coaching</span>
-                    </div>
-                    <span className="font-medium">22%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                      <span>Combined</span>
-                    </div>
-                    <span className="font-medium">10%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </AnimatedCard>
-
-            <AnimatedCard>
-              <CardHeader>
-                <CardTitle>
-                  {language === "english"
-                    ? "Platform Distribution"
-                    : "플랫폼 분포"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-primary mr-2"></div>
-                      <span>KakaoTalk</span>
-                    </div>
-                    <span className="font-medium">62%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                      <span>Web Dashboard</span>
-                    </div>
-                    <span className="font-medium">28%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                      <span>Other</span>
-                    </div>
-                    <span className="font-medium">10%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </AnimatedCard>
-          </div>
+          <SessionAnalysis language={language} />
         </TabsContent>
 
         <TabsContent value="feedback" className="space-y-6">
@@ -375,14 +526,13 @@ export default function SessionsPage() {
                       <div className="flex mb-2">
                         {Array(5)
                           .fill(0)
-                          .map((_, i) => (
+                          .map((_, index) => (
                             <IconStar
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < item.rating
-                                  ? "text-yellow-500"
-                                  : "text-muted-foreground"
-                              }`}
+                              key={`star-${item.id}-${index}`}
+                              className={`h-4 w-4 ${index < item.rating
+                                ? "text-yellow-500"
+                                : "text-muted-foreground"
+                                }`}
                             />
                           ))}
                       </div>
@@ -395,7 +545,111 @@ export default function SessionsPage() {
             </CardContent>
           </AnimatedCard>
         </TabsContent>
+
+        <TabsContent value="summaries" className="space-y-6">
+          <AnimatedCard>
+            <CardHeader>
+              <CardTitle>
+                {language === "english" ? "Session Summaries" : "세션 요약"}
+              </CardTitle>
+              <CardDescription>
+                {language === "english"
+                  ? "View automated summaries and key insights from sessions"
+                  : "세션의 자동 요약 및 주요 인사이트 보기"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {sessionSummaries.map((summary) => (
+                <div key={summary.id} className="mb-8 last:mb-0">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold">Session #{summary.id}</h3>
+                    <div className="flex items-center gap-2">
+                      {summary.hasAudio && (
+                        <Badge variant="outline">
+                          <IconMicrophone className="h-4 w-4 mr-1" />
+                          {language === "english" ? "Has Recording" : "녹음 있음"}
+                        </Badge>
+                      )}
+                      {summary.needsUpdate && (
+                        <Badge variant="destructive">
+                          <IconAlertCircle className="h-4 w-4 mr-1" />
+                          {language === "english" ? "Needs Update" : "업데이트 필요"}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          {language === "english" ? "Key Topics" : "주요 주제"}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {summary.topics.map((topic) => (
+                            <Badge key={topic} variant="secondary">
+                              {topic}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          {language === "english" ? "Coach Notes" : "코치 노트"}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {summary.coachNotes}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium mb-2">
+                        {language === "english" ? "Action Items" : "실행 항목"}
+                      </h4>
+                      <ul className="space-y-2">
+                        {summary.actionItems.map((item) => {
+                          const actionId = `${summary.id}-action-${item.task.toLowerCase().replace(/\s+/g, '-')}`;
+                          return (
+                            <li key={actionId} className="flex items-center gap-2">
+                              {item.status === "completed" ? (
+                                <IconCheck className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
+                              )}
+                              <span className="text-sm">{item.task}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDownload("summary")}
+                    >
+                      <IconDownload className="h-4 w-4 mr-2" />
+                      {language === "english" ? "Download Summary" : "요약 다운로드"}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </AnimatedCard>
+        </TabsContent>
       </Tabs>
+
+      <SessionDetailsDialog
+        open={selectedSession !== null}
+        onOpenChange={(open) => !open && setSelectedSession(null)}
+        sessionId={selectedSession || ""}
+        language={language}
+      />
     </>
   );
 }

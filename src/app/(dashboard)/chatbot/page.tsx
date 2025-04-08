@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   IconMessageChatbot,
   IconLanguage,
@@ -12,19 +12,24 @@ import {
   IconPalette,
   IconForms,
   IconBrain,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { AnimatedCard } from "@/components/ui/animated-card"
-import { Button } from "@/components/ui/button"
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Toggle } from "@/components/ui/toggle"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
-import { TrainingStatusDashboard } from "@/components/chatbot/training-status-dashboard"
-import { IntegrationStatus } from "@/components/knowledge-base/integration-status"
-import { CoachInstructionsDialog } from "@/components/chatbot/coach-instructions-dialog"
-import type { CoachInstructionsData } from "@/components/chatbot/coach-instructions-form"
+import { AnimatedCard } from "@/components/ui/animated-card";
+import { Button } from "@/components/ui/button";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { TrainingStatusDashboard } from "@/components/chatbot/training-status-dashboard";
+import { IntegrationStatus } from "@/components/knowledge-base/integration-status";
+import { CoachInstructionsDialog } from "@/components/chatbot/coach-instructions-dialog";
+import type { CoachInstructionsData } from "@/components/chatbot/coach-instructions-form";
 
 // Mock chat messages
 const initialMessages = [
@@ -40,20 +45,23 @@ const initialMessages = [
   },
   {
     role: "assistant",
-    content: "I understand how challenging time management can be. Let's work on this together. Could you tell me more about your current routine and what specific areas you're finding difficult?",
+    content:
+      "I understand how challenging time management can be. Let's work on this together. Could you tell me more about your current routine and what specific areas you're finding difficult?",
     timestamp: "10:31 AM",
   },
   {
     role: "user",
-    content: "I have trouble prioritizing tasks and often end up procrastinating.",
+    content:
+      "I have trouble prioritizing tasks and often end up procrastinating.",
     timestamp: "10:32 AM",
   },
   {
     role: "assistant",
-    content: "That's a common challenge. Let's start by breaking down your approach to prioritization. Have you tried using any specific methods like the Eisenhower Matrix (urgent/important grid) or time-blocking?",
+    content:
+      "That's a common challenge. Let's start by breaking down your approach to prioritization. Have you tried using any specific methods like the Eisenhower Matrix (urgent/important grid) or time-blocking?",
     timestamp: "10:32 AM",
   },
-]
+];
 
 // Mock training status data
 const mockTrainingStatus = {
@@ -64,22 +72,62 @@ const mockTrainingStatus = {
       name: "Accuracy",
       value: 85,
       change: 2.5,
-      target: 95
+      target: 95,
     },
     responseTime: {
       name: "Response Time",
       value: 250,
       change: -50,
-      target: 200
+      target: 200,
     },
     consistency: {
       name: "Consistency",
       value: 90,
       change: 5,
-      target: 95
-    }
-  }
-}
+      target: 95,
+    },
+  },
+  activeKnowledgeBase: [
+    {
+      id: "kb-1",
+      name: "Coaching Methodology Guide",
+      type: "PDF Document",
+      active: true,
+      lastUpdated: "2024-04-10 14:30",
+    },
+    {
+      id: "kb-2",
+      name: "Communication Techniques",
+      type: "Text Document",
+      active: true,
+      lastUpdated: "2024-04-12 09:15",
+    },
+    {
+      id: "kb-3",
+      name: "Goal Setting Framework",
+      type: "Spreadsheet",
+      active: true,
+      lastUpdated: "2024-04-08 16:45",
+    },
+    {
+      id: "kb-4",
+      name: "Emotional Intelligence Assessment",
+      type: "PDF Document",
+      active: false,
+      lastUpdated: "2024-04-05 11:20",
+    },
+  ],
+  chatbotTone: {
+    name: "Empathetic Coach",
+    description: {
+      english:
+        "Focuses on understanding client emotions and providing supportive guidance with a warm, encouraging tone.",
+      korean:
+        "고객의 감정을 이해하고 따뜻하고 격려하는 톤으로 지원적인 안내를 제공하는 데 중점을 둡니다.",
+    },
+    active: true,
+  },
+};
 
 // Mock integration items
 const mockIntegrationItems = [
@@ -87,31 +135,33 @@ const mockIntegrationItems = [
     id: "1",
     name: "Coaching Methodology Guide",
     type: "guide" as const,
-    status: "integrated" as const
+    status: "integrated" as const,
   },
   {
     id: "2",
     name: "Communication Techniques",
     type: "document" as const,
     status: "integrating" as const,
-    progress: 75
+    progress: 75,
   },
   {
     id: "3",
     name: "Goal Setting Framework",
     type: "article" as const,
-    status: "integrated" as const
-  }
-]
+    status: "integrated" as const,
+  },
+];
 
 export default function ChatbotPage() {
-  const [language, setLanguage] = useState<"english" | "korean">("english")
-  const [messages, setMessages] = useState(initialMessages)
-  const [newMessage, setNewMessage] = useState("")
-  const [primaryColor, setPrimaryColor] = useState("#0ea5e9")
-  const [chatbotName, setChatbotName] = useState("Coach Assistant")
-  const [welcomeMessage, setWelcomeMessage] = useState("Hello! I'm your AI coaching assistant. How can I help you today?")
-  const [instructionsOpen, setInstructionsOpen] = useState(false)
+  const [language, setLanguage] = useState<"english" | "korean">("english");
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("#0ea5e9");
+  const [chatbotName, setChatbotName] = useState("Coach Assistant");
+  const [welcomeMessage, setWelcomeMessage] = useState(
+    "Hello! I'm your AI coaching assistant. How can I help you today?"
+  );
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -120,7 +170,10 @@ export default function ChatbotPage() {
     const userMessage = {
       role: "user",
       content: newMessage,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
     setMessages([...messages, userMessage]);
@@ -130,17 +183,21 @@ export default function ChatbotPage() {
     setTimeout(() => {
       const aiResponse = {
         role: "assistant",
-        content: "Thank you for sharing that. I've noted your concerns. This is a demo, so I'm providing a generic response, but the actual AI would give personalized coaching advice based on your input.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        content:
+          "Thank you for sharing that. I've noted your concerns. This is a demo, so I'm providing a generic response, but the actual AI would give personalized coaching advice based on your input.",
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       };
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages((prev) => [...prev, aiResponse]);
     }, 1000);
   };
 
   const handleInstructionsSubmit = (data: CoachInstructionsData) => {
-    console.log("Coach instructions submitted:", data)
-    setInstructionsOpen(false)
-  }
+    console.log("Coach instructions submitted:", data);
+    setInstructionsOpen(false);
+  };
 
   return (
     <>
@@ -154,7 +211,9 @@ export default function ChatbotPage() {
         <Toggle
           aria-label="Toggle language"
           pressed={language === "korean"}
-          onPressedChange={(pressed) => setLanguage(pressed ? "korean" : "english")}
+          onPressedChange={(pressed) =>
+            setLanguage(pressed ? "korean" : "english")
+          }
         >
           <IconLanguage className="h-4 w-4 mr-2" />
           {language === "english" ? "English" : "한국어"}
@@ -191,7 +250,9 @@ export default function ChatbotPage() {
               <AnimatedCard>
                 <CardHeader>
                   <CardTitle>
-                    {language === "english" ? "Chatbot Preview" : "챗봇 미리보기"}
+                    {language === "english"
+                      ? "Chatbot Preview"
+                      : "챗봇 미리보기"}
                   </CardTitle>
                   <CardDescription>
                     {language === "english"
@@ -207,7 +268,9 @@ export default function ChatbotPage() {
                       style={{ backgroundColor: primaryColor }}
                     >
                       <IconRobot className="h-6 w-6 mr-2 text-white" />
-                      <span className="text-white font-medium">{chatbotName}</span>
+                      <span className="text-white font-medium">
+                        {chatbotName}
+                      </span>
                     </div>
 
                     {/* Chat messages */}
@@ -215,17 +278,26 @@ export default function ChatbotPage() {
                       {messages.map((message, i) => (
                         <div
                           key={i}
-                          className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex ${
+                            message.role === "user"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                         >
                           <div
                             className={`
-                              max-w-[80%] rounded-lg p-3 
-                              ${message.role === "user"
-                                ? "bg-primary text-primary-foreground ml-auto"
-                                : "bg-muted"
+                              max-w-[80%] rounded-lg p-3
+                              ${
+                                message.role === "user"
+                                  ? "bg-primary text-primary-foreground ml-auto"
+                                  : "bg-muted"
                               }
                             `}
-                            style={message.role === "user" ? { backgroundColor: primaryColor } : {}}
+                            style={
+                              message.role === "user"
+                                ? { backgroundColor: primaryColor }
+                                : {}
+                            }
                           >
                             <div className="flex items-start">
                               {message.role === "assistant" && (
@@ -246,7 +318,11 @@ export default function ChatbotPage() {
                     {/* Chat input */}
                     <div className="p-3 border-t flex gap-2">
                       <Input
-                        placeholder={language === "english" ? "Type your message..." : "메시지 입력..."}
+                        placeholder={
+                          language === "english"
+                            ? "Type your message..."
+                            : "메시지 입력..."
+                        }
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => {
@@ -284,7 +360,10 @@ export default function ChatbotPage() {
                 <CardContent>
                   <div className="space-y-6">
                     <div>
-                      <label htmlFor="chatbotName" className="text-sm font-medium mb-2 block">
+                      <label
+                        htmlFor="chatbotName"
+                        className="text-sm font-medium mb-2 block"
+                      >
                         {language === "english" ? "Chatbot Name" : "챗봇 이름"}
                       </label>
                       <Input
@@ -296,7 +375,10 @@ export default function ChatbotPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="primaryColor" className="text-sm font-medium mb-2 block">
+                      <label
+                        htmlFor="primaryColor"
+                        className="text-sm font-medium mb-2 block"
+                      >
                         {language === "english" ? "Primary Color" : "주요 색상"}
                       </label>
                       <Input
@@ -313,7 +395,11 @@ export default function ChatbotPage() {
                       </label>
                       <Input
                         id="chatInput"
-                        placeholder={language === "english" ? "Type your message..." : "메시지 입력..."}
+                        placeholder={
+                          language === "english"
+                            ? "Type your message..."
+                            : "메시지 입력..."
+                        }
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => {
@@ -338,10 +424,18 @@ export default function ChatbotPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="chatAvailability" className="text-sm font-medium mb-2 block">
-                        {language === "english" ? "Chatbot Availability" : "챗봇 가용성"}
+                      <label
+                        htmlFor="chatAvailability"
+                        className="text-sm font-medium mb-2 block"
+                      >
+                        {language === "english"
+                          ? "Chatbot Availability"
+                          : "챗봇 가용성"}
                       </label>
-                      <div id="chatAvailability" className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <div
+                        id="chatAvailability"
+                        className="grid grid-cols-1 md:grid-cols-3 gap-2"
+                      >
                         <Button
                           variant="outline"
                           className="justify-start"
@@ -351,7 +445,9 @@ export default function ChatbotPage() {
                             }
                           }}
                         >
-                          {language === "english" ? "Always Online" : "항상 온라인"}
+                          {language === "english"
+                            ? "Always Online"
+                            : "항상 온라인"}
                         </Button>
                         <Button
                           variant="outline"
@@ -362,7 +458,9 @@ export default function ChatbotPage() {
                             }
                           }}
                         >
-                          {language === "english" ? "Business Hours Only" : "영업 시간만"}
+                          {language === "english"
+                            ? "Business Hours Only"
+                            : "영업 시간만"}
                         </Button>
                         <Button
                           variant="outline"
@@ -373,16 +471,26 @@ export default function ChatbotPage() {
                             }
                           }}
                         >
-                          {language === "english" ? "Custom Schedule" : "사용자 정의 일정"}
+                          {language === "english"
+                            ? "Custom Schedule"
+                            : "사용자 정의 일정"}
                         </Button>
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="windowPosition" className="text-sm font-medium mb-2 block">
-                        {language === "english" ? "Chat Window Position" : "채팅 창 위치"}
+                      <label
+                        htmlFor="windowPosition"
+                        className="text-sm font-medium mb-2 block"
+                      >
+                        {language === "english"
+                          ? "Chat Window Position"
+                          : "채팅 창 위치"}
                       </label>
-                      <div id="windowPosition" className="grid grid-cols-2 gap-2">
+                      <div
+                        id="windowPosition"
+                        className="grid grid-cols-2 gap-2"
+                      >
                         <Button
                           variant="outline"
                           className="justify-start"
@@ -392,7 +500,9 @@ export default function ChatbotPage() {
                             }
                           }}
                         >
-                          {language === "english" ? "Bottom Right" : "오른쪽 하단"}
+                          {language === "english"
+                            ? "Bottom Right"
+                            : "오른쪽 하단"}
                         </Button>
                         <Button
                           variant="outline"
@@ -409,7 +519,10 @@ export default function ChatbotPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="buttonIcon" className="text-sm font-medium mb-2 block">
+                      <label
+                        htmlFor="buttonIcon"
+                        className="text-sm font-medium mb-2 block"
+                      >
                         {language === "english" ? "Button Icon" : "버튼 아이콘"}
                       </label>
                       <div id="buttonIcon" className="grid grid-cols-3 gap-2">
@@ -453,7 +566,9 @@ export default function ChatbotPage() {
 
                     <div>
                       <Button>
-                        {language === "english" ? "Save Changes" : "변경사항 저장"}
+                        {language === "english"
+                          ? "Save Changes"
+                          : "변경사항 저장"}
                       </Button>
                     </div>
                   </div>
@@ -483,10 +598,20 @@ export default function ChatbotPage() {
                       {language === "english" ? "Color Scheme" : "색상 구성표"}
                     </label>
                     <div className="grid grid-cols-5 gap-2">
-                      {["#0ea5e9", "#8b5cf6", "#10b981", "#f97316", "#ef4444"].map((color) => (
+                      {[
+                        "#0ea5e9",
+                        "#8b5cf6",
+                        "#10b981",
+                        "#f97316",
+                        "#ef4444",
+                      ].map((color) => (
                         <div
                           key={color}
-                          className={`w-full aspect-square rounded-md cursor-pointer transition-all ${primaryColor === color ? "ring-2 ring-offset-2 ring-primary" : ""}`}
+                          className={`w-full aspect-square rounded-md cursor-pointer transition-all ${
+                            primaryColor === color
+                              ? "ring-2 ring-offset-2 ring-primary"
+                              : ""
+                          }`}
                           style={{ backgroundColor: color }}
                           onClick={() => setPrimaryColor(color)}
                         />
@@ -496,7 +621,9 @@ export default function ChatbotPage() {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {language === "english" ? "Custom Color" : "사용자 정의 색상"}
+                      {language === "english"
+                        ? "Custom Color"
+                        : "사용자 정의 색상"}
                     </label>
                     <div className="flex items-center gap-3">
                       <input
@@ -519,11 +646,15 @@ export default function ChatbotPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      {language === "english" ? "Chat Window Position" : "채팅 창 위치"}
+                      {language === "english"
+                        ? "Chat Window Position"
+                        : "채팅 창 위치"}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       <Button variant="outline" className="justify-start">
-                        {language === "english" ? "Bottom Right" : "오른쪽 하단"}
+                        {language === "english"
+                          ? "Bottom Right"
+                          : "오른쪽 하단"}
                       </Button>
                       <Button variant="outline" className="justify-start">
                         {language === "english" ? "Bottom Left" : "왼쪽 하단"}
@@ -573,8 +704,13 @@ export default function ChatbotPage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="welcomeMessage" className="text-sm font-medium mb-2 block">
-                      {language === "english" ? "Welcome Message" : "환영 메시지"}
+                    <label
+                      htmlFor="welcomeMessage"
+                      className="text-sm font-medium mb-2 block"
+                    >
+                      {language === "english"
+                        ? "Welcome Message"
+                        : "환영 메시지"}
                     </label>
                     <Input
                       id="welcomeMessage"
@@ -585,14 +721,20 @@ export default function ChatbotPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="offlineMessage" className="text-sm font-medium mb-2 block">
-                      {language === "english" ? "Offline Message" : "오프라인 메시지"}
+                    <label
+                      htmlFor="offlineMessage"
+                      className="text-sm font-medium mb-2 block"
+                    >
+                      {language === "english"
+                        ? "Offline Message"
+                        : "오프라인 메시지"}
                     </label>
                     <Input
                       id="offlineMessage"
-                      placeholder={language === "english"
-                        ? "Sorry, I'm offline right now. Please try again later."
-                        : "죄송합니다. 현재 오프라인입니다. 나중에 다시 시도해주세요."
+                      placeholder={
+                        language === "english"
+                          ? "Sorry, I'm offline right now. Please try again later."
+                          : "죄송합니다. 현재 오프라인입니다. 나중에 다시 시도해주세요."
                       }
                     />
                   </div>
@@ -602,14 +744,16 @@ export default function ChatbotPage() {
 
                 <div>
                   <h3 className="text-sm font-medium mb-4">
-                    {language === "english" ? "User-Specific Instructions" : "사용자별 지침"}
+                    {language === "english"
+                      ? "User-Specific Instructions"
+                      : "사용자별 지침"}
                   </h3>
                   <Button
                     variant="outline"
                     onClick={() => setInstructionsOpen(true)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        setInstructionsOpen(true)
+                        setInstructionsOpen(true);
                       }
                     }}
                     className="w-full"
@@ -624,17 +768,23 @@ export default function ChatbotPage() {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {language === "english" ? "Chatbot Availability" : "챗봇 가용성"}
+                    {language === "english"
+                      ? "Chatbot Availability"
+                      : "챗봇 가용성"}
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <Button variant="outline" className="justify-start">
                       {language === "english" ? "Always Online" : "항상 온라인"}
                     </Button>
                     <Button variant="outline" className="justify-start">
-                      {language === "english" ? "Business Hours Only" : "영업 시간만"}
+                      {language === "english"
+                        ? "Business Hours Only"
+                        : "영업 시간만"}
                     </Button>
                     <Button variant="outline" className="justify-start">
-                      {language === "english" ? "Custom Schedule" : "사용자 정의 일정"}
+                      {language === "english"
+                        ? "Custom Schedule"
+                        : "사용자 정의 일정"}
                     </Button>
                   </div>
                 </div>
@@ -643,27 +793,35 @@ export default function ChatbotPage() {
 
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">
-                    {language === "english" ? "Conversation Options" : "대화 옵션"}
+                    {language === "english"
+                      ? "Conversation Options"
+                      : "대화 옵션"}
                   </h3>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
-                        {language === "english" ? "Save Conversation History" : "대화 기록 저장"}
+                        {language === "english"
+                          ? "Save Conversation History"
+                          : "대화 기록 저장"}
                       </label>
                       <Toggle />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
-                        {language === "english" ? "Show Typing Indicator" : "입력 표시기 표시"}
+                        {language === "english"
+                          ? "Show Typing Indicator"
+                          : "입력 표시기 표시"}
                       </label>
                       <Toggle defaultPressed />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <label className="text-sm">
-                        {language === "english" ? "Allow File Attachments" : "파일 첨부 허용"}
+                        {language === "english"
+                          ? "Allow File Attachments"
+                          : "파일 첨부 허용"}
                       </label>
                       <Toggle />
                     </div>
@@ -734,7 +892,9 @@ export default function ChatbotPage() {
               <div className="space-y-6">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    {language === "english" ? "Website Script" : "웹사이트 스크립트"}
+                    {language === "english"
+                      ? "Website Script"
+                      : "웹사이트 스크립트"}
                   </label>
                   <div className="bg-muted/50 p-4 rounded-md overflow-x-auto">
                     <pre className="text-xs">
@@ -767,7 +927,10 @@ export default function ChatbotPage() {
                       : "이 링크를 공유하여 누구나 AI 코치와 채팅할 수 있도록 허용"}
                   </p>
                   <div className="bg-muted/50 p-4 rounded-md">
-                    <p className="break-all text-sm">https://ai-coach.example.com/chat/{`coach-${Math.random().toString(36).substring(2, 8)}`}</p>
+                    <p className="break-all text-sm">
+                      https://ai-coach.example.com/chat/
+                      {`coach-${Math.random().toString(36).substring(2, 8)}`}
+                    </p>
                   </div>
                 </div>
 
@@ -787,5 +950,5 @@ export default function ChatbotPage() {
         onSubmit={handleInstructionsSubmit}
       />
     </>
-  )
-} 
+  );
+}
