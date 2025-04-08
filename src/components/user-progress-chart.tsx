@@ -48,6 +48,7 @@ export function UserProgressChart({ language }: UserProgressChartProps) {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -76,7 +77,7 @@ export function UserProgressChart({ language }: UserProgressChartProps) {
   }
 
   return (
-    <div className="w-full h-[300px]">
+    <div className="w-full h-[300px] p-4">
       <Line options={options} data={data} />
     </div>
   )

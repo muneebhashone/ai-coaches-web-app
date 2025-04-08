@@ -8,6 +8,7 @@ import {
   IconSettings,
   IconPlugConnected,
   IconBook,
+  IconMessageForward,
 } from "@tabler/icons-react"
 
 import {
@@ -40,6 +41,11 @@ const data = {
       title: "Sessions",
       url: "/sessions",
       icon: IconHistory,
+    },
+    {
+      title: "Feedback Messaging",
+      url: "/feedback-messaging",
+      icon: IconMessageForward,
     },
     {
       title: "Integrations",

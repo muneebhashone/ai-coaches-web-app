@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconBook,
   IconLanguage,
@@ -26,6 +26,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+// Import the new components and types
+import { FileFormatInfo } from "@/components/knowledge-base/file-format-info";
+import { ChatbotMemoryIndicator } from "@/components/knowledge-base/chatbot-memory-indicator";
+import { EnhancedFileUpload } from "@/components/knowledge-base/enhanced-file-upload";
+import { IntegrationStatus } from "@/components/knowledge-base/integration-status";
+
+// Define the types we need based on the components
+interface IntegrationItem {
+  id: string;
+  name: string;
+  type: "document" | "article" | "guide";
+  status: "integrating" | "integrated" | "failed";
+  progress?: number;
+}
 
 // Mock data for documents
 const documents = [
@@ -79,9 +95,104 @@ const categories = [
   { id: 4, name: "References", count: 2 },
 ];
 
+// Mock data for chatbot memory items
+const chatbotMemoryItems = [
+  {
+    id: "1",
+    name: "Getting Started Guide",
+    category: "Guides",
+    date: "2 days ago",
+    type: "PDF",
+    isActive: true,
+  },
+  {
+    id: "2",
+    name: "Coaching Best Practices",
+    category: "Templates",
+    date: "1 week ago",
+    type: "Word",
+    isActive: true,
+  },
+  {
+    id: "3",
+    name: "User Onboarding Flow",
+    category: "Guides",
+    date: "3 days ago",
+    type: "PDF",
+    isActive: false,
+  },
+  {
+    id: "4",
+    name: "Session Scripts",
+    category: "Templates",
+    date: "Yesterday",
+    type: "Text",
+    isActive: true,
+  },
+  {
+    id: "5",
+    name: "AI Training Guidelines",
+    category: "Guides",
+    date: "4 days ago",
+    type: "PDF",
+    isActive: false,
+  },
+];
+
+// Mock data for integration status
+const integrationItems: IntegrationItem[] = [
+  {
+    id: "1",
+    name: "Getting Started Guide",
+    type: "document",
+    status: "integrated",
+  },
+  {
+    id: "2",
+    name: "Coaching Best Practices",
+    type: "document",
+    status: "integrated",
+  },
+  {
+    id: "3",
+    name: "User Onboarding Flow",
+    type: "guide",
+    status: "integrating",
+    progress: 45,
+  },
+  {
+    id: "4",
+    name: "Session Scripts",
+    type: "article",
+    status: "failed",
+  },
+];
+
 export default function KnowledgeBasePage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
   const [searchQuery, setSearchQuery] = useState("");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [memoryItems, setMemoryItems] = useState(chatbotMemoryItems);
+
+  const handleToggleActive = (id: string, active: boolean) => {
+    setMemoryItems(prev =>
+      prev.map(item => item.id === id ? { ...item, isActive: active } : item)
+    );
+  };
+
+  const handleFilesSelected = (files: File[]) => {
+    setSelectedFiles(files);
+    // Temporarily log to console to use the selectedFiles state
+    console.log(`Selected ${files.length} files for upload`);
+  };
+
+  // Use the selected files in an effect to show it's being used
+  useEffect(() => {
+    if (selectedFiles.length > 0) {
+      console.log(`Processing ${selectedFiles.length} files for upload`);
+    }
+  }, [selectedFiles]);
 
   return (
     <>
@@ -117,7 +228,7 @@ export default function KnowledgeBasePage() {
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setUploadDialogOpen(true)}>
             <IconUpload className="h-4 w-4 mr-2" />
             {language === "english" ? "Upload" : "업로드"}
           </Button>
@@ -126,6 +237,11 @@ export default function KnowledgeBasePage() {
             {language === "english" ? "New Document" : "새 문서"}
           </Button>
         </div>
+      </div>
+
+      {/* File Format Info */}
+      <div className="mb-6">
+        <FileFormatInfo language={language} />
       </div>
 
       <Tabs defaultValue="all" className="w-full">
@@ -138,6 +254,9 @@ export default function KnowledgeBasePage() {
           </TabsTrigger>
           <TabsTrigger value="favorites">
             {language === "english" ? "Favorites" : "즐겨찾기"}
+          </TabsTrigger>
+          <TabsTrigger value="integration">
+            {language === "english" ? "Integration Status" : "통합 상태"}
           </TabsTrigger>
         </TabsList>
 
@@ -295,7 +414,45 @@ export default function KnowledgeBasePage() {
             </CardContent>
           </AnimatedCard>
         </TabsContent>
+
+        {/* New Integration Status Tab */}
+        <TabsContent value="integration" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <IntegrationStatus items={integrationItems} language={language} />
+            </div>
+            <div>
+              <ChatbotMemoryIndicator
+                items={memoryItems}
+                language={language}
+                onToggleActive={handleToggleActive}
+              />
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
+
+      {/* Upload Dialog */}
+      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>
+              {language === "english" ? "Upload Documents" : "문서 업로드"}
+            </DialogTitle>
+            <DialogDescription>
+              {language === "english"
+                ? "Upload documents to add to your knowledge base."
+                : "지식 베이스에 추가할 문서를 업로드하세요."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <EnhancedFileUpload
+              language={language}
+              onFilesSelected={handleFilesSelected}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

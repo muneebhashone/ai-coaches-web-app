@@ -5,13 +5,11 @@ import {
   IconPlugConnected,
   IconLanguage,
   IconBrandKakoTalk,
-  // IconBrandWhatsapp,
-  // IconBrandTelegram,
   IconCalendar,
   IconBrandZoom,
   IconFile,
-  // IconDatabase,
-  // IconCloud
+  IconMessage,
+  IconSend
 } from "@tabler/icons-react"
 
 import { AnimatedCard } from "@/components/ui/animated-card"
@@ -21,6 +19,9 @@ import { Toggle } from "@/components/ui/toggle"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+// Import the components from the components folder
+import { KakaoTalkPreviewDialog, SendAnnouncementDialog } from "./components"
 
 // Mock integration data
 const messagingIntegrations = [
@@ -32,22 +33,6 @@ const messagingIntegrations = [
     status: "connected",
     lastSync: "2 hours ago",
   },
-  // {
-  //   id: 2,
-  //   name: "WhatsApp",
-  //   description: "Connect your AI coach with WhatsApp messaging platform",
-  //   icon: IconBrandWhatsapp,
-  //   status: "disconnected",
-  //   lastSync: null,
-  // },
-  // {
-  //   id: 3,
-  //   name: "Telegram",
-  //   description: "Connect your AI coach with Telegram messaging platform",
-  //   icon: IconBrandTelegram,
-  //   status: "disconnected",
-  //   lastSync: null,
-  // },
 ]
 
 const calendarIntegrations = [
@@ -78,22 +63,6 @@ const dataIntegrations = [
     status: "available",
     lastSync: null,
   },
-  // {
-  //   id: 2,
-  //   name: "Database",
-  //   description: "Connect to your custom databases",
-  //   icon: IconDatabase,
-  //   status: "available",
-  //   lastSync: null,
-  // },
-  // {
-  //   id: 3,
-  //   name: "Cloud Storage",
-  //   description: "Connect to cloud storage services",
-  //   icon: IconCloud,
-  //   status: "coming-soon",
-  //   lastSync: null,
-  // },
 ]
 
 export default function IntegrationsPage() {
@@ -167,11 +136,61 @@ export default function IntegrationsPage() {
                         : `마지막 동기화: ${integration.lastSync}`}
                     </div>
                   )}
-                  <Button variant={integration.status === "connected" ? "outline" : "default"}>
-                    {language === "english"
-                      ? integration.status === "connected" ? "Disconnect" : "Connect"
-                      : integration.status === "connected" ? "연결 해제" : "연결"}
-                  </Button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button variant={integration.status === "connected" ? "outline" : "default"}>
+                      {language === "english"
+                        ? integration.status === "connected" ? "Disconnect" : "Connect"
+                        : integration.status === "connected" ? "연결 해제" : "연결"}
+                    </Button>
+
+                    {integration.name === "KakaoTalk" && integration.status === "connected" && (
+                      <>
+                        <KakaoTalkPreviewDialog language={language} />
+                        <SendAnnouncementDialog language={language} />
+                      </>
+                    )}
+                  </div>
+
+                  {integration.name === "KakaoTalk" && integration.status === "connected" && (
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-medium mb-2">
+                        {language === "english" ? "Interface Options" : "인터페이스 옵션"}
+                      </h4>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-start gap-2">
+                          <div className="bg-primary/10 p-1 rounded-md">
+                            <IconMessage className="h-4 w-4" />
+                          </div>
+                          <div className="text-sm">
+                            <p className="font-medium">
+                              {language === "english" ? "Customize Chat Appearance" : "채팅 외관 사용자 정의"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {language === "english"
+                                ? "Edit how your AI coach appears to users"
+                                : "AI 코치가 사용자에게 어떻게 표시되는지 편집"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                          <div className="bg-primary/10 p-1 rounded-md">
+                            <IconSend className="h-4 w-4" />
+                          </div>
+                          <div className="text-sm">
+                            <p className="font-medium">
+                              {language === "english" ? "Bulk Messaging" : "일괄 메시징"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {language === "english"
+                                ? "Send announcements to all users"
+                                : "모든 사용자에게 공지사항 보내기"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </AnimatedCard>
             ))}
@@ -264,55 +283,6 @@ export default function IntegrationsPage() {
       </Tabs>
 
       <Separator className="my-8" />
-
-      {/* <div className="mt-8">
-        <CardTitle className="mb-4">
-          {language === "english" ? "API Access" : "API 접근"}
-        </CardTitle>
-        <AnimatedCard>
-          <CardHeader>
-            <CardTitle>
-              {language === "english" ? "API Keys" : "API 키"}
-            </CardTitle>
-            <CardDescription>
-              {language === "english"
-                ? "Manage API keys for custom integrations with your own applications"
-                : "자체 애플리케이션과의 사용자 지정 통합을 위한 API 키 관리"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-4 border rounded-md">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-medium">Primary API Key</div>
-                    <div className="text-xs text-muted-foreground">Created on April 1, 2023</div>
-                  </div>
-                  <Badge variant="outline">Active</Badge>
-                </div>
-                <div className="mt-2 bg-muted/50 p-2 rounded text-muted-foreground">
-                  •••••••••••••••••••••••••••••
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Button variant="outline" size="sm">
-                    {language === "english" ? "Reveal" : "표시"}
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    {language === "english" ? "Regenerate" : "재생성"}
-                  </Button>
-                  <Button variant="destructive" size="sm">
-                    {language === "english" ? "Revoke" : "취소"}
-                  </Button>
-                </div>
-              </div>
-
-              <Button variant="outline">
-                {language === "english" ? "Create New API Key" : "새 API 키 생성"}
-              </Button>
-            </div>
-          </CardContent>
-        </AnimatedCard>
-      </div> */}
     </>
   )
 } 
