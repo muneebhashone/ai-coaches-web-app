@@ -9,9 +9,33 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from "@/component
 import { Toggle } from "@/components/ui/toggle"
 import { Button } from "@/components/ui/button"
 import { MetricDetailsDialog } from "@/components/dashboard/metric-details-dialog"
+import { UserActivityChart } from "@/components/dashboard/user-activity-chart"
+import { UserInsightsTable } from "@/components/dashboard/user-insights-table"
 
 export default function DashboardPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english")
+
+  // Sample feedback metrics data - would be replaced with real data in production
+  const feedbackMetrics = [
+    {
+      id: "feedback-1",
+      question: language === "english" ? "Action plan follow-through" : "실행 계획 이행",
+      average: 4.2,
+      responseRate: 85
+    },
+    {
+      id: "feedback-2",
+      question: language === "english" ? "Emotional state improvement" : "감정 상태 개선",
+      average: 3.8,
+      responseRate: 78
+    },
+    {
+      id: "feedback-3",
+      question: language === "english" ? "Goal progress satisfaction" : "목표 진행 만족도",
+      average: 4.5,
+      responseRate: 90
+    }
+  ]
 
   return (
     <>
@@ -50,6 +74,7 @@ export default function DashboardPage() {
               change: 8
             }
           }}
+          feedbackMetrics={feedbackMetrics}
         >
           <AnimatedCard>
             <CardHeader className="pb-2">
@@ -67,103 +92,116 @@ export default function DashboardPage() {
         </MetricDetailsDialog>
 
         <MetricDetailsDialog
-          title={language === "english" ? "Active Sessions" : "활성 세션"}
-          value={18}
-          description={language === "english" ? "Current active session details and engagement metrics" : "현재 활성 세션 세부 정보 및 참여 지표"}
+          title={language === "english" ? "Profile Completion" : "프로필 완성도"}
+          value="85%"
+          description={language === "english" ? "User profile collection statistics" : "사용자 프로필 수집 통계"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Profile completion rate" : "프로필 완성률",
+              value: 85,
+              change: 15
+            },
+            goals: {
+              label: language === "english" ? "Data quality score" : "데이터 품질 점수",
+              value: 92,
+              change: 5
+            }
+          }}
+          feedbackMetrics={feedbackMetrics}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Profile Completion" : "프로필 완성도"}
+              </CardDescription>
+              <CardTitle className="text-2xl">85%</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "+15% from last month" : "지난 달 대비 +15%"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
+
+        <MetricDetailsDialog
+          title={language === "english" ? "Goal Progress" : "목표 진행도"}
+          value="72%"
+          description={language === "english" ? "Combined progress metrics for sessions and goals" : "세션 및 목표에 대한 통합 진행 지표"}
           language={language}
           progressMetrics={{
             sessions: {
               label: language === "english" ? "Session completion rate" : "세션 완료율",
               value: 68,
-              change: 5
-            },
-            goals: {
-              label: language === "english" ? "Goal achievement rate" : "목표 달성률",
-              value: 72,
-              change: 15
-            }
-          }}
-        >
-          <AnimatedCard>
-            <CardHeader className="pb-2">
-              <CardDescription>
-                {language === "english" ? "Active Sessions" : "활성 세션"}
-              </CardDescription>
-              <CardTitle className="text-2xl">18</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground">
-                {language === "english" ? "5 sessions today" : "오늘 5개 세션"}
-              </div>
-            </CardContent>
-          </AnimatedCard>
-        </MetricDetailsDialog>
-
-        <MetricDetailsDialog
-          title={language === "english" ? "Completed Sessions" : "완료된 세션"}
-          value={156}
-          description={language === "english" ? "Historical session data and completion analytics" : "과거 세션 데이터 및 완료 분석"}
-          language={language}
-          progressMetrics={{
-            sessions: {
-              label: language === "english" ? "Average session duration" : "평균 세션 시간",
-              value: 85,
-              change: 24
-            },
-            goals: {
-              label: language === "english" ? "Success rate" : "성공률",
-              value: 78,
-              change: 10
-            }
-          }}
-        >
-          <AnimatedCard>
-            <CardHeader className="pb-2">
-              <CardDescription>
-                {language === "english" ? "Completed Sessions" : "완료된 세션"}
-              </CardDescription>
-              <CardTitle className="text-2xl">156</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground">
-                {language === "english" ? "+24% from last month" : "지난 달 대비 +24%"}
-              </div>
-            </CardContent>
-          </AnimatedCard>
-        </MetricDetailsDialog>
-
-        <MetricDetailsDialog
-          title={language === "english" ? "Average Progress" : "평균 진행률"}
-          value="68%"
-          description={language === "english" ? "Overall progress metrics and goal achievement statistics" : "전체 진행 지표 및 목표 달성 통계"}
-          language={language}
-          progressMetrics={{
-            sessions: {
-              label: language === "english" ? "Session progress rate" : "세션 진행률",
-              value: 68,
               change: 8
             },
             goals: {
-              label: language === "english" ? "Goal completion rate" : "목표 완료율",
+              label: language === "english" ? "Goal achievement rate" : "목표 달성률",
               value: 75,
               change: 12
             }
           }}
+          feedbackMetrics={feedbackMetrics}
         >
           <AnimatedCard>
             <CardHeader className="pb-2">
               <CardDescription>
-                {language === "english" ? "Avg. Progress" : "평균 진행률"}
+                {language === "english" ? "Goal Progress" : "목표 진행도"}
               </CardDescription>
-              <CardTitle className="text-2xl">68%</CardTitle>
+              <CardTitle className="text-2xl">72%</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
-                {language === "english" ? "+8% from last month" : "지난 달 대비 +8%"}
+                {language === "english" ? "Combined progress" : "통합 진행도"}
               </div>
             </CardContent>
           </AnimatedCard>
         </MetricDetailsDialog>
+
+        <MetricDetailsDialog
+          title={language === "english" ? "Session Feedback" : "세션 피드백"}
+          value="4.5"
+          description={language === "english" ? "Post-session satisfaction scores and trends" : "세션 후 만족도 점수 및 동향"}
+          language={language}
+          progressMetrics={{
+            sessions: {
+              label: language === "english" ? "Average satisfaction" : "평균 만족도",
+              value: 90,
+              change: 5
+            },
+            goals: {
+              label: language === "english" ? "Response rate" : "응답률",
+              value: 88,
+              change: 10
+            }
+          }}
+          feedbackMetrics={feedbackMetrics}
+        >
+          <AnimatedCard>
+            <CardHeader className="pb-2">
+              <CardDescription>
+                {language === "english" ? "Session Feedback" : "세션 피드백"}
+              </CardDescription>
+              <CardTitle className="text-2xl">4.5</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                {language === "english" ? "Out of 5.0" : "5.0 만점"}
+              </div>
+            </CardContent>
+          </AnimatedCard>
+        </MetricDetailsDialog>
+      </div>
+
+      {/* Added User Activity Chart */}
+      <div className="mt-6">
+        <UserActivityChart language={language} />
+      </div>
+
+      {/* Added User Insights Table */}
+      <div className="mt-6">
+        <UserInsightsTable language={language} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -249,15 +287,15 @@ export default function DashboardPage() {
             </CardTitle>
             <CardDescription>
               {language === "english"
-                ? "Manage external connections"
-                : "외부 연결 관리"}
+                ? "Connect with other platforms"
+                : "다른 플랫폼과 연결"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
               {language === "english"
-                ? "Connect your AI coach with external tools and services. Set up data sources and manage API integrations."
-                : "AI 코치를 외부 도구 및 서비스와 연결하세요. 데이터 소스를 설정하고 API 통합을 관리하세요."}
+                ? "Connect your AI coach with third-party services and platforms to expand its capabilities and reach."
+                : "AI 코치를 타사 서비스 및 플랫폼과 연결하여 기능과 범위를 확장하세요."}
             </p>
             <Button asChild>
               <Link href="/integrations">
