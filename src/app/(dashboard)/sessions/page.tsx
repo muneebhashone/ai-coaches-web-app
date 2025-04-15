@@ -14,8 +14,6 @@ import {
   IconMicrophone,
   IconAlertCircle,
   IconCheck,
-  IconX,
-  IconMaximize,
 } from "@tabler/icons-react";
 
 import { AnimatedCard } from "@/components/ui/animated-card";
@@ -30,13 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 import { SessionAnalysis } from "./components/SessionAnalysis";
 
 // Mock feedback data
@@ -84,7 +76,8 @@ const sessionSummaries = [
   {
     id: 1,
     topics: ["Goal Setting", "Time Management", "Work-Life Balance"],
-    coachNotes: "Client shows strong motivation but needs help with prioritization",
+    coachNotes:
+      "Client shows strong motivation but needs help with prioritization",
     actionItems: [
       { task: "Create daily schedule", status: "completed" },
       { task: "Set SMART goals", status: "pending" },
@@ -112,218 +105,10 @@ const statusVariants = {
   Scheduled: "secondary",
 } as const;
 
-// Mock chat data
-const mockChatLog = [
-  {
-    id: 1,
-    role: "user",
-    message: "I've been struggling with time management lately.",
-    timestamp: "2024-04-08T10:00:00Z",
-  },
-  {
-    id: 2,
-    role: "assistant",
-    message: "I understand. Let's break down your daily schedule and identify areas where we can improve efficiency. What does your typical day look like?",
-    timestamp: "2024-04-08T10:00:30Z",
-  },
-  {
-    id: 3,
-    role: "user",
-    message: "I usually start work at 9 AM, but I find myself getting distracted by emails and meetings throughout the day.",
-    timestamp: "2024-04-08T10:01:00Z",
-  },
-  {
-    id: 4,
-    role: "assistant",
-    message: "That's a common challenge. Have you tried time-blocking or the Pomodoro technique? These methods can help structure your day better.",
-    timestamp: "2024-04-08T10:01:30Z",
-  },
-];
-
-interface SessionDetailsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  sessionId: string;
-  language: "english" | "korean";
-}
-
-function SessionDetailsDialog({ open, onOpenChange, sessionId, language }: SessionDetailsDialogProps) {
-  const [activeTab, setActiveTab] = useState<"chat" | "summary">("chat");
-
-  const handleDownload = (type: "chat" | "summary") => {
-    console.log(`Downloading ${type} for session ${sessionId}`);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>
-            {language === "english" ? "Session Details" : "세션 상세"} #{sessionId}
-          </DialogTitle>
-          <DialogDescription>
-            {language === "english"
-              ? "View complete session information including chat log and summary"
-              : "채팅 로그 및 요약을 포함한 전체 세션 정보 보기"}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex border-b">
-          <button
-            type="button"
-            className={`px-4 py-2 font-medium ${activeTab === "chat"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground"
-              }`}
-            onClick={() => setActiveTab("chat")}
-          >
-            {language === "english" ? "Chat Log" : "채팅 로그"}
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-2 font-medium ${activeTab === "summary"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground"
-              }`}
-            onClick={() => setActiveTab("summary")}
-          >
-            {language === "english" ? "Summary" : "요약"}
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto">
-          {activeTab === "chat" ? (
-            <div className="space-y-4 p-4">
-              {mockChatLog.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                      }`}
-                  >
-                    <p className="text-sm">{message.message}</p>
-                    <p className="text-xs mt-1 opacity-70">
-                      {new Date(message.timestamp).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 space-y-6">
-              <div>
-                <h4 className="font-medium mb-2">
-                  {language === "english" ? "Key Topics" : "주요 주제"}
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {sessionSummaries[0].topics.map((topic) => (
-                    <Badge key={topic} variant="secondary">
-                      {topic}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">
-                  {language === "english" ? "Coach Notes" : "코치 노트"}
-                </h4>
-                <div className="bg-muted rounded-lg p-4">
-                  <p className="text-sm">{sessionSummaries[0].coachNotes}</p>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">
-                  {language === "english" ? "Action Items" : "실행 항목"}
-                </h4>
-                <div className="bg-muted rounded-lg p-4">
-                  <ul className="space-y-3">
-                    {sessionSummaries[0].actionItems.map((item) => (
-                      <li key={item.task} className="flex items-center gap-2">
-                        {item.status === "completed" ? (
-                          <IconCheck className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
-                        )}
-                        <span className="text-sm">{item.task}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium mb-2">
-                  {language === "english" ? "Key Metrics" : "주요 지표"}
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-muted rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {language === "english" ? "Duration" : "기간"}
-                    </p>
-                    <p className="text-lg font-medium">45 minutes</p>
-                  </div>
-                  <div className="bg-muted rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {language === "english" ? "Engagement Score" : "참여도"}
-                    </p>
-                    <p className="text-lg font-medium">85%</p>
-                  </div>
-                  <div className="bg-muted rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground">
-                      {language === "english" ? "Progress Made" : "진행 상황"}
-                    </p>
-                    <p className="text-lg font-medium">Good</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center border-t p-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            <IconX className="h-4 w-4 mr-2" />
-            {language === "english" ? "Close" : "닫기"}
-          </Button>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.open(`/sessions/${sessionId}`, '_blank')}
-            >
-              <IconMaximize className="h-4 w-4 mr-2" />
-              {language === "english" ? "Open in New Tab" : "새 탭에서 열기"}
-            </Button>
-            <Button
-              type="button"
-              variant="default"
-              onClick={() => handleDownload(activeTab === "chat" ? "chat" : "summary")}
-            >
-              <IconDownload className="h-4 w-4 mr-2" />
-              {language === "english" ? "Download" : "다운로드"}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export default function SessionsPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Handle audio file upload
@@ -427,15 +212,23 @@ export default function SessionsPage() {
                     {Array(6)
                       .fill(null)
                       .map((_, index) => {
-                        const status = ["Completed", "In Progress", "Scheduled"][index % 3] as keyof typeof statusVariants;
+                        const status = [
+                          "Completed",
+                          "In Progress",
+                          "Scheduled",
+                        ][index % 3] as keyof typeof statusVariants;
                         const needsUpdate = index % 3 === 1;
                         const sessionId = `session-${index}`;
-                        const date = new Date(Date.now() - index * 24 * 60 * 60 * 1000);
+                        const date = new Date(
+                          Date.now() - index * 24 * 60 * 60 * 1000
+                        );
                         return (
                           <tr key={sessionId} className="border-b">
                             <td className="p-3">User {index + 1}</td>
                             <td className="p-3">{date.toLocaleDateString()}</td>
-                            <td className="p-3">{`${Math.floor(Math.random() * 20) + 5} min`}</td>
+                            <td className="p-3">{`${
+                              Math.floor(Math.random() * 20) + 5
+                            } min`}</td>
                             <td className="p-3">
                               <Badge variant={statusVariants[status]}>
                                 {status}
@@ -448,15 +241,27 @@ export default function SessionsPage() {
                               <div className="flex items-center gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => setSelectedSession(sessionId)}
+                                  onClick={() =>
+                                    router.push(
+                                      `/sessions/${sessionId}?language=${language}`
+                                    )
+                                  }
                                   className="text-muted-foreground hover:text-foreground"
-                                  title={language === "english" ? "View details" : "상세 보기"}
+                                  title={
+                                    language === "english"
+                                      ? "View details"
+                                      : "상세 보기"
+                                  }
                                 >
                                   <IconFileText className="h-4 w-4" />
                                 </button>
                                 <label
                                   className="cursor-pointer text-muted-foreground hover:text-foreground"
-                                  title={language === "english" ? "Upload audio" : "오디오 업로드"}
+                                  title={
+                                    language === "english"
+                                      ? "Upload audio"
+                                      : "오디오 업로드"
+                                  }
                                 >
                                   <IconMicrophone className="h-4 w-4" />
                                   <input
@@ -529,10 +334,11 @@ export default function SessionsPage() {
                           .map((_, index) => (
                             <IconStar
                               key={`star-${item.id}-${index}`}
-                              className={`h-4 w-4 ${index < item.rating
-                                ? "text-yellow-500"
-                                : "text-muted-foreground"
-                                }`}
+                              className={`h-4 w-4 ${
+                                index < item.rating
+                                  ? "text-yellow-500"
+                                  : "text-muted-foreground"
+                              }`}
                             />
                           ))}
                       </div>
@@ -562,18 +368,24 @@ export default function SessionsPage() {
               {sessionSummaries.map((summary) => (
                 <div key={summary.id} className="mb-8 last:mb-0">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Session #{summary.id}</h3>
+                    <h3 className="text-lg font-semibold">
+                      Session #{summary.id}
+                    </h3>
                     <div className="flex items-center gap-2">
                       {summary.hasAudio && (
                         <Badge variant="outline">
                           <IconMicrophone className="h-4 w-4 mr-1" />
-                          {language === "english" ? "Has Recording" : "녹음 있음"}
+                          {language === "english"
+                            ? "Has Recording"
+                            : "녹음 있음"}
                         </Badge>
                       )}
                       {summary.needsUpdate && (
                         <Badge variant="destructive">
                           <IconAlertCircle className="h-4 w-4 mr-1" />
-                          {language === "english" ? "Needs Update" : "업데이트 필요"}
+                          {language === "english"
+                            ? "Needs Update"
+                            : "업데이트 필요"}
                         </Badge>
                       )}
                     </div>
@@ -610,9 +422,14 @@ export default function SessionsPage() {
                       </h4>
                       <ul className="space-y-2">
                         {summary.actionItems.map((item) => {
-                          const actionId = `${summary.id}-action-${item.task.toLowerCase().replace(/\s+/g, '-')}`;
+                          const actionId = `${summary.id}-action-${item.task
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`;
                           return (
-                            <li key={actionId} className="flex items-center gap-2">
+                            <li
+                              key={actionId}
+                              className="flex items-center gap-2"
+                            >
                               {item.status === "completed" ? (
                                 <IconCheck className="h-4 w-4 text-green-500" />
                               ) : (
@@ -634,7 +451,9 @@ export default function SessionsPage() {
                       onClick={() => handleDownload("summary")}
                     >
                       <IconDownload className="h-4 w-4 mr-2" />
-                      {language === "english" ? "Download Summary" : "요약 다운로드"}
+                      {language === "english"
+                        ? "Download Summary"
+                        : "요약 다운로드"}
                     </Button>
                   </div>
                 </div>
@@ -643,13 +462,6 @@ export default function SessionsPage() {
           </AnimatedCard>
         </TabsContent>
       </Tabs>
-
-      <SessionDetailsDialog
-        open={selectedSession !== null}
-        onOpenChange={(open) => !open && setSelectedSession(null)}
-        sessionId={selectedSession || ""}
-        language={language}
-      />
     </>
   );
 }

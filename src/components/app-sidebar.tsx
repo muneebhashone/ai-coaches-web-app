@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import Link from "next/link"
+import Link from "next/link";
 import {
   IconDashboard,
   IconMessageChatbot,
@@ -9,7 +9,9 @@ import {
   IconPlugConnected,
   IconBook,
   IconMessageForward,
-} from "@tabler/icons-react"
+  IconUsers,
+  IconListDetails,
+} from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -19,9 +21,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
-import { usePathname } from "next/navigation"
+import { usePathname } from "next/navigation";
 
 // Note: The NavMain component will need to be modified to support nested menu items
 const data = {
@@ -38,9 +40,19 @@ const data = {
       icon: IconBook,
     },
     {
+      title: "Users",
+      url: "/users",
+      icon: IconUsers,
+    },
+    {
       title: "Sessions",
       url: "/sessions",
       icon: IconHistory,
+    },
+    {
+      title: "Programs",
+      url: "/programs",
+      icon: IconListDetails,
     },
     {
       title: "Feedback Messaging",
@@ -63,16 +75,22 @@ const data = {
       icon: IconSettings,
     },
   ],
-}
+};
 
-export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "floating" | "inset" }) {
-  const pathname = usePathname()
+export function AppSidebar({
+  variant = "sidebar",
+}: {
+  variant?: "sidebar" | "floating" | "inset";
+}) {
+  const pathname = usePathname();
 
   return (
     <Sidebar variant={variant}>
       <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">AI Coaches</span>
+          <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            AI Coaches
+          </span>
         </div>
         <SidebarTrigger />
       </SidebarHeader>
@@ -95,5 +113,5 @@ export function AppSidebar({ variant = "sidebar" }: { variant?: "sidebar" | "flo
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

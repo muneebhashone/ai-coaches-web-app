@@ -77,36 +77,8 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <MetricDetailsDialog
-          title={language === "english" ? "Total Users" : "전체 사용자"}
-          value={42}
-          description={
-            language === "english"
-              ? "Detailed user statistics and demographics"
-              : "상세 사용자 통계 및 인구 통계"
-          }
-          language={language}
-          progressMetrics={{
-            sessions: {
-              label:
-                language === "english"
-                  ? "Active users this week"
-                  : "이번 주 활성 사용자",
-              value: 75,
-              change: 12,
-            },
-            goals: {
-              label:
-                language === "english"
-                  ? "User retention rate"
-                  : "사용자 유지율",
-              value: 82,
-              change: 8,
-            },
-          }}
-          feedbackMetrics={feedbackMetrics}
-        >
-          <AnimatedCard>
+        <Link href="/users" className="block">
+          <AnimatedCard className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
             <CardHeader className="pb-1">
               <CardTitle className="text-base font-medium">
                 {language === "english" ? "Total Users" : "전체 사용자"}
@@ -123,7 +95,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </AnimatedCard>
-        </MetricDetailsDialog>
+        </Link>
 
         <MetricDetailsDialog
           title={
