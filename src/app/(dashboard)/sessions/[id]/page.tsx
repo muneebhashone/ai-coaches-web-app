@@ -26,7 +26,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,11 +92,7 @@ const sessionSummaries = [
   },
 ];
 
-export default function SessionDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function SessionDetailsPage() {
   const [activeTab, setActiveTab] = useState<"chat" | "summary">("chat");
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
   const [language, setLanguage] = useState<"english" | "korean">("english");
@@ -108,6 +104,7 @@ export default function SessionDetailsPage({
   );
   const [showAlerts, setShowAlerts] = useState(true);
   const router = useRouter();
+  const params = useParams();
   const sessionId = params.id;
 
   // Mock data for coaching programs

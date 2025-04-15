@@ -17,12 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface ProgramDetailPageProps {
-  params: {
-    id: string;
-  };
-}
+import type { PageProps } from "../../../../../.next/types/app/layout";
 
 // Mock data for a single program (fetch based on params.id later)
 const mockProgramDetail = {
@@ -72,9 +67,9 @@ const mockProgramDetail = {
   ],
 };
 
-export default function ProgramDetailPage({ params }: ProgramDetailPageProps) {
+export default async function ProgramDetailPage({ params }: PageProps) {
   // In real implementation, fetch program details based on params.id
-  const program = mockProgramDetail; // Use mock data for now
+  const program = (await params).id === "prog-101" ? mockProgramDetail : null; // Use mock data for now
 
   if (!program) {
     // Handle case where program is not found
