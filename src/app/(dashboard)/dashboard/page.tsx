@@ -15,13 +15,20 @@ import { Toggle } from "@/components/ui/toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MetricDetailsDialog } from "@/components/dashboard/metric-details-dialog";
-import { UserActivityChart } from "@/components/dashboard/user-activity-chart";
-import { UserInsightsTable } from "@/components/dashboard/user-insights-table";
 import { UserSegmentation } from "@/components/dashboard/user-segmentation";
 import { ChatbotFeedback } from "@/components/dashboard/chatbot-feedback";
 import { SessionRecommendations } from "@/components/dashboard/session-recommendations";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 export default function DashboardPage() {
+  const [open, setOpen] = useState(false);
+
   const [language, setLanguage] = useState<"english" | "korean">("english");
 
   // Sample feedback metrics data - would be replaced with real data in production
@@ -237,21 +244,28 @@ export default function DashboardPage() {
         </MetricDetailsDialog>
       </div>
 
-      {/* Added User Activity Chart */}
-      <div className="mt-6">
-        <UserActivityChart language={language} />
-      </div>
-
-      {/* Added User Insights Table */}
-      <div className="mt-6">
-        <UserInsightsTable language={language} />
-      </div>
-
       {/* User Auto-Segmentation, Chatbot Feedback, and Session Recommendations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <UserSegmentation language={language} />
         <ChatbotFeedback language={language} />
         <SessionRecommendations language={language} />
+      </div>
+
+      <div className="mt-6">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button>View Detailed Analysis</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[825px]">
+            <DialogHeader>
+              <DialogTitle>Detailed Analysis</DialogTitle>
+              <DialogDescription>
+                Comprehensive insights into chatbot performance and user
+                activity.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Separator className="my-6" />

@@ -1,17 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  IconDashboard,
-  IconMessageChatbot,
-  IconHistory,
-  IconSettings,
-  IconPlugConnected,
-  IconBook,
-  IconMessageForward,
-  IconUsers,
-  IconListDetails,
-} from "@tabler/icons-react";
+import { IconBook, IconMessageForward, IconUsers } from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -25,54 +15,24 @@ import {
 
 import { usePathname } from "next/navigation";
 
-// Note: The NavMain component will need to be modified to support nested menu items
+// Updated navigation with only the 3 required items
 const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
+      title: "User Management",
+      url: "/users",
+      icon: IconUsers,
       isActive: true,
     },
     {
-      title: "Knowledge Base",
-      url: "/knowledge-base",
+      title: "Clone Coach Training",
+      url: "/clone-coach-training",
       icon: IconBook,
     },
     {
-      title: "Users",
-      url: "/users",
-      icon: IconUsers,
-    },
-    {
-      title: "Sessions",
-      url: "/sessions",
-      icon: IconHistory,
-    },
-    {
-      title: "Programs",
-      url: "/programs",
-      icon: IconListDetails,
-    },
-    {
-      title: "Feedback Messaging",
-      url: "/feedback-messaging",
+      title: "Messenger Management",
+      url: "/messenger",
       icon: IconMessageForward,
-    },
-    {
-      title: "Integrations",
-      url: "/integrations",
-      icon: IconPlugConnected,
-    },
-    {
-      title: "Chatbot",
-      url: "/chatbot",
-      icon: IconMessageChatbot,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
     },
   ],
 };
