@@ -29,86 +29,81 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { AnimatedCard } from "@/components/ui/animated-card";
 import { Progress } from "@/components/ui/progress";
 
-// Mock data for users
+// Mock data for users with updated fields
 const MOCK_USERS = [
   {
     id: "1",
     name: "Sara Johnson",
+    age: 32,
+    occupation: "Marketing Manager",
     program: "Stress Reduction Program",
     status: "active",
     progress: 72,
-    lastActivity: "2025-04-10T10:30:00",
-    alerts: 0,
+    sessions: 8,
   },
   {
     id: "2",
     name: "David Kim",
+    age: 28,
+    occupation: "Software Engineer",
     program: "Career Coaching",
     status: "active",
     progress: 45,
-    lastActivity: "2025-04-10T09:15:00",
-    alerts: 1,
+    sessions: 5,
   },
   {
     id: "3",
     name: "Michael Chen",
+    age: 41,
+    occupation: "Finance Director",
     program: "Productivity Coaching",
     status: "active",
     progress: 89,
-    lastActivity: "2025-04-09T14:20:00",
-    alerts: 0,
+    sessions: 12,
   },
   {
     id: "4",
     name: "Emma Watson",
+    age: 35,
+    occupation: "HR Specialist",
     program: "Stress Reduction Program",
     status: "inactive",
     progress: 30,
-    lastActivity: "2025-04-05T11:45:00",
-    alerts: 2,
+    sessions: 3,
   },
   {
     id: "5",
     name: "James Lee",
+    age: 45,
+    occupation: "Project Manager",
     program: "Career Coaching",
     status: "active",
     progress: 65,
-    lastActivity: "2025-04-10T08:30:00",
-    alerts: 0,
+    sessions: 7,
   },
   {
     id: "6",
     name: "Sophia Park",
+    age: 29,
+    occupation: "UX Designer",
     program: "Productivity Coaching",
     status: "active",
     progress: 52,
-    lastActivity: "2025-04-09T16:45:00",
-    alerts: 0,
+    sessions: 6,
   },
   {
     id: "7",
     name: "Robert Johnson",
+    age: 38,
+    occupation: "Sales Director",
     program: "Stress Reduction Program",
     status: "inactive",
     progress: 18,
-    lastActivity: "2025-04-03T09:10:00",
-    alerts: 3,
+    sessions: 2,
   },
 ];
-
-// Function to format date for display
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  }).format(date);
-};
 
 export default function UsersPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
@@ -223,20 +218,18 @@ export default function UsersPage() {
           <TableHeader>
             <TableRow>
               <TableHead>{language === "english" ? "Name" : "이름"}</TableHead>
+              <TableHead>{language === "english" ? "Age" : "나이"}</TableHead>
               <TableHead>
-                {language === "english" ? "Program" : "프로그램"}
+                {language === "english" ? "Occupation" : "직업"}
+              </TableHead>
+              <TableHead>
+                {language === "english" ? "Sessions" : "세션"}
+              </TableHead>
+              <TableHead>
+                {language === "english" ? "Goal Progress" : "목표 진행도"}
               </TableHead>
               <TableHead>
                 {language === "english" ? "Status" : "상태"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Progress" : "진행도"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Last Activity" : "마지막 활동"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Alerts" : "알림"}
               </TableHead>
               <TableHead className="text-right">
                 {language === "english" ? "Actions" : "작업"}
@@ -247,7 +240,17 @@ export default function UsersPage() {
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.program}</TableCell>
+                <TableCell>{user.age}</TableCell>
+                <TableCell>{user.occupation}</TableCell>
+                <TableCell>{user.sessions}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Progress value={user.progress} className="h-2 w-[100px]" />
+                    <span className="text-xs text-muted-foreground">
+                      {user.progress}%
+                    </span>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant={user.status === "active" ? "default" : "secondary"}
@@ -261,24 +264,6 @@ export default function UsersPage() {
                       : "비활성"}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Progress value={user.progress} className="h-2 w-[100px]" />
-                    <span className="text-xs text-muted-foreground">
-                      {user.progress}%
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>{formatDate(user.lastActivity)}</TableCell>
-                <TableCell>
-                  {user.alerts > 0 ? (
-                    <Badge variant="destructive" className="rounded-full px-2">
-                      {user.alerts}
-                    </Badge>
-                  ) : (
-                    "0"
-                  )}
-                </TableCell>
                 <TableCell className="text-right">
                   <Button size="sm" asChild>
                     <Link href={`/users/${user.id}`}>
@@ -290,54 +275,6 @@ export default function UsersPage() {
             ))}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="mt-8">
-        <AnimatedCard>
-          <div className="p-4">
-            <h2 className="text-lg font-semibold mb-2">
-              {language === "english"
-                ? "User Management Overview"
-                : "사용자 관리 개요"}
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              {language === "english"
-                ? "Click on a user to view a comprehensive dashboard with session summaries, goal tracking, and more."
-                : "사용자를 클릭하여 세션 요약, 목표 추적 등이 포함된 종합 대시보드를 확인하세요."}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-lg">
-                <h3 className="font-medium">
-                  {language === "english" ? "Active Users" : "활성 사용자"}
-                </h3>
-                <span className="text-2xl font-bold mt-2">
-                  {MOCK_USERS.filter((u) => u.status === "active").length}
-                </span>
-              </div>
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-lg">
-                <h3 className="font-medium">
-                  {language === "english" ? "Average Progress" : "평균 진행도"}
-                </h3>
-                <span className="text-2xl font-bold mt-2">
-                  {Math.round(
-                    MOCK_USERS.reduce((sum, user) => sum + user.progress, 0) /
-                      MOCK_USERS.length
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="flex flex-col items-center p-4 bg-muted/50 rounded-lg">
-                <h3 className="font-medium">
-                  {language === "english" ? "Total Alerts" : "전체 알림"}
-                </h3>
-                <span className="text-2xl font-bold mt-2">
-                  {MOCK_USERS.reduce((sum, user) => sum + user.alerts, 0)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </AnimatedCard>
       </div>
     </>
   );
