@@ -1,54 +1,72 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+interface Template {
+  id: string;
+  name: string;
+  content: string;
+  category: string;
+  createdBy: string;
+}
 
 // Mock data for template messages
-const initialTemplates = [
-  { 
-    id: "1", 
-    name: "Session Reminder", 
-    content: "Hello! This is a reminder about our coaching session scheduled for tomorrow at 2 PM. Looking forward to speaking with you!",
+const initialTemplates: Template[] = [
+  {
+    id: "1",
+    name: "Session Reminder",
+    content:
+      "Hello! This is a reminder about our coaching session scheduled for tomorrow at 2 PM. Looking forward to speaking with you!",
     category: "reminder",
-    createdBy: "Admin"
+    createdBy: "Admin",
   },
-  { 
-    id: "2", 
-    name: "Weekly Progress Check", 
-    content: "Hi there! How has your progress been with the goals we set last week? Is there anything specific you'd like to discuss in our next session?",
+  {
+    id: "2",
+    name: "Weekly Progress Check",
+    content:
+      "Hi there! How has your progress been with the goals we set last week? Is there anything specific you'd like to discuss in our next session?",
     category: "follow-up",
-    createdBy: "Admin"
+    createdBy: "Admin",
   },
-  { 
-    id: "3", 
-    name: "Motivational Message", 
-    content: "Just a quick note to remind you that you're making great progress! Keep up the good work and remember to practice the techniques we discussed.",
+  {
+    id: "3",
+    name: "Motivational Message",
+    content:
+      "Just a quick note to remind you that you're making great progress! Keep up the good work and remember to practice the techniques we discussed.",
     category: "motivational",
-    createdBy: "Coach"
-  }
-]
+    createdBy: "Coach",
+  },
+];
 
 export function TemplateManager() {
-  const [templates, setTemplates] = useState(initialTemplates)
-  const [editingTemplate, setEditingTemplate] = useState<any>(null)
+  const [templates, setTemplates] = useState<Template[]>(initialTemplates);
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [newTemplate, setNewTemplate] = useState({
     name: "",
     content: "",
-    category: "reminder"
-  })
-  const [activeTab, setActiveTab] = useState("all")
+    category: "reminder",
+  });
+  const [activeTab, setActiveTab] = useState("all");
 
-  const filteredTemplates = templates.filter(template => {
-    if (activeTab === "all") return true
-    return template.category === activeTab
-  })
+  const filteredTemplates = templates.filter((template) => {
+    if (activeTab === "all") return true;
+    return template.category === activeTab;
+  });
 
   const handleNewTemplate = () => {
     const template = {
@@ -56,30 +74,30 @@ export function TemplateManager() {
       name: newTemplate.name,
       content: newTemplate.content,
       category: newTemplate.category,
-      createdBy: "Coach" // In a real app, this would come from the authenticated user
-    }
-    
-    setTemplates([...templates, template])
+      createdBy: "Coach", // In a real app, this would come from the authenticated user
+    };
+
+    setTemplates([...templates, template]);
     setNewTemplate({
       name: "",
       content: "",
-      category: "reminder"
-    })
-  }
+      category: "reminder",
+    });
+  };
 
   const handleUpdateTemplate = () => {
-    if (!editingTemplate) return
-    
-    setTemplates(templates.map(t => 
-      t.id === editingTemplate.id ? editingTemplate : t
-    ))
-    
-    setEditingTemplate(null)
-  }
+    if (!editingTemplate) return;
+
+    setTemplates(
+      templates.map((t) => (t.id === editingTemplate.id ? editingTemplate : t))
+    );
+
+    setEditingTemplate(null);
+  };
 
   const handleDeleteTemplate = (id: string) => {
-    setTemplates(templates.filter(t => t.id !== id))
-  }
+    setTemplates(templates.filter((t) => t.id !== id));
+  };
 
   return (
     <div>
@@ -106,21 +124,29 @@ export function TemplateManager() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium">Template Name</label>
-                <Input 
-                  id="name" 
-                  placeholder="e.g., Session Reminder" 
+                <label htmlFor="name" className="text-sm font-medium">
+                  Template Name
+                </label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Session Reminder"
                   value={newTemplate.name}
-                  onChange={e => setNewTemplate({...newTemplate, name: e.target.value})}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, name: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="category" className="text-sm font-medium">Category</label>
-                <select 
+                <label htmlFor="category" className="text-sm font-medium">
+                  Category
+                </label>
+                <select
                   id="category"
                   className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   value={newTemplate.category}
-                  onChange={e => setNewTemplate({...newTemplate, category: e.target.value})}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, category: e.target.value })
+                  }
                 >
                   <option value="reminder">Reminder</option>
                   <option value="follow-up">Follow-up</option>
@@ -129,18 +155,22 @@ export function TemplateManager() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label htmlFor="content" className="text-sm font-medium">Message Content</label>
-                <Textarea 
-                  id="content" 
-                  rows={5} 
+                <label htmlFor="content" className="text-sm font-medium">
+                  Message Content
+                </label>
+                <Textarea
+                  id="content"
+                  rows={5}
                   placeholder="Enter your template message..."
                   value={newTemplate.content}
-                  onChange={e => setNewTemplate({...newTemplate, content: e.target.value})}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, content: e.target.value })
+                  }
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button 
+              <Button
                 onClick={handleNewTemplate}
                 disabled={!newTemplate.name || !newTemplate.content}
               >
@@ -159,11 +189,11 @@ export function TemplateManager() {
             <TabsTrigger value="motivational">Motivational</TabsTrigger>
             <TabsTrigger value="announcement">Announcements</TabsTrigger>
           </TabsList>
-          
+
           <div className="space-y-3">
-            {filteredTemplates.map(template => (
-              <div 
-                key={template.id} 
+            {filteredTemplates.map((template) => (
+              <div
+                key={template.id}
                 className="p-3 border rounded-lg space-y-2"
               >
                 <div className="flex justify-between">
@@ -181,22 +211,48 @@ export function TemplateManager() {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                           <div className="space-y-2">
-                            <label htmlFor="edit-name" className="text-sm font-medium">Template Name</label>
-                            <Input 
-                              id="edit-name" 
+                            <label
+                              htmlFor="edit-name"
+                              className="text-sm font-medium"
+                            >
+                              Template Name
+                            </label>
+                            <Input
+                              id="edit-name"
                               value={editingTemplate?.name || template.name}
-                              onChange={e => setEditingTemplate({...editingTemplate || template, name: e.target.value})}
-                              onFocus={() => !editingTemplate && setEditingTemplate(template)}
+                              onChange={(e) =>
+                                setEditingTemplate({
+                                  ...(editingTemplate || template),
+                                  name: e.target.value,
+                                })
+                              }
+                              onFocus={() =>
+                                !editingTemplate && setEditingTemplate(template)
+                              }
                             />
                           </div>
                           <div className="space-y-2">
-                            <label htmlFor="edit-category" className="text-sm font-medium">Category</label>
-                            <select 
+                            <label
+                              htmlFor="edit-category"
+                              className="text-sm font-medium"
+                            >
+                              Category
+                            </label>
+                            <select
                               id="edit-category"
                               className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                              value={editingTemplate?.category || template.category}
-                              onChange={e => setEditingTemplate({...editingTemplate || template, category: e.target.value})}
-                              onFocus={() => !editingTemplate && setEditingTemplate(template)}
+                              value={
+                                editingTemplate?.category || template.category
+                              }
+                              onChange={(e) =>
+                                setEditingTemplate({
+                                  ...(editingTemplate || template),
+                                  category: e.target.value,
+                                })
+                              }
+                              onFocus={() =>
+                                !editingTemplate && setEditingTemplate(template)
+                              }
                             >
                               <option value="reminder">Reminder</option>
                               <option value="follow-up">Follow-up</option>
@@ -205,28 +261,40 @@ export function TemplateManager() {
                             </select>
                           </div>
                           <div className="space-y-2">
-                            <label htmlFor="edit-content" className="text-sm font-medium">Message Content</label>
-                            <Textarea 
-                              id="edit-content" 
-                              rows={5} 
-                              value={editingTemplate?.content || template.content}
-                              onChange={e => setEditingTemplate({...editingTemplate || template, content: e.target.value})}
-                              onFocus={() => !editingTemplate && setEditingTemplate(template)}
+                            <label
+                              htmlFor="edit-content"
+                              className="text-sm font-medium"
+                            >
+                              Message Content
+                            </label>
+                            <Textarea
+                              id="edit-content"
+                              rows={5}
+                              value={
+                                editingTemplate?.content || template.content
+                              }
+                              onChange={(e) =>
+                                setEditingTemplate({
+                                  ...(editingTemplate || template),
+                                  content: e.target.value,
+                                })
+                              }
+                              onFocus={() =>
+                                !editingTemplate && setEditingTemplate(template)
+                              }
                             />
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button 
-                            onClick={handleUpdateTemplate}
-                          >
+                          <Button onClick={handleUpdateTemplate}>
                             Update Template
                           </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    
-                    <Button 
-                      variant="ghost" 
+
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteTemplate(template.id)}
                     >
@@ -241,11 +309,13 @@ export function TemplateManager() {
                   <Badge variant="outline" className="capitalize">
                     {template.category}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">Created by: {template.createdBy}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Created by: {template.createdBy}
+                  </span>
                 </div>
               </div>
             ))}
-            
+
             {filteredTemplates.length === 0 && (
               <div className="text-center py-6 text-muted-foreground">
                 No templates found in this category.
@@ -255,5 +325,5 @@ export function TemplateManager() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { IconDashboard, IconUsers, IconBook, IconMessageForward, IconSettings } from "@tabler/icons-react";
+import {
+  IconDashboard,
+  IconUsers,
+  IconBook,
+  IconMessageForward,
+} from "@tabler/icons-react";
 
 import {
   Sidebar,

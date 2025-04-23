@@ -1,13 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { IconCheck, IconRefresh, IconX } from "@tabler/icons-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { IconCheck, IconRefresh, IconX } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Mock data for connection status
 const connectionStatusData = [
@@ -16,41 +21,47 @@ const connectionStatusData = [
     name: "Kim Min-ji",
     icon: "/globe.svg",
     status: "connected",
-    lastConnected: "2025-04-21T14:30:00Z"
+    lastConnected: "2025-04-21T14:30:00Z",
   },
   {
     id: "2",
     name: "Park Ji-sung",
     icon: "/globe.svg",
     status: "disconnected",
-    lastConnected: "2025-04-10T09:15:00Z"
+    lastConnected: "2025-04-10T09:15:00Z",
   },
   {
     id: "3",
     name: "Lee Soo-jin",
     icon: "/globe.svg",
     status: "connected",
-    lastConnected: "2025-04-22T10:45:00Z"
-  }
-]
+    lastConnected: "2025-04-22T10:45:00Z",
+  },
+];
 
 export function ConnectionStatus() {
-  const [connections, setConnections] = useState(connectionStatusData)
-  const [isReconnecting, setIsReconnecting] = useState<string | null>(null)
+  const [connections, setConnections] = useState(connectionStatusData);
+  const [isReconnecting, setIsReconnecting] = useState<string | null>(null);
 
   const handleReconnect = (id: string) => {
-    setIsReconnecting(id)
-    
+    setIsReconnecting(id);
+
     // Simulate reconnection process
     setTimeout(() => {
-      setConnections(connections.map(conn => 
-        conn.id === id 
-          ? { ...conn, status: "connected", lastConnected: new Date().toISOString() } 
-          : conn
-      ))
-      setIsReconnecting(null)
-    }, 1500)
-  }
+      setConnections(
+        connections.map((conn) =>
+          conn.id === id
+            ? {
+                ...conn,
+                status: "connected",
+                lastConnected: new Date().toISOString(),
+              }
+            : conn
+        )
+      );
+      setIsReconnecting(null);
+    }, 1500);
+  };
 
   return (
     <div className="bg-card rounded-lg border shadow-sm">
@@ -76,18 +87,33 @@ export function ConnectionStatus() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={connection.icon} alt={connection.name} />
-                      <AvatarFallback>{connection.name.substring(0, 2)}</AvatarFallback>
+                      <AvatarImage
+                        src={connection.icon}
+                        alt={connection.name}
+                      />
+                      <AvatarFallback>
+                        {connection.name.substring(0, 2)}
+                      </AvatarFallback>
                     </Avatar>
                     <span>{connection.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={connection.status === "connected" ? "default" : "destructive"}>
+                  <Badge
+                    variant={
+                      connection.status === "connected"
+                        ? "default"
+                        : "destructive"
+                    }
+                  >
                     {connection.status === "connected" ? (
-                      <><IconCheck className="mr-1 h-3 w-3" /> Connected</>
+                      <>
+                        <IconCheck className="mr-1 h-3 w-3" /> Connected
+                      </>
                     ) : (
-                      <><IconX className="mr-1 h-3 w-3" /> Disconnected</>
+                      <>
+                        <IconX className="mr-1 h-3 w-3" /> Disconnected
+                      </>
                     )}
                   </Badge>
                 </TableCell>
@@ -96,9 +122,9 @@ export function ConnectionStatus() {
                 </TableCell>
                 <TableCell>
                   {connection.status === "disconnected" && (
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       onClick={() => handleReconnect(connection.id)}
                       disabled={isReconnecting === connection.id}
                     >
@@ -117,5 +143,5 @@ export function ConnectionStatus() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
