@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { IconBook, IconMessageForward, IconUsers } from "@tabler/icons-react";
+import { IconDashboard, IconUsers, IconBook, IconMessageForward, IconSettings } from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -15,29 +15,33 @@ import {
 
 import { usePathname } from "next/navigation";
 
-// Updated navigation with only the 3 required items
 const data = {
   navMain: [
     {
-      title: "User Management",
-      url: "/users",
-      icon: IconUsers,
+      title: "Dashboard",
+      url: "/admin/dashboard",
+      icon: IconDashboard,
       isActive: true,
     },
     {
+      title: "User Management",
+      url: "/admin/users",
+      icon: IconUsers,
+    },
+    {
       title: "Clone Coach Training",
-      url: "/clone-coach-training",
+      url: "/admin/clone-coach-training",
       icon: IconBook,
     },
     {
       title: "Messenger Management",
-      url: "/messenger-management",
+      url: "/admin/messenger-management",
       icon: IconMessageForward,
     },
   ],
 };
 
-export function AppSidebar({
+export function AdminSidebar({
   variant = "sidebar",
 }: {
   variant?: "sidebar" | "floating" | "inset";
@@ -48,8 +52,8 @@ export function AppSidebar({
     <Sidebar variant={variant}>
       <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            AI Coaches
+          <span className="text-lg font-semibold bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
+            Admin Panel
           </span>
         </div>
         <SidebarTrigger />
@@ -61,7 +65,7 @@ export function AppSidebar({
               <SidebarMenuButton
                 asChild
                 isActive={pathname === item.url}
-                className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5 transition-all duration-200"
+                className="data-[active=true]:bg-red-500/10 data-[active=true]:text-red-500 hover:bg-red-500/5 transition-all duration-200"
               >
                 <Link href={item.url}>
                   <item.icon className="size-4" />
