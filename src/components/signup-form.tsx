@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,19 +23,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRegisterEmail } from "@/services/auth/auth.hooks";
+import { toast } from "sonner";
+import { passwordValidationSchema } from "@/services/common/common.schema";
 
+// Use service-defined validation for consistency
 const signupSchema = z
   .object({
-    name: z.string().min(2, {
+    name: z.string({ required_error: "Name is required" }).min(2, {
       message: "Name must be at least 2 characters.",
     }),
-    email: z.string().email({
-      message: "Please enter a valid email address.",
-    }),
-    password: z.string().min(8, {
-      message: "Password must be at least 8 characters.",
-    }),
-    confirmPassword: z.string(),
+    email: z
+      .string({ required_error: "Email is required" })
+      .email({ message: "Email is not valid" }),
+    password: passwordValidationSchema("Password"),
+    confirmPassword: passwordValidationSchema("Confirm password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -46,6 +50,9 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const [isFormDisabled, setIsFormDisabled] = useState(false);
+
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -56,9 +63,30 @@ export function SignUpForm({
     },
   });
 
+  const registerMutation = useRegisterEmail({
+    onSuccess: (response) => {
+      if (response.success) {
+        toast.success(response.message || "Account created successfully");
+        // Redirect to login page after successful registration
+        router.push("/login");
+      } else {
+        toast.error(response.message || "Registration failed");
+        setIsFormDisabled(false);
+      }
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Registration failed. Please try again.";
+      toast.error(errorMessage);
+      setIsFormDisabled(false);
+    },
+  });
+
   function onSubmit(data: SignUpFormValues) {
-    // Add signup logic here
-    console.log(data);
+    setIsFormDisabled(true);
+    // Remove confirmPassword field as it's not expected by the API
+    const { ...registrationData } = data;
+    registerMutation.mutate(registrationData);
   }
 
   return (
@@ -80,7 +108,11 @@ export function SignUpForm({
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input
+                        placeholder="John Doe"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -93,7 +125,11 @@ export function SignUpForm({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m@example.com" {...field} />
+                      <Input
+                        placeholder="m@example.com"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,9 +142,17 @@ export function SignUpForm({
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
+                    <p className="text-xs text-muted-foreground">
+                      Password must be at least 8 characters with lowercase,
+                      uppercase, number and symbol.
+                    </p>
                   </FormItem>
                 )}
               />
@@ -119,14 +163,22 @@ export function SignUpForm({
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isFormDisabled || registerMutation.isPending}
+              >
+                {registerMutation.isPending ? "Creating account..." : "Sign Up"}
               </Button>
               <div className="mt-4 text-center text-sm">
                 Already have an account?{" "}

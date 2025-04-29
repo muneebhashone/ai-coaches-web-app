@@ -41,6 +41,8 @@ export const authKeys = {
 export const useGetMe = (options?: UseQueryOptions<IGetMeResponse>) => {
   const { token } = useAuthStore();
 
+  console.log({ token });
+
   return useQuery({
     ...options,
     queryKey: authKeys.me(token),

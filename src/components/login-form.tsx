@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,14 +23,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useLoginEmail } from "@/services/auth/auth.hooks";
+import type { LoginUserByEmailSchemaType } from "@/services/auth/auth.schema";
+import useAuthStore from "@/stores/useAuthStore";
+import { toast } from "sonner";
 
+// Use the same schema as defined in auth service for consistency
 const loginSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email({ message: "Email is not valid" }),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -37,6 +42,10 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const [isFormDisabled, setIsFormDisabled] = useState(false);
+  const { setToken } = useAuthStore();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -45,9 +54,29 @@ export function LoginForm({
     },
   });
 
+  const loginMutation = useLoginEmail({
+    onSuccess: (response) => {
+      if (response.success) {
+        // Store the token in auth store
+        setToken(response.data.token);
+
+        toast.success(response.message || "Login successful");
+        router.push("/dashboard");
+      } else {
+        // Even with success:false in response, show the error message
+        toast.error(response.message || "Login failed");
+        setIsFormDisabled(false);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || "Login failed. Please try again.");
+      setIsFormDisabled(false);
+    },
+  });
+
   function onSubmit(data: LoginFormValues) {
-    // Add login logic here
-    console.log(data);
+    setIsFormDisabled(true);
+    loginMutation.mutate(data as LoginUserByEmailSchemaType);
   }
 
   return (
@@ -69,7 +98,11 @@ export function LoginForm({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m@example.com" {...field} />
+                      <Input
+                        placeholder="m@example.com"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -90,15 +123,23 @@ export function LoginForm({
                       </a>
                     </div>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        {...field}
+                        disabled={isFormDisabled}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isFormDisabled || loginMutation.isPending}
+                >
+                  {loginMutation.isPending ? "Logging in..." : "Login"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
