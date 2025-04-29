@@ -25,7 +25,7 @@ export interface ISession {
   endTime?: string;
   status: SessionStatus;
   messages: IMessage[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   feedback?: IFeedback;
   createdAt: string;
   updatedAt: string;
