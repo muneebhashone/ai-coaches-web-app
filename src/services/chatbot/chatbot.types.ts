@@ -23,7 +23,7 @@ export interface IChatbot {
   persona: IChatbotPersona;
   status: ChatbotStatus;
   apiSettings: IChatbotApiSettings;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
