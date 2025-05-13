@@ -8,7 +8,7 @@ import {
   IconPlus,
   IconX,
   IconEdit,
-  IconTrash,
+  // IconTrash,
   IconFolder,
 } from "@tabler/icons-react";
 import {
@@ -161,12 +161,12 @@ export function FileTaggingList({ files, language }: FileTaggingListProps) {
                           {language === "english" ? "Edit" : "편집"}
                         </span>
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      {/* <Button variant="ghost" size="icon">
                         <IconTrash className="h-4 w-4" />
                         <span className="sr-only">
                           {language === "english" ? "Delete" : "삭제"}
                         </span>
-                      </Button>
+                      </Button> */}
                     </div>
                   </TableCell>
                 </TableRow>

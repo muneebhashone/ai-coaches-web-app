@@ -126,6 +126,7 @@ export function ChatbotTestConsole() {
 
   const handleCreateTestClient = () => {
     createClient({
+      chatbotId: selectedChatbotId || "",
       name: "Test Client",
       email: "test@example.com",
       metadata: {

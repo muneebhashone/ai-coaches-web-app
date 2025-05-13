@@ -20,6 +20,7 @@ export const createChatbotSchema = z.object({
   description: z.string().optional(),
   persona: personaSchema.optional(),
   apiSettings: apiSettingsSchema.optional(),
+  knowledgeBases: z.array(z.string()).optional(),
   metadata: z.record(z.any()).optional(),
 });
 
@@ -36,6 +37,7 @@ export const updateChatbotSchema = z.object({
     .optional(),
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   apiSettings: apiSettingsSchema.optional(),
+  knowledgeBases: z.array(z.string()).optional(),
   metadata: z.record(z.any()).optional(),
 });
 
