@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedCard } from "@/components/ui/animated-card";
-import { SessionSchedulerPanel } from "@/components/sessions/session-scheduler-panel";
+// import { SessionSchedulerPanel } from "@/components/sessions/session-scheduler-panel";
 import {
   CardContent,
   CardDescription,
@@ -39,88 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-
-// Mock user data (would be fetched from API in a real application)
-const MOCK_USERS = [
-  {
-    id: "1",
-    name: "Sara Johnson",
-    age: 32,
-    occupation: "Marketing Manager",
-    program: "Stress Reduction Program",
-    status: "active",
-    progress: 72,
-    lastActivity: "2025-04-10T10:30:00",
-    email: "sara.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-    joinDate: "2025-01-15",
-    sessions: [
-      {
-        id: "s1",
-        date: "2025-04-10T10:30:00",
-        type: "human",
-        title: "Initial Assessment",
-        summary: "Discussed stress triggers and established baseline goals.",
-        emotionalState: "anxious",
-      },
-      {
-        id: "s2",
-        date: "2025-04-03T14:45:00",
-        type: "chatbot",
-        title: "Daily Check-in",
-        summary: "Reported improved sleep and reduced anxiety.",
-        emotionalState: "calm",
-      },
-      {
-        id: "s3",
-        date: "2025-03-27T09:15:00",
-        type: "human",
-        title: "Progress Review",
-        summary:
-          "Reviewed mindfulness techniques and adjusted practice schedule.",
-        emotionalState: "positive",
-      },
-    ],
-    goals: [
-      { id: "g1", title: "Reduce daily stress levels", progress: 65 },
-      { id: "g2", title: "Improve sleep quality", progress: 80 },
-      { id: "g3", title: "Practice mindfulness daily", progress: 50 },
-    ],
-    emotionalAnalysis: {
-      weekly: {
-        positive: 45,
-        neutral: 30,
-        negative: 25,
-      },
-      trend: "improving",
-    },
-    notes:
-      "Sara has been making consistent progress. Focus on work-related stressors in upcoming sessions.",
-    chatbotInstructions:
-      "Ask about sleep quality daily. Remind about mindfulness practice in morning check-ins.",
-    timezone: "America/New_York",
-    scheduledSessions: {
-      chatbot: {
-        time: "08:00",
-        days: ["Monday", "Wednesday", "Friday"],
-        enabled: true,
-      },
-      human: {
-        upcoming: [
-          {
-            date: "2025-04-17T15:00:00",
-            title: "Weekly Progress Review",
-          },
-          {
-            date: "2025-04-24T15:00:00",
-            title: "Stress Management Techniques",
-          },
-        ],
-      },
-    },
-  },
-  // Other mock users...
-];
+import { useClient } from "@/services/client/client.hooks";
 
 // Function to format date
 const formatDate = (dateString: string) => {
@@ -140,6 +59,10 @@ export default function UserDetailPage() {
   const [chatbotInstructions, setChatbotInstructions] = useState("");
   const [expandedSessions, setExpandedSessions] = useState<string[]>([]);
 
+  // Fetch client/user data
+  const { data: clientResponse, isLoading } = useClient(userId);
+  const client = clientResponse?.data;
+
   // Function to toggle session expansion
   const toggleSessionExpansion = (sessionId: string) => {
     setExpandedSessions((prev) =>
@@ -149,18 +72,25 @@ export default function UserDetailPage() {
     );
   };
 
-  // Find user by ID (in a real app, this would be fetched from API)
-  const user = MOCK_USERS.find((u) => u.id === userId);
-
-  // Set initial values for notes and instructions when user is loaded
+  // Set initial values for notes and instructions when client is loaded
   useEffect(() => {
-    if (user) {
-      setNotes(user.notes);
-      setChatbotInstructions(user.chatbotInstructions);
+    if (client?.metadata) {
+      setNotes((client.metadata.notes as string) || "");
+      setChatbotInstructions(
+        (client.metadata.chatbotInstructions as string) || ""
+      );
     }
-  }, [user]);
+  }, [client]);
 
-  if (!user) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!client) {
     return (
       <div className="flex items-center justify-center h-96">
         <p>
@@ -172,6 +102,26 @@ export default function UserDetailPage() {
     );
   }
 
+  // Get client metadata with defaults
+  const clientMetadata = client.metadata || {};
+  const clientStatus = (clientMetadata.status as string) || "active";
+  const clientProgram = (clientMetadata.program as string) || "No Program";
+  const clientProgress = Number(clientMetadata.progress) || 0;
+  const clientAge = (clientMetadata.age as string) || "";
+  const clientOccupation = (clientMetadata.occupation as string) || "";
+  const clientSessions = (clientMetadata.sessions as any[]) || [];
+  const clientGoals = (clientMetadata.goals as any[]) || [];
+  // const clientEmotionalAnalysis = clientMetadata.emotionalAnalysis || {
+  //   weekly: { positive: 0, neutral: 0, negative: 0 },
+  //   trend: "stable",
+  // };
+  const clientTimezone =
+    (clientMetadata.timezone as string) || "America/New_York";
+  // const clientScheduledSessions = clientMetadata.scheduledSessions || {
+  //   chatbot: { time: "08:00", days: [], enabled: false },
+  //   human: { upcoming: [] },
+  // };
+
   return (
     <>
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 justify-between">
@@ -182,12 +132,12 @@ export default function UserDetailPage() {
             asChild
             className="h-7 w-7 rounded-full"
           >
-            <Link href="/users">
+            <Link href="/dashboard/users">
               <IconArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <IconUserCircle className="h-5 w-5 page-heading-icon" />
-          <h1 className="page-heading-text">{user.name}</h1>
+          <h1 className="page-heading-text">{client.name}</h1>
         </div>
         <div className="flex items-center gap-2">
           <Toggle
@@ -217,7 +167,7 @@ export default function UserDetailPage() {
                 {language === "english" ? "Active Program" : "활성 프로그램"}
               </p>
               <h2 className="text-lg font-medium text-primary">
-                {user.program}
+                {clientProgram}
               </h2>
             </div>
           </div>
@@ -226,9 +176,9 @@ export default function UserDetailPage() {
               <p className="text-sm text-muted-foreground">
                 {language === "english" ? "Progress" : "진행도"}
               </p>
-              <p className="font-medium">{user.progress}%</p>
+              <p className="font-medium">{clientProgress}%</p>
             </div>
-            <Progress value={user.progress} className="h-2 w-24" />
+            <Progress value={clientProgress} className="h-2 w-24" />
             <Button variant="outline" size="sm" className="ml-2">
               {language === "english" ? "View Details" : "세부 정보 보기"}
             </Button>
@@ -245,10 +195,10 @@ export default function UserDetailPage() {
                 {language === "english" ? "User Information" : "사용자 정보"}
               </CardTitle>
               <Badge
-                variant={user.status === "active" ? "default" : "secondary"}
+                variant={clientStatus === "active" ? "default" : "secondary"}
                 className="px-2 py-1"
               >
-                {user.status === "active"
+                {clientStatus === "active"
                   ? language === "english"
                     ? "Active"
                     : "활성"
@@ -275,10 +225,13 @@ export default function UserDetailPage() {
                       ? "Name & Occupation"
                       : "이름 및 직업"}
                   </p>
-                  <p className="text-sm font-medium">{user.name}</p>
+                  <p className="text-sm font-medium">{client.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {user.occupation}, {user.age}{" "}
-                    {language === "english" ? "years old" : "세"}
+                    {clientOccupation}
+                    {clientAge &&
+                      `, ${clientAge} ${
+                        language === "english" ? "years old" : "세"
+                      }`}
                   </p>
                 </div>
               </div>
@@ -290,7 +243,9 @@ export default function UserDetailPage() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <IconMessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                    <p className="text-sm font-medium truncate">{user.email}</p>
+                    <p className="text-sm font-medium truncate">
+                      {client.email}
+                    </p>
                   </div>
                 </div>
                 <div className="border rounded-md p-2">
@@ -299,7 +254,9 @@ export default function UserDetailPage() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <IconMicrophone className="h-3.5 w-3.5 text-muted-foreground" />
-                    <p className="text-sm font-medium">{user.phone}</p>
+                    <p className="text-sm font-medium">
+                      {client.phoneNumber || "-"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -310,7 +267,7 @@ export default function UserDetailPage() {
                     {language === "english" ? "Member Since" : "가입일"}
                   </p>
                   <p className="text-sm font-medium">
-                    {formatDate(user.joinDate)}
+                    {formatDate(client.createdAt)}
                   </p>
                 </div>
                 <div>
@@ -320,7 +277,7 @@ export default function UserDetailPage() {
                   <div className="flex items-center gap-1">
                     <IconCalendarEvent className="h-3.5 w-3.5 text-muted-foreground" />
                     <p className="text-sm font-medium">
-                      {user.timezone.replace("_", " ")}
+                      {clientTimezone.replace("_", " ")}
                     </p>
                   </div>
                 </div>
@@ -337,7 +294,9 @@ export default function UserDetailPage() {
                 {language === "english" ? "Goal Progress" : "목표 진행도"}
               </CardTitle>
               <Badge variant="outline" className="px-2 py-0.5">
-                {language === "english" ? "3 Goals" : "3개 목표"}
+                {language === "english"
+                  ? `${clientGoals.length} Goals`
+                  : `${clientGoals.length}개 목표`}
               </Badge>
             </div>
             <CardDescription>
@@ -348,86 +307,103 @@ export default function UserDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {user.goals.map((goal, index) => {
-                // Determine status and color based on progress
-                const getStatusInfo = (progress: number) => {
-                  if (progress < 30)
+              {clientGoals.length > 0 ? (
+                clientGoals.map((goal, index) => {
+                  // Determine status and color based on progress
+                  const getStatusInfo = (progress: number) => {
+                    if (progress < 30)
+                      return {
+                        status: language === "english" ? "At Risk" : "위험",
+                        color: "text-destructive",
+                        bgColor: "bg-destructive/10",
+                      };
+                    if (progress < 70)
+                      return {
+                        status:
+                          language === "english" ? "In Progress" : "진행 중",
+                        color: "text-amber-500",
+                        bgColor: "bg-amber-100/50",
+                      };
                     return {
-                      status: language === "english" ? "At Risk" : "위험",
-                      color: "text-destructive",
-                      bgColor: "bg-destructive/10",
+                      status: language === "english" ? "On Track" : "정상",
+                      color: "text-green-600",
+                      bgColor: "bg-green-100/50",
                     };
-                  if (progress < 70)
-                    return {
-                      status:
-                        language === "english" ? "In Progress" : "진행 중",
-                      color: "text-amber-500",
-                      bgColor: "bg-amber-100/50",
-                    };
-                  return {
-                    status: language === "english" ? "On Track" : "정상",
-                    color: "text-green-600",
-                    bgColor: "bg-green-100/50",
                   };
-                };
 
-                const { status, color, bgColor } = getStatusInfo(goal.progress);
+                  const { status, color, bgColor } = getStatusInfo(
+                    goal.progress
+                  );
 
-                return (
-                  <div key={goal.id} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-6 h-6 rounded-full flex items-center justify-center ${bgColor}`}
-                        >
-                          <span className="text-xs font-medium">
-                            {index + 1}
+                  return (
+                    <div key={goal.id || index} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center ${bgColor}`}
+                          >
+                            <span className="text-xs font-medium">
+                              {index + 1}
+                            </span>
+                          </div>
+                          <span className="text-sm font-medium">
+                            {goal.title}
                           </span>
                         </div>
-                        <span className="text-sm font-medium">
-                          {goal.title}
+                        <span className={`text-sm font-medium ${color}`}>
+                          {goal.progress}%
                         </span>
                       </div>
-                      <span className={`text-sm font-medium ${color}`}>
-                        {goal.progress}%
-                      </span>
+                      <div className="relative">
+                        <Progress
+                          value={goal.progress}
+                          className={`h-2 ${
+                            goal.progress < 30
+                              ? "bg-destructive/20"
+                              : goal.progress < 70
+                              ? "bg-amber-100"
+                              : "bg-green-100"
+                          }`}
+                        />
+                        <span
+                          className={`absolute right-0 -bottom-4 text-xs ${color}`}
+                        >
+                          {status}
+                        </span>
+                      </div>
                     </div>
-                    <div className="relative">
-                      <Progress
-                        value={goal.progress}
-                        className={`h-2 ${
-                          goal.progress < 30
-                            ? "bg-destructive/20"
-                            : goal.progress < 70
-                            ? "bg-amber-100"
-                            : "bg-green-100"
-                        }`}
-                      />
-                      <span
-                        className={`absolute right-0 -bottom-4 text-xs ${color}`}
-                      >
-                        {status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6">
+                  <p className="text-sm text-muted-foreground">
+                    {language === "english"
+                      ? "No goals defined yet"
+                      : "아직 정의된 목표가 없습니다"}
+                  </p>
+                  <Button variant="outline" size="sm" className="mt-3">
+                    {language === "english" ? "Add First Goal" : "첫 목표 추가"}
+                  </Button>
+                </div>
+              )}
             </div>
 
-            <div className="mt-6 pt-3 border-t flex justify-between items-center">
-              <div>
-                <p className="text-xs text-muted-foreground">
-                  {language === "english"
-                    ? "Overall Completion"
-                    : "전체 완료율"}
-                </p>
-                <p className="text-sm font-medium">{user.progress}%</p>
+            {clientGoals.length > 0 && (
+              <div className="mt-6 pt-3 border-t flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    {language === "english"
+                      ? "Overall Completion"
+                      : "전체 완료율"}
+                  </p>
+                  <p className="text-sm font-medium">{clientProgress}%</p>
+                </div>
+                <Button variant="outline" size="sm" className="text-xs h-8">
+                  <IconListCheck className="h-3.5 w-3.5 mr-1" />
+                  {language === "english" ? "Manage Goals" : "목표 관리"}
+                </Button>
               </div>
-              <Button variant="outline" size="sm" className="text-xs h-8">
-                <IconListCheck className="h-3.5 w-3.5 mr-1" />
-                {language === "english" ? "Manage Goals" : "목표 관리"}
-              </Button>
-            </div>
+            )}
           </CardContent>
         </AnimatedCard>
 
@@ -438,11 +414,11 @@ export default function UserDetailPage() {
               <CardTitle>
                 {language === "english" ? "Last Session" : "마지막 세션"}
               </CardTitle>
-              {user.sessions.length > 0 && (
+              {clientSessions.length > 0 && (
                 <div className="flex items-center gap-1">
                   <IconCalendarEvent className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
-                    {formatDate(user.sessions[0].date)}
+                    {formatDate(clientSessions[0].date)}
                   </span>
                 </div>
               )}
@@ -454,20 +430,20 @@ export default function UserDetailPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {user.sessions.length > 0 ? (
+            {clientSessions.length > 0 ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div
                     className={`p-2 rounded-full ${
-                      user.sessions[0].type === "human"
+                      clientSessions[0].type === "human"
                         ? "bg-blue-100"
                         : "bg-purple-100"
                     }`}
                   >
-                    {user.sessions[0].type === "human" ? (
+                    {clientSessions[0].type === "human" ? (
                       <IconUser
                         className={`h-5 w-5 ${
-                          user.sessions[0].type === "human"
+                          clientSessions[0].type === "human"
                             ? "text-blue-600"
                             : "text-purple-600"
                         }`}
@@ -475,7 +451,7 @@ export default function UserDetailPage() {
                     ) : (
                       <IconRobot
                         className={`h-5 w-5 ${
-                          user.sessions[0].type === "human"
+                          clientSessions[0].type === "human"
                             ? "text-blue-600"
                             : "text-purple-600"
                         }`}
@@ -483,9 +459,9 @@ export default function UserDetailPage() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-medium">{user.sessions[0].title}</h3>
+                    <h3 className="font-medium">{clientSessions[0].title}</h3>
                     <Badge variant="outline" className="mt-1">
-                      {user.sessions[0].type === "human"
+                      {clientSessions[0].type === "human"
                         ? language === "english"
                           ? "Human Coach"
                           : "인간 코치"
@@ -500,16 +476,16 @@ export default function UserDetailPage() {
                   <div className="flex items-start gap-2 mb-2">
                     <div
                       className={`mt-0.5 p-1 rounded-full ${
-                        user.sessions[0].emotionalState === "anxious"
+                        clientSessions[0].emotionalState === "anxious"
                           ? "bg-red-100"
-                          : user.sessions[0].emotionalState === "calm"
+                          : clientSessions[0].emotionalState === "calm"
                           ? "bg-green-100"
                           : "bg-blue-100"
                       }`}
                     >
-                      {user.sessions[0].emotionalState === "anxious" ? (
+                      {clientSessions[0].emotionalState === "anxious" ? (
                         <IconMoodSad className="h-3 w-3 text-red-500" />
-                      ) : user.sessions[0].emotionalState === "calm" ? (
+                      ) : clientSessions[0].emotionalState === "calm" ? (
                         <IconMoodNeutral className="h-3 w-3 text-green-500" />
                       ) : (
                         <IconMoodSmile className="h-3 w-3 text-blue-500" />
@@ -520,11 +496,11 @@ export default function UserDetailPage() {
                         ? "Emotional State: "
                         : "감정 상태: "}
                       <span className="font-medium">
-                        {user.sessions[0].emotionalState === "anxious"
+                        {clientSessions[0].emotionalState === "anxious"
                           ? language === "english"
                             ? "Anxious"
                             : "불안"
-                          : user.sessions[0].emotionalState === "calm"
+                          : clientSessions[0].emotionalState === "calm"
                           ? language === "english"
                             ? "Calm"
                             : "평온"
@@ -534,7 +510,7 @@ export default function UserDetailPage() {
                       </span>
                     </p>
                   </div>
-                  <p className="text-sm">{user.sessions[0].summary}</p>
+                  <p className="text-sm">{clientSessions[0].summary}</p>
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
@@ -549,7 +525,7 @@ export default function UserDetailPage() {
                       : "전체 노트 보기"}
                   </Button>
                   <Link
-                    href={`/sessions/${user.sessions[0].id}`}
+                    href={`/sessions/${clientSessions[0].id}`}
                     className="text-xs text-primary hover:underline flex items-center"
                   >
                     {language === "english"
@@ -700,13 +676,13 @@ export default function UserDetailPage() {
                   <div className="text-sm">
                     <p className="mb-2">
                       {language === "english"
-                        ? `Total sessions: ${user.sessions.length}`
-                        : `총 세션: ${user.sessions.length}`}
+                        ? `Total sessions: ${clientSessions.length}`
+                        : `총 세션: ${clientSessions.length}`}
                     </p>
                     <p className="mb-2">
                       {language === "english"
-                        ? `Program completion: ${user.progress}%`
-                        : `프로그램 완료: ${user.progress}%`}
+                        ? `Program completion: ${clientProgress}%`
+                        : `프로그램 완료: ${clientProgress}%`}
                     </p>
                     <p>
                       {language === "english"
@@ -738,7 +714,7 @@ export default function UserDetailPage() {
                   {language === "english" ? "Emotional Analysis" : "감정 분석"}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              {/* <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col items-center">
                     <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-2">
@@ -748,7 +724,7 @@ export default function UserDetailPage() {
                       {language === "english" ? "Positive" : "긍정적"}
                     </p>
                     <p className="text-2xl font-bold">
-                      {user.emotionalAnalysis.weekly.positive}%
+                      {clientEmotionalAnalysis?.weekly?.positive || 0}%
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
@@ -759,7 +735,7 @@ export default function UserDetailPage() {
                       {language === "english" ? "Neutral" : "중립적"}
                     </p>
                     <p className="text-2xl font-bold">
-                      {user.emotionalAnalysis.weekly.neutral}%
+                      {clientEmotionalAnalysis?.weekly?.neutral || 0}%
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
@@ -770,28 +746,28 @@ export default function UserDetailPage() {
                       {language === "english" ? "Negative" : "부정적"}
                     </p>
                     <p className="text-2xl font-bold">
-                      {user.emotionalAnalysis.weekly.negative}%
+                      {clientEmotionalAnalysis?.weekly?.negative || 0}%
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 text-center">
                   <Badge
                     variant={
-                      user.emotionalAnalysis.trend === "improving"
+                      clientEmotionalAnalysis.trend === "improving"
                         ? "default"
                         : "secondary"
                     }
                   >
                     {language === "english"
-                      ? user.emotionalAnalysis.trend === "improving"
+                      ? clientEmotionalAnalysis.trend === "improving"
                         ? "Improving"
                         : "Declining"
-                      : user.emotionalAnalysis.trend === "improving"
+                      : clientEmotionalAnalysis.trend === "improving"
                       ? "개선 중"
                       : "악화 중"}
                   </Badge>
                 </div>
-              </CardContent>
+              </CardContent> */}
             </AnimatedCard>
 
             {/* Manual Message Sender */}
@@ -836,7 +812,7 @@ export default function UserDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {user.sessions.map((session) => (
+                  {clientSessions.map((session) => (
                     <div
                       key={session.id}
                       className="border rounded-md overflow-hidden"
@@ -981,12 +957,12 @@ export default function UserDetailPage() {
                   : "챗봇 체크인 및 인간 코칭 세션 일정 관리"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               <SessionSchedulerPanel
                 language={language}
-                timezone={user.timezone}
-                chatbotSchedule={user.scheduledSessions.chatbot}
-                upcomingSessions={user.scheduledSessions.human.upcoming.map(
+                timezone={clientTimezone}
+                chatbotSchedule={clientScheduledSessions.chatbot}
+                upcomingSessions={clientScheduledSessions.human.upcoming.map(
                   (session, index) => ({
                     id: `upcoming-${index}`,
                     date: session.date,
@@ -1006,7 +982,7 @@ export default function UserDetailPage() {
                   // In a real app, this would remove from the user's upcoming sessions
                 }}
               />
-            </CardContent>
+            </CardContent> */}
           </AnimatedCard>
         </TabsContent>
 
@@ -1027,7 +1003,7 @@ export default function UserDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {user.goals.map((goal) => (
+                  {clientGoals.map((goal) => (
                     <div key={goal.id} className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">
@@ -1111,8 +1087,8 @@ export default function UserDetailPage() {
                       </h4>
                       <p className="text-xs text-muted-foreground">
                         {language === "english"
-                          ? `${user.progress}% complete`
-                          : `${user.progress}% 완료`}
+                          ? `${clientProgress}% complete`
+                          : `${clientProgress}% 완료`}
                       </p>
                     </div>
                     <div className="text-right">
@@ -1128,7 +1104,7 @@ export default function UserDetailPage() {
                   </div>
                   <div className="relative pt-2">
                     <Progress
-                      value={user.progress}
+                      value={clientProgress}
                       className="h-2 bg-primary/10"
                     />
                     <div

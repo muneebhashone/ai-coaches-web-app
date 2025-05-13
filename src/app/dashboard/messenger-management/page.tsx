@@ -13,6 +13,7 @@ import { MessageSender } from "@/components/messenger-management/message-sender"
 import { TemplateManager } from "@/components/messenger-management/template-manager";
 import { ChatbotTestConsole } from "@/components/messenger-management/chatbot-test-console";
 import { ExportTools } from "@/components/messenger-management/export-tools";
+import { ChatbotManager } from "@/components/messenger-management/chatbot-manager";
 
 export default function MessengerManagementPage() {
   return (
@@ -29,10 +30,11 @@ export default function MessengerManagementPage() {
       </div>
 
       <Tabs defaultValue="connections">
-        <TabsList className="grid grid-cols-3 lg:w-[400px]">
+        <TabsList className="grid grid-cols-4 lg:w-[500px]">
           <TabsTrigger value="connections">Connections</TabsTrigger>
           <TabsTrigger value="messages">Messages</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="chatbot">Chatbot</TabsTrigger>
         </TabsList>
 
         <TabsContent value="connections" className="space-y-4 mt-4">
@@ -58,6 +60,10 @@ export default function MessengerManagementPage() {
           <Card>
             <TemplateManager />
           </Card>
+        </TabsContent>
+
+        <TabsContent value="chatbot" className="mt-4">
+          <ChatbotManager />
         </TabsContent>
       </Tabs>
     </div>

@@ -29,109 +29,45 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-
-// Mock data for users with updated fields
-const MOCK_USERS = [
-  {
-    id: "1",
-    name: "Sara Johnson",
-    age: 32,
-    occupation: "Marketing Manager",
-    program: "Stress Reduction Program",
-    status: "active",
-    progress: 72,
-    sessions: 8,
-  },
-  {
-    id: "2",
-    name: "David Kim",
-    age: 28,
-    occupation: "Software Engineer",
-    program: "Career Coaching",
-    status: "active",
-    progress: 45,
-    sessions: 5,
-  },
-  {
-    id: "3",
-    name: "Michael Chen",
-    age: 41,
-    occupation: "Finance Director",
-    program: "Productivity Coaching",
-    status: "active",
-    progress: 89,
-    sessions: 12,
-  },
-  {
-    id: "4",
-    name: "Emma Watson",
-    age: 35,
-    occupation: "HR Specialist",
-    program: "Stress Reduction Program",
-    status: "inactive",
-    progress: 30,
-    sessions: 3,
-  },
-  {
-    id: "5",
-    name: "James Lee",
-    age: 45,
-    occupation: "Project Manager",
-    program: "Career Coaching",
-    status: "active",
-    progress: 65,
-    sessions: 7,
-  },
-  {
-    id: "6",
-    name: "Sophia Park",
-    age: 29,
-    occupation: "UX Designer",
-    program: "Productivity Coaching",
-    status: "active",
-    progress: 52,
-    sessions: 6,
-  },
-  {
-    id: "7",
-    name: "Robert Johnson",
-    age: 38,
-    occupation: "Sales Director",
-    program: "Stress Reduction Program",
-    status: "inactive",
-    progress: 18,
-    sessions: 2,
-  },
-];
+import { useClients } from "@/services/client/client.hooks";
+import type { IClient } from "@/services/client/client.types";
 
 export default function UsersPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchString, setSearchString] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [programFilter, setProgramFilter] = useState<string>("all");
 
-  // Filter users based on search query and filters
-  const filteredUsers = MOCK_USERS.filter((user) => {
-    // Search filter
-    const matchesSearch = user.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  // Fetch clients using the client hook
+  const { data: clientsResponse, isLoading } = useClients({
+    searchString,
+    limit: 50,
+  });
 
-    // Status filter
+  // Use the data from API or empty array if not available
+  const clients = clientsResponse?.data?.results || [];
+
+  // Filter clients/users based on filters (status and program would need to be added to metadata)
+  const filteredClients = clients.filter((client: IClient) => {
+    // Status filter would be in metadata if available
+    const clientStatus = (client.metadata?.status as string) || "active";
+    const clientProgram = (client.metadata?.program as string) || "";
+
     const matchesStatus =
-      statusFilter === "all" || user.status === statusFilter;
-
-    // Program filter
+      statusFilter === "all" || clientStatus === statusFilter;
     const matchesProgram =
-      programFilter === "all" || user.program === programFilter;
+      programFilter === "all" || clientProgram === programFilter;
 
-    return matchesSearch && matchesStatus && matchesProgram;
+    return matchesStatus && matchesProgram;
   });
 
   // Get unique programs for filter dropdown
   const uniquePrograms = Array.from(
-    new Set(MOCK_USERS.map((user) => user.program))
+    new Set(
+      clients
+        .map((client: IClient) => client.metadata?.program as string)
+        .filter(Boolean)
+    )
   );
 
   return (
@@ -167,8 +103,8 @@ export default function UsersPage() {
               language === "english" ? "Search users..." : "사용자 검색..."
             }
             className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchString}
+            onChange={(e) => setSearchString(e.target.value)}
           />
         </div>
         <div className="flex gap-2">
@@ -213,69 +149,86 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{language === "english" ? "Name" : "이름"}</TableHead>
-              <TableHead>{language === "english" ? "Age" : "나이"}</TableHead>
-              <TableHead>
-                {language === "english" ? "Occupation" : "직업"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Sessions" : "세션"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Goal Progress" : "목표 진행도"}
-              </TableHead>
-              <TableHead>
-                {language === "english" ? "Status" : "상태"}
-              </TableHead>
-              <TableHead className="text-right">
-                {language === "english" ? "Actions" : "작업"}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.age}</TableCell>
-                <TableCell>{user.occupation}</TableCell>
-                <TableCell>{user.sessions}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Progress value={user.progress} className="h-2 w-[100px]" />
-                    <span className="text-xs text-muted-foreground">
-                      {user.progress}%
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={user.status === "active" ? "default" : "secondary"}
-                  >
-                    {user.status === "active"
-                      ? language === "english"
-                        ? "Active"
-                        : "활성"
-                      : language === "english"
-                      ? "Inactive"
-                      : "비활성"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button size="sm" asChild>
-                    <Link href={`/users/${user.id}`}>
-                      {language === "english" ? "View" : "보기"}
-                    </Link>
-                  </Button>
-                </TableCell>
+      {isLoading ? (
+        <div className="flex justify-center p-8">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>
+                  {language === "english" ? "Name" : "이름"}
+                </TableHead>
+                <TableHead>
+                  {language === "english" ? "Email" : "이메일"}
+                </TableHead>
+                <TableHead>
+                  {language === "english" ? "Phone" : "전화번호"}
+                </TableHead>
+                <TableHead>
+                  {language === "english" ? "Joined" : "가입일"}
+                </TableHead>
+                <TableHead>
+                  {language === "english" ? "Status" : "상태"}
+                </TableHead>
+                <TableHead className="text-right">
+                  {language === "english" ? "Actions" : "작업"}
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredClients.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    {language === "english"
+                      ? "No users found"
+                      : "사용자를 찾을 수 없습니다"}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredClients.map((client: IClient) => (
+                  <TableRow key={client._id}>
+                    <TableCell className="font-medium">{client.name}</TableCell>
+                    <TableCell>{client.email}</TableCell>
+                    <TableCell>{client.phoneNumber || "-"}</TableCell>
+                    <TableCell>
+                      {new Date(client.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          ((client.metadata?.status as string) || "active") ===
+                          "active"
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {((client.metadata?.status as string) || "active") ===
+                        "active"
+                          ? language === "english"
+                            ? "Active"
+                            : "활성"
+                          : language === "english"
+                          ? "Inactive"
+                          : "비활성"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" asChild>
+                        <Link href={`/dashboard/users/${client._id}`}>
+                          {language === "english" ? "View" : "보기"}
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </>
   );
 }

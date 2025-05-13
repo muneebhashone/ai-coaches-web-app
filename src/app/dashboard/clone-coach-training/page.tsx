@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconBrain,
   IconLanguage,
@@ -32,7 +32,35 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Import knowledge base services
+import {
+  createKnowledgeBase,
+  getKnowledgeBases,
+  getKnowledgeBase,
+  uploadDocumentToKnowledgeBase,
+} from "@/services/knowledge-base";
+import type { IKnowledgeBase } from "@/services/knowledge-base/knowledge-base.types";
 
 // Import existing components
 import { EnhancedFileUpload } from "@/components/knowledge-base/enhanced-file-upload";
@@ -146,53 +174,6 @@ const userData = [
 ];
 
 // Mock data for knowledge base files
-const knowledgeBaseFiles = [
-  {
-    id: "file-1",
-    name: "Stress Management Guide.pdf",
-    type: "PDF",
-    size: "2.4 MB",
-    tags: ["stress", "management", "guide"],
-    program: "Stress Program",
-    uploadDate: "2024-04-10",
-  },
-  {
-    id: "file-2",
-    name: "Mindfulness Techniques.docx",
-    type: "Word",
-    size: "1.8 MB",
-    tags: ["mindfulness", "techniques", "meditation"],
-    program: "Stress Program",
-    uploadDate: "2024-04-12",
-  },
-  {
-    id: "file-3",
-    name: "Sleep Improvement Protocol.pdf",
-    type: "PDF",
-    size: "3.2 MB",
-    tags: ["sleep", "improvement", "protocol"],
-    program: "Sleep Program",
-    uploadDate: "2024-04-15",
-  },
-  {
-    id: "file-4",
-    name: "Nutrition Guidelines.txt",
-    type: "Text",
-    size: "0.5 MB",
-    tags: ["nutrition", "diet", "guidelines"],
-    program: "Wellness Program",
-    uploadDate: "2024-04-08",
-  },
-  {
-    id: "file-5",
-    name: "Exercise Routines.pdf",
-    type: "PDF",
-    size: "4.1 MB",
-    tags: ["exercise", "fitness", "routines"],
-    program: "Wellness Program",
-    uploadDate: "2024-04-05",
-  },
-];
 
 // Mock data for programs
 const programs = [
@@ -223,13 +204,135 @@ export default function CloneCoachTrainingPage() {
   const [language, setLanguage] = useState<"english" | "korean">("english");
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [, setSelectedFiles] = useState<File[]>([]);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("files");
 
+  // Knowledge base state
+  const [knowledgeBases, setKnowledgeBases] = useState<IKnowledgeBase[]>([]);
+  const [activeKnowledgeBase, setActiveKnowledgeBase] =
+    useState<IKnowledgeBase | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [createKBDialogOpen, setCreateKBDialogOpen] = useState(false);
+  const [newKBName, setNewKBName] = useState("");
+  const [newKBDescription, setNewKBDescription] = useState("");
+
+  // Fetch knowledge bases on component mount
+  useEffect(() => {
+    fetchKnowledgeBases();
+  }, []);
+
+  const fetchKnowledgeBases = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getKnowledgeBases();
+      setKnowledgeBases(response.data.results);
+      if (response.data.results.length > 0) {
+        setActiveKnowledgeBase(response.data.results[0]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch knowledge bases:", error);
+      setApiError("Failed to fetch knowledge bases. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchKnowledgeBaseFiles = async () => {
+    if (!activeKnowledgeBase) return;
+
+    setIsLoading(true);
+    try {
+      const response = await getKnowledgeBase(activeKnowledgeBase._id);
+      setActiveKnowledgeBase(response.data);
+    } catch (error) {
+      console.error("Failed to fetch knowledge base details:", error);
+      setApiError("Failed to fetch knowledge base details. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Map API data to UI format
+  const getFormattedKnowledgeBaseFiles = () => {
+    if (!activeKnowledgeBase?.documents?.length) return [];
+
+    return activeKnowledgeBase.documents.map((doc) => ({
+      id: doc.name, // Using name as id since API doesn't seem to provide document IDs
+      name: doc.name,
+      type: doc.mimeType.split("/")[1].toUpperCase(),
+      size: `${(doc.size / (1024 * 1024)).toFixed(1)} MB`,
+      tags: [], // Add tag management functionality later
+      program: "Unassigned", // Add program assignment functionality later
+      uploadDate: new Date(doc.createdAt).toLocaleDateString(),
+    }));
+  };
+
+  const handleCreateKnowledgeBase = async (
+    name: string,
+    description?: string
+  ) => {
+    setIsLoading(true);
+    try {
+      const response = await createKnowledgeBase({ name, description });
+      setKnowledgeBases((prev) => [...prev, response.data]);
+      setActiveKnowledgeBase(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to create knowledge base:", error);
+      setApiError("Failed to create knowledge base. Please try again.");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUploadSubmit = async (files: File[]) => {
+    if (!activeKnowledgeBase) {
+      try {
+        // Create knowledge base if none exists
+        const newKB = await createKnowledgeBase({
+          name: "Main Knowledge Base",
+          description: "Primary knowledge base for coach training",
+        });
+        setActiveKnowledgeBase(newKB.data);
+        await uploadFiles(newKB.data._id, files);
+      } catch (error) {
+        console.error(
+          "Failed to create knowledge base and upload files:",
+          error
+        );
+        setApiError(
+          "Failed to create knowledge base and upload files. Please try again."
+        );
+      }
+    } else {
+      await uploadFiles(activeKnowledgeBase._id, files);
+    }
+  };
+
+  const uploadFiles = async (kbId: string, files: File[]) => {
+    setIsLoading(true);
+    try {
+      // Upload each file to the knowledge base
+      const uploadPromises = files.map((file) =>
+        uploadDocumentToKnowledgeBase(kbId, file)
+      );
+
+      await Promise.all(uploadPromises);
+      // Update knowledge base files display
+      fetchKnowledgeBaseFiles();
+      setUploadDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to upload files:", error);
+      setApiError("Failed to upload files. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleFilesSelected = (files: File[]) => {
-    setSelectedFiles(files);
-    console.log(`Selected ${files.length} files for upload`);
+    console.log(`Selected ${files.length} files`);
   };
 
   const handleInstructionsSubmit = (data: CoachInstructionsData) => {
@@ -237,15 +340,53 @@ export default function CloneCoachTrainingPage() {
     setInstructionsOpen(false);
   };
 
-  // Filter files based on search query
-  const filteredFiles = knowledgeBaseFiles.filter(
-    (file) =>
-      file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      file.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
-      ) ||
-      file.program.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter files based on search query and knowledge base
+  const filteredFiles = getFormattedKnowledgeBaseFiles().filter((file) =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Knowledge Base Selector Component
+  const KnowledgeBaseSelector = () => {
+    return (
+      <div className="mb-4">
+        <label htmlFor="kb-selector" className="block text-sm font-medium mb-1">
+          {language === "english"
+            ? "Active Knowledge Base"
+            : "활성 지식 베이스"}
+        </label>
+        <div className="flex items-center gap-2">
+          <Select
+            value={activeKnowledgeBase?._id || ""}
+            onValueChange={(value) => {
+              const selected = knowledgeBases.find((kb) => kb._id === value);
+              if (selected) setActiveKnowledgeBase(selected);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={
+                  language === "english"
+                    ? "Select a knowledge base"
+                    : "지식 베이스 선택"
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {knowledgeBases.map((kb) => (
+                <SelectItem key={kb._id} value={kb._id}>
+                  {kb.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" onClick={() => setCreateKBDialogOpen(true)}>
+            <IconPlus className="h-4 w-4 mr-2" />
+            {language === "english" ? "New" : "새로 만들기"}
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -271,6 +412,13 @@ export default function CloneCoachTrainingPage() {
       </div>
 
       <div className="grid grid-cols-1  gap-6 mt-6">
+        {/* Loading Indicator */}
+        {isLoading && (
+          <div className="flex justify-center items-center p-4">
+            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+          </div>
+        )}
+
         {/* Main Interface - 2/3 width on large screens */}
         <div className="lg:col-span-2 space-y-6">
           <AnimatedCard>
@@ -334,13 +482,14 @@ export default function CloneCoachTrainingPage() {
                 </TabsList>
 
                 <TabsContent value="files" className="space-y-4">
+                  <KnowledgeBaseSelector />
                   <FileTaggingList files={filteredFiles} language={language} />
                 </TabsContent>
 
                 <TabsContent value="programs" className="space-y-4">
                   <ProgramGrouping
                     programs={programs}
-                    files={knowledgeBaseFiles}
+                    files={filteredFiles}
                     language={language}
                   />
                 </TabsContent>
@@ -425,11 +574,108 @@ export default function CloneCoachTrainingPage() {
             <EnhancedFileUpload
               language={language}
               onFilesSelected={handleFilesSelected}
+              onUploadSubmit={handleUploadSubmit}
               acceptedFileTypes={[".pdf", ".docx", ".doc", ".txt"]}
+              isUploading={isLoading}
             />
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Create Knowledge Base Dialog */}
+      <Dialog open={createKBDialogOpen} onOpenChange={setCreateKBDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {language === "english"
+                ? "Create Knowledge Base"
+                : "지식 베이스 생성"}
+            </DialogTitle>
+            <DialogDescription>
+              {language === "english"
+                ? "Create a new knowledge base for your coach training materials"
+                : "코치 트레이닝 자료를 위한 새 지식 베이스 생성"}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateKnowledgeBase(newKBName, newKBDescription)
+                .then(() => {
+                  setCreateKBDialogOpen(false);
+                  setNewKBName("");
+                  setNewKBDescription("");
+                })
+                .catch(() => {
+                  // Error already handled in handleCreateKnowledgeBase
+                });
+            }}
+          >
+            <div className="space-y-4 py-2">
+              <div>
+                <label
+                  htmlFor="kb-name"
+                  className="block text-sm font-medium mb-1"
+                >
+                  {language === "english" ? "Name" : "이름"}
+                </label>
+                <Input
+                  id="kb-name"
+                  value={newKBName}
+                  onChange={(e) => setNewKBName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="kb-description"
+                  className="block text-sm font-medium mb-1"
+                >
+                  {language === "english" ? "Description" : "설명"}
+                </label>
+                <Input
+                  id="kb-description"
+                  value={newKBDescription}
+                  onChange={(e) => setNewKBDescription(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                    {language === "english" ? "Creating..." : "생성 중..."}
+                  </span>
+                ) : language === "english" ? (
+                  "Create"
+                ) : (
+                  "생성"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Alert Dialog */}
+      {apiError && (
+        <AlertDialog open={!!apiError} onOpenChange={() => setApiError(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {language === "english" ? "Error" : "오류"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>{apiError}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction>
+                {language === "english" ? "Dismiss" : "닫기"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
 
       {/* Coach Instructions Dialog */}
       <CoachInstructionsDialog

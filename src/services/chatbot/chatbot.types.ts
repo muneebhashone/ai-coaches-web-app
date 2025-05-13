@@ -24,6 +24,7 @@ export interface IChatbot {
   status: ChatbotStatus;
   apiSettings: IChatbotApiSettings;
   metadata?: Record<string, unknown>;
+  knowledgeBases: string[]; // knowledge base ids
   createdAt: string;
   updatedAt: string;
 }
