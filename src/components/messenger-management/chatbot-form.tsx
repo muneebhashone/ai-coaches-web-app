@@ -210,9 +210,9 @@ export function ChatbotForm({
               <TabsTrigger value="persona" className="flex-1">
                 Persona
               </TabsTrigger>
-              <TabsTrigger value="api" className="flex-1">
+              {/* <TabsTrigger value="api" className="flex-1">
                 API Settings
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger value="knowledge" className="flex-1">
                 Knowledge Base
               </TabsTrigger>
