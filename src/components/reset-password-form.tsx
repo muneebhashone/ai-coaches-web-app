@@ -2,9 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import * as z from "zod";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
+import { Link } from "@/lib/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,30 +31,40 @@ import { useResetPassword } from "@/services/auth/auth.hooks";
 import { toast } from "sonner";
 import { passwordValidationSchema } from "@/services/common/common.schema";
 
-// Create a schema that matches the API requirements
-const resetPasswordSchema = z
-  .object({
-    userId: z.string().min(1, "User ID is required"),
-    code: z.string().min(1, "Reset code is required"),
-    password: passwordValidationSchema("Password"),
-    confirmPassword: passwordValidationSchema("Confirm password"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+type ResetPasswordFormValues = {
+  userId: string;
+  code: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export function ResetPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const t = useTranslations("auth");
+  const tErrors = useTranslations("errors");
+  const tValidation = useTranslations("validation");
+  const tCommon = useTranslations("common");
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isFormDisabled, setIsFormDisabled] = useState(false);
   const userId = searchParams.get("userId") || "";
   const code = searchParams.get("code") || "";
+
+  // Create a schema that matches the API requirements with translations
+  const resetPasswordSchema = z
+    .object({
+      userId: z.string().min(1, "User ID is required"),
+      code: z.string().min(1, "Reset code is required"),
+      password: passwordValidationSchema(t("password")),
+      confirmPassword: passwordValidationSchema(t("confirmPassword")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: tValidation("password.mustMatch"),
+      path: ["confirmPassword"],
+    });
 
   // Form validation will fail if userId or code are missing
   const form = useForm<ResetPasswordFormValues>({
@@ -66,16 +80,16 @@ export function ResetPasswordForm({
   const resetPasswordMutation = useResetPassword({
     onSuccess: (response) => {
       if (response.success) {
-        toast.success(response.message || "Password has been reset successfully");
+        toast.success(response.message || tCommon("success"));
         // Redirect to login page after successful password reset
         router.push("/login");
       } else {
-        toast.error(response.message || "Password reset failed");
+        toast.error(response.message || tErrors("networkError"));
         setIsFormDisabled(false);
       }
     },
     onError: (error) => {
-      const errorMessage = error?.message || "Password reset failed. Please try again or request a new reset link.";
+      const errorMessage = error?.message || tErrors("networkError");
       toast.error(errorMessage);
       setIsFormDisabled(false);
     },
@@ -91,51 +105,55 @@ export function ResetPasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Language Switcher */}
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
+          <CardTitle>{t("resetPassword")}</CardTitle>
           <CardDescription>
-            {missingParams 
-              ? "Invalid reset link. Please request a new password reset." 
-              : "Enter your new password below"}
+            {missingParams ? t("invalidResetLink") : t("enterNewPassword")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {missingParams ? (
             <div className="text-center py-4">
-              <p className="text-red-500 mb-4">
-                Your password reset link is invalid or has expired.
-              </p>
+              <p className="text-red-500 mb-4">{t("resetLinkExpired")}</p>
               <Button
                 onClick={() => router.push("/forgot-password")}
                 className="w-full"
               >
-                Request New Reset Link
+                {t("requestNewResetLink")}
               </Button>
             </div>
           ) : (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* Hidden fields for userId and code */}
                 <input type="hidden" {...form.register("userId")} />
                 <input type="hidden" {...form.register("code")} />
-                
+
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>New Password</FormLabel>
+                      <FormLabel>{t("newPassword")}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="password" 
+                        <Input
+                          type="password"
                           disabled={isFormDisabled}
-                          {...field} 
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-muted-foreground">
-                        Password must be at least 8 characters with lowercase, uppercase, number and symbol.
+                        {t("passwordRequirements")}
                       </p>
                     </FormItem>
                   )}
@@ -145,29 +163,31 @@ export function ResetPasswordForm({
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm New Password</FormLabel>
+                      <FormLabel>{t("confirmPassword")}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="password" 
+                        <Input
+                          type="password"
                           disabled={isFormDisabled}
-                          {...field} 
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full"
                   disabled={isFormDisabled || resetPasswordMutation.isPending}
                 >
-                  {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
+                  {resetPasswordMutation.isPending
+                    ? tCommon("loading")
+                    : t("resetPassword")}
                 </Button>
                 <div className="mt-4 text-center text-sm">
-                  <a href="/login" className="underline underline-offset-4">
-                    Back to login
-                  </a>
+                  <Link href="/login" className="underline underline-offset-4">
+                    {tCommon("back")} to {t("login").toLowerCase()}
+                  </Link>
                 </div>
               </form>
             </Form>

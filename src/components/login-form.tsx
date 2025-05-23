@@ -2,9 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import * as z from "zod";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter, Link } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,23 +30,32 @@ import type { LoginUserByEmailSchemaType } from "@/services/auth/auth.schema";
 import useAuthStore from "@/stores/useAuthStore";
 import { toast } from "sonner";
 
-// Use the same schema as defined in auth service for consistency
-const loginSchema = z.object({
-  email: z
-    .string({ required_error: "Email is required" })
-    .email({ message: "Email is not valid" }),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const t = useTranslations("auth");
+  const tErrors = useTranslations("errors");
+  const tValidation = useTranslations("validation");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+
   const router = useRouter();
   const [isFormDisabled, setIsFormDisabled] = useState(false);
   const { setToken } = useAuthStore();
+
+  // Create schema with translated validation messages
+  const loginSchema = z.object({
+    email: z
+      .string({ required_error: tValidation("email.required") })
+      .email({ message: tValidation("email.invalid") }),
+    password: z.string().min(1, tValidation("password.required")),
+  });
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -60,16 +71,16 @@ export function LoginForm({
         // Store the token in auth store
         setToken(response.data.token);
 
-        toast.success(response.message || "Login successful");
-        router.push("/dashboard");
+        toast.success(response.message || tCommon("success"));
+        router.push("/dashboard" as any);
       } else {
         // Even with success:false in response, show the error message
-        toast.error(response.message || "Login failed");
+        toast.error(response.message || tErrors("unauthorized"));
         setIsFormDisabled(false);
       }
     },
     onError: (error) => {
-      toast.error(error.message || "Login failed. Please try again.");
+      toast.error(error.message || tErrors("networkError"));
       setIsFormDisabled(false);
     },
   });
@@ -81,12 +92,15 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Language Switcher */}
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardTitle>{t("login")}</CardTitle>
+          <CardDescription>{t("enterEmailToLogin")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -96,7 +110,7 @@ export function LoginForm({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("email")}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="m@example.com"
@@ -114,13 +128,13 @@ export function LoginForm({
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center">
-                      <FormLabel>Password</FormLabel>
-                      <a
-                        href="/forgot-password"
+                      <FormLabel>{t("password")}</FormLabel>
+                      <Link
+                        href={"/forgot-password" as any}
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                       >
-                        Forgot your password?
-                      </a>
+                        {t("forgotPassword")}?
+                      </Link>
                     </div>
                     <FormControl>
                       <Input
@@ -139,14 +153,19 @@ export function LoginForm({
                   className="w-full"
                   disabled={isFormDisabled || loginMutation.isPending}
                 >
-                  {loginMutation.isPending ? "Logging in..." : "Login"}
+                  {loginMutation.isPending
+                    ? `${tCommon("loading")}`
+                    : t("loginButton")}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="/signup" className="underline underline-offset-4">
-                  Sign up
-                </a>
+                {t("dontHaveAccount")}{" "}
+                <Link
+                  href={"/signup" as any}
+                  className="underline underline-offset-4"
+                >
+                  {t("signup")}
+                </Link>
               </div>
             </form>
           </Form>
