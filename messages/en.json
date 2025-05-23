@@ -1,0 +1,102 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset",
+    "send": "Send",
+    "tryAgain": "Try again"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "loginButton": "Log In",
+    "signupButton": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "rememberMe": "Remember me",
+    "enterEmailToLogin": "Enter your email below to login to your account",
+    "enterDetailsToCreateAccount": "Enter your details below to create your account",
+    "fullName": "Full Name",
+    "newPassword": "New Password",
+    "sendResetLink": "Send Reset Link",
+    "resetLinkSent": "Password reset instructions sent to your email",
+    "checkEmailForInstructions": "Check your email for instructions to reset your password",
+    "enterEmailForReset": "Enter your email address and we'll send you a link to reset your password",
+    "invalidResetLink": "Invalid reset link. Please request a new password reset.",
+    "resetLinkExpired": "Your password reset link is invalid or has expired.",
+    "requestNewResetLink": "Request New Reset Link",
+    "passwordResetSuccessfully": "Password has been reset successfully",
+    "enterNewPassword": "Enter your new password below",
+    "rememberPassword": "Remember your password?",
+    "tryAnotherEmail": "Try another email",
+    "ifAccountExists": "If an account exists with that email, you will receive password reset instructions.",
+    "passwordRequirements": "Password must be at least 8 characters with lowercase, uppercase, number and symbol."
+  },
+  "dashboard": {
+    "title": "AI Coaching Dashboard",
+    "welcome": "Welcome back!",
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "recentActivity": "Recent Activity"
+  },
+  "chatbot": {
+    "title": "Chatbot",
+    "conversation": "Conversation",
+    "newMessage": "Type your message...",
+    "send": "Send"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordMismatch": "Passwords do not match",
+    "networkError": "Network error. Please try again.",
+    "unauthorized": "You are not authorized to perform this action",
+    "notFound": "The requested resource was not found",
+    "loginFailed": "Login failed. Please try again.",
+    "registrationFailed": "Registration failed. Please try again.",
+    "passwordResetFailed": "Password reset failed. Please try again or request a new reset link."
+  },
+  "validation": {
+    "email": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least {count} characters",
+      "mustMatch": "Passwords must match"
+    },
+    "name": {
+      "required": "Name is required",
+      "minLength": "Name must be at least {count} characters"
+    }
+  }
+}
