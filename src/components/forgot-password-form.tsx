@@ -4,6 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import type * as z from "zod";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +36,10 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const t = useTranslations("auth");
+  const tErrors = useTranslations("errors");
+  const tCommon = useTranslations("common");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -55,13 +62,10 @@ export function ForgotPasswordForm({
           response.message || "Password reset instructions sent to your email"
         );
       } else {
-        toast.error(response.message || "Failed to process request");
+        toast.error(response.message || tErrors("networkError"));
       }
     } catch (error) {
-      toast.error(
-        (error as Error)?.message ||
-          "Failed to process request. Please try again."
-      );
+      toast.error((error as Error)?.message || tErrors("networkError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -69,13 +73,18 @@ export function ForgotPasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Language Switcher */}
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Forgot Password</CardTitle>
+          <CardTitle>{t("forgotPassword")}</CardTitle>
           <CardDescription>
             {isSuccess
-              ? "Check your email for instructions to reset your password"
-              : "Enter your email address and we'll send you a link to reset your password"}
+              ? t("checkEmailForInstructions")
+              : t("enterEmailForReset")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -90,7 +99,7 @@ export function ForgotPasswordForm({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t("email")}</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="m@example.com"
@@ -107,28 +116,25 @@ export function ForgotPasswordForm({
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Reset Link"}
+                  {isSubmitting ? tCommon("loading") : t("sendResetLink")}
                 </Button>
               </form>
             </Form>
           ) : (
             <div className="text-center py-4">
-              <p className="mb-4">
-                If an account exists with that email, you will receive password
-                reset instructions.
-              </p>
+              <p className="mb-4">{t("ifAccountExists")}</p>
               <Button onClick={() => setIsSuccess(false)} variant="outline">
-                Try another email
+                {t("tryAnotherEmail")}
               </Button>
             </div>
           )}
         </CardContent>
         <CardFooter className="flex justify-center">
           <div className="text-sm">
-            Remember your password?{" "}
-            <a href="/login" className="underline underline-offset-4">
-              Back to login
-            </a>
+            {t("rememberPassword")}{" "}
+            <Link href="/login" className="underline underline-offset-4">
+              {tCommon("back")} to {t("login").toLowerCase()}
+            </Link>
           </div>
         </CardFooter>
       </Card>
