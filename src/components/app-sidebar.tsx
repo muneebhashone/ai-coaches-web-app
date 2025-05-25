@@ -82,7 +82,7 @@ export function AppSidebar({
     onSuccess: (response) => {
       if (response.success) {
         toast.success(response.message || "Successfully logged out");
-        router.push("/login");
+        router.push(`/${locale}/login`);
       } else {
         toast.error(response.message || "Logout failed");
       }

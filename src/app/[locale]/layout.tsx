@@ -5,7 +5,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import RootProvider from "./root-provider";
-import { Noto_Sans } from "@next/font/google";
+import { Noto_Sans } from "next/font/google";
 
 const notoSans = Noto_Sans({
   subsets: ["latin"],
@@ -40,7 +40,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={notoSans.className}>
       <body className={`${notoSans.variable} font-sans antialiased`}>
         <RootProvider>
           <NextIntlClientProvider messages={messages}>

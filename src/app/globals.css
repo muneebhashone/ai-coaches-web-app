@@ -19,8 +19,8 @@
   --color-background: oklch(0.97 0.01 240); /* Soft Gray #F5F7F9 */
   --color-foreground: oklch(0.15 0.01 240); /* Jet Black for text */
   
-  --color-accent: oklch(0.68 0.15 15); /* Coral Orange #FF6B57 */
-  --color-accent-foreground: oklch(1 0 0); /* White text on accent */
+  --color-accent: oklch(0.85 0.08 174); /* Light Teal Green accent */
+  --color-accent-foreground: oklch(0.15 0.01 240); /* Dark text on light accent */
   
   --color-muted: oklch(0.92 0.01 240); /* Light muted background */
   --color-muted-foreground: oklch(0.55 0.02 240); /* Cool Gray #6E7C87 for text */
@@ -43,7 +43,7 @@
   
   /* Chart Colors - Brand Variations */
   --color-chart-1: oklch(0.65 0.15 174); /* Primary Teal */
-  --color-chart-2: oklch(0.68 0.15 15); /* Coral Orange */
+  --color-chart-2: oklch(0.85 0.08 174); /* Light Teal Green */
   --color-chart-3: oklch(0.65 0.15 145); /* Emerald Green */
   --color-chart-4: oklch(0.80 0.12 85); /* Amber Yellow */
   --color-chart-5: oklch(0.55 0.02 240); /* Cool Gray */
@@ -71,7 +71,7 @@
   
   /* RGB variables for shadows and effects */
   --primary-rgb: 44, 177, 160; /* Teal Green RGB */
-  --accent-rgb: 255, 107, 87; /* Coral Orange RGB #FF6B57 */
+  --accent-rgb: 160, 220, 210; /* Light Teal Green RGB */
 
   /* Accessibility variables */
   --focus-ring-color: oklch(0.65 0.15 174 / 0.5); /* Teal with opacity */
@@ -93,7 +93,7 @@
   --color-secondary: oklch(0.20 0.01 240); /* Lighter than jet black */
   --color-secondary-foreground: oklch(0.95 0.01 240); /* Light text */
   
-  --color-accent: oklch(0.72 0.15 15); /* Brighter coral for dark mode */
+  --color-accent: oklch(0.75 0.12 174); /* Medium Teal Green accent for dark mode */
   --color-accent-foreground: oklch(0.08 0.01 240); /* Dark text on accent */
   
   --color-muted: oklch(0.25 0.01 240); /* Dark muted background */
@@ -117,7 +117,7 @@
   
   /* Dark Mode Chart Colors */
   --color-chart-1: oklch(0.70 0.15 174); /* Brighter Teal */
-  --color-chart-2: oklch(0.72 0.15 15); /* Brighter Coral */
+  --color-chart-2: oklch(0.75 0.12 174); /* Medium Teal Green */
   --color-chart-3: oklch(0.70 0.15 145); /* Brighter Emerald */
   --color-chart-4: oklch(0.85 0.12 85); /* Brighter Amber */
   --color-chart-5: oklch(0.65 0.02 240); /* Lighter Cool Gray */
@@ -134,7 +134,7 @@
   
   /* Dark Mode RGB variables */
   --primary-rgb: 77, 201, 185; /* Brighter Teal RGB */
-  --accent-rgb: 255, 107, 87; /* Coral Orange RGB #FF6B57 */
+  --accent-rgb: 180, 230, 220; /* Light Teal Green RGB for dark mode */
   --focus-ring-color: oklch(0.70 0.15 174 / 0.6); /* Brighter teal with opacity */
 }
 

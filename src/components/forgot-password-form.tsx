@@ -6,7 +6,6 @@ import { useState } from "react";
 import type * as z from "zod";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -73,10 +72,7 @@ export function ForgotPasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {/* Language Switcher */}
-      <div className="flex justify-end">
-        <LanguageSwitcher />
-      </div>
+    
 
       <Card>
         <CardHeader>

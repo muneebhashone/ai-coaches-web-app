@@ -26,6 +26,9 @@
       "style": {
         "useImportType": "off",
         "useSelfClosingElements": "off"
+      },
+      "a11y": {
+        "useSemanticElements": "off"
       }
     }
   },
