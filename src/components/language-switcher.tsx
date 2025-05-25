@@ -39,7 +39,7 @@ export function LanguageSwitcher() {
           <span className="sm:hidden">{currentLanguage?.flag}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="space-y-1">
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
