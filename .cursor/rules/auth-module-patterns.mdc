@@ -1,0 +1,32 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Auth Module Patterns
+
+## Form Structure
+- **Base Layout:** All auth forms should use the pattern from [login-form.tsx](mdc:src/components/login-form.tsx)
+- **Container:** `<div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-background">`
+- **Form Wrapper:** `<div className={cn("flex flex-col gap-6", className)}>`
+- **Language Switcher:** Always include at the top right
+
+## Form Components
+- **Card Structure:** Use CardHeader, CardContent, and optionally CardFooter
+- **Form Spacing:** Use `className="space-y-6"` for form fields
+- **Button Styling:** Full width buttons with loading states
+- **Link Styling:** Use brand primary color with hover effects
+
+## Error Handling
+- **Error Colors:** Use `text-destructive` for error messages
+- **Success States:** Use `text-success` for success messages
+- **Loading States:** Show loading text with `text-muted-foreground`
+
+## Navigation Links
+- **Pattern:** `text-primary hover:text-primary/80 underline underline-offset-4 transition-colors`
+- **Consistency:** All auth forms should have consistent navigation patterns
+
+## Validation
+- Use translated validation messages from `useTranslations`
+- Implement proper form state management with disabled states
+- Follow patterns from [reset-password-form.tsx](mdc:src/components/reset-password-form.tsx)

@@ -9,6 +9,7 @@ import {
   IconUsers,
   IconUserCircle,
   IconSettings,
+  IconChevronRight,
 } from "@tabler/icons-react";
 
 import {
@@ -19,7 +20,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 import { usePathname } from "next/navigation";
@@ -37,27 +37,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
-// Updated navigation with only the 3 required items
-const data = {
-  navMain: [
+const data = (locale: string, t: (value: string) => string) => {
+  return [
     {
-      title: "User Management",
-      url: "/dashboard/users",
+      title: t("userManagement.title"),
+      url: `/${locale}/dashboard/user-management`,
       icon: IconUsers,
-      isActive: true,
+      description: "Manage users and permissions",
     },
     {
-      title: "Clone Coach Training",
-      url: "/dashboard/clone-coach-training",
+      title: t("cloneCoachTraining.title"),
+      url: `/${locale}/dashboard/clone-coach-training`,
       icon: IconBook,
+      description: "Train and configure AI coaches",
     },
     {
-      title: "Messenger Management",
-      url: "/dashboard/messenger-management",
+      title: t("messengerManagement.title"),
+      url: `/${locale}/dashboard/messenger-management`,
       icon: IconMessageForward,
+      description: "Manage messaging platforms",
     },
-  ],
+  ];
 };
 
 export function AppSidebar({
@@ -67,10 +71,12 @@ export function AppSidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useLocale();
   const { data: userData, isLoading: isUserLoading } = useGetMe();
   const user = userData?.data;
+  const t = useTranslations("dashboard");
 
-  console.log({ user });
+  const navMain = data(locale, t);
 
   const logoutMutation = useLogout({
     onSuccess: (response) => {
@@ -100,40 +106,66 @@ export function AppSidebar({
   };
 
   return (
-    <Sidebar variant={variant}>
-      <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            AI Coaches
-          </span>
+    <Sidebar variant={variant} className="border-r border-border/40">
+      <SidebarHeader className="px-4 py-4 border-b border-border/30">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <img 
+              src="/logo.png" 
+              alt="logo" 
+              className="w-10 h-10 rounded-lg shadow-sm" 
+            />
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="font-semibold text-base text-foreground">Julia Coaching Lab</h1>
+            <p className="text-xs text-muted-foreground">Coaches Panel</p>
+          </div>
         </div>
-        <SidebarTrigger />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {data.navMain.map((item) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.url}
-                className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5 transition-all duration-200"
-              >
-                <Link href={item.url}>
-                  <item.icon className="size-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+      
+      <SidebarContent className="px-2 py-4">
+        <div className="mb-3">
+          <h2 className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+            Navigation
+          </h2>
+        </div>
+        <SidebarMenu className="space-y-1">
+          {navMain.map((item) => {
+            const isActive = pathname === item.url;
+            return (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  className={cn(
+                    "group relative rounded-md mx-1 px-3 py-2.5 transition-colors duration-150",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  )}
+                >
+                  <Link href={item.url} className="flex items-center gap-3 w-full">
+                    <item.icon className="size-4 shrink-0" />
+                    <span className="font-medium text-sm truncate">{item.title}</span>
+                    {isActive && (
+                      <IconChevronRight className="size-3 ml-auto shrink-0" />
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t border-border/50 p-4 space-y-4">
+      
+      <SidebarFooter className="border-t border-border/30 p-3">
         {isUserLoading ? (
           <div className="flex items-center gap-3 px-2 py-2">
-            <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
             <div className="space-y-1 flex-1">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-2 w-24" />
             </div>
           </div>
         ) : user ? (
@@ -141,33 +173,42 @@ export function AppSidebar({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="w-full flex items-center gap-3 px-2 py-2 h-auto hover:bg-primary/5 justify-start"
+                className={cn(
+                  "w-full flex items-center gap-3 px-2 py-2 h-auto rounded-md",
+                  "hover:bg-accent hover:text-accent-foreground transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "justify-start"
+                )}
               >
-                <Avatar className="h-10 w-10 border border-border">
+                <Avatar className="h-8 w-8 border border-border">
                   <AvatarImage src={undefined} alt={user.name} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col items-start text-left">
-                  <span className="font-medium">{user.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                <div className="flex flex-col items-start text-left flex-1 min-w-0">
+                  <span className="font-medium text-sm truncate">{user.name}</span>
+                  <span className="text-xs text-muted-foreground truncate">
                     {user.email}
                   </span>
                 </div>
+                <IconChevronRight className="size-3 text-muted-foreground shrink-0" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent 
+              align="end" 
+              className="w-56"
+            >
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <IconUserCircle className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>Profile Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <IconSettings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>Preferences</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -177,7 +218,7 @@ export function AppSidebar({
               >
                 <IconLogout className="mr-2 h-4 w-4 text-destructive" />
                 <span className="text-destructive">
-                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                  {logoutMutation.isPending ? "Logging out..." : "Sign Out"}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -185,13 +226,17 @@ export function AppSidebar({
         ) : (
           <Button
             variant="ghost"
-            className="w-full text-primary hover:bg-primary/5 hover:text-primary gap-2 justify-start"
+            className={cn(
+              "w-full text-destructive hover:bg-destructive/10 hover:text-destructive",
+              "gap-2 justify-start px-2 py-2 rounded-md transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            )}
             onClick={handleLogout}
             disabled={logoutMutation.isPending}
           >
             <IconLogout className="size-4" />
-            <span>
-              {logoutMutation.isPending ? "Logging out..." : "Logout"}
+            <span className="text-sm">
+              {logoutMutation.isPending ? "Logging out..." : "Sign Out"}
             </span>
           </Button>
         )}

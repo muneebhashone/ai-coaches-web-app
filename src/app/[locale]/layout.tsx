@@ -5,10 +5,18 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import RootProvider from "./root-provider";
+import { Noto_Sans } from "@next/font/google";
+
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-noto-sans",
+  display: "swap",
+});
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export const metadata: Metadata = {
@@ -33,7 +41,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
+      <body className={`${notoSans.variable} font-sans antialiased`}>
         <RootProvider>
           <NextIntlClientProvider messages={messages}>
             {children}

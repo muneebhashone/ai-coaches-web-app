@@ -1,0 +1,36 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Accessibility Standards
+
+## Color Contrast
+- **WCAG AA Compliance:** Ensure 4.5:1 contrast ratio for normal text, 3:1 for large text
+- **Theme Variables:** Use semantic color variables that maintain proper contrast
+- **Testing:** Test both light and dark modes for contrast compliance
+
+## Focus Management
+- **Focus Indicators:** Use `focus-visible:ring-2 focus-visible:ring-primary/50` pattern
+- **Keyboard Navigation:** Ensure all interactive elements are keyboard accessible
+- **Focus Trapping:** Implement proper focus management in modals and forms
+
+## Screen Reader Support
+- **Semantic HTML:** Use proper heading hierarchy (h1, h2, h3)
+- **ARIA Labels:** Add appropriate ARIA labels for complex interactions
+- **Skip Links:** Include skip-to-content links as defined in [globals.css](mdc:src/app/globals.css)
+
+## Motion & Animation
+- **Reduced Motion:** Respect `prefers-reduced-motion` setting
+- **Smooth Transitions:** Use `transition-colors` for color changes
+- **Performance:** Keep animations performant and purposeful
+
+## Form Accessibility
+- **Labels:** Always associate labels with form controls
+- **Error Messages:** Use `text-destructive` for clear error indication
+- **Loading States:** Provide clear loading feedback with `text-muted-foreground`
+
+## Touch Targets
+- **Minimum Size:** Ensure interactive elements are at least 44px (2.75rem)
+- **Spacing:** Provide adequate spacing between touch targets
+- **Button Sizing:** Use `min-height: 2.5rem` as defined in component styles

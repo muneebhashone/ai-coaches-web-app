@@ -1,0 +1,34 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Brand Theme System
+
+## Color Usage
+- **NEVER use arbitrary color values** (e.g., `text-red-500`, `bg-blue-600`)
+- **ALWAYS use semantic theme variables** from [globals.css](mdc:src/app/globals.css)
+- **Brand Colors:**
+  - Primary: `text-primary` / `bg-primary` (Teal Green #2CB1A0)
+  - Secondary: `text-secondary` / `bg-secondary` (Jet Black #1C1C1C)
+  - Accent: `text-accent` / `bg-accent` (Coral Orange #FF6B57)
+  - Success: `text-success` / `bg-success` (Emerald Green #4CAF50)
+  - Warning: `text-warning` / `bg-warning` (Amber Yellow #FFC107)
+  - Error: `text-destructive` / `bg-destructive` (Tomato Red #E53935)
+
+## Typography
+- **Font System:** Noto Sans with Pretendard fallback as defined in [layout.tsx](mdc:src/app/[locale]/layout.tsx)
+- **Text Colors:** Use `text-foreground`, `text-muted-foreground` for hierarchy
+- **Links:** Always use `text-primary hover:text-primary/80 transition-colors`
+
+## Component Styling
+- **Cards:** Use `bg-card text-card-foreground` with `card` utility class
+- **Backgrounds:** Use `bg-background` for page containers
+- **Borders:** Use `border-border` instead of arbitrary border colors
+- **Focus States:** Use `focus-visible:ring-2 focus-visible:ring-primary/50`
+
+## Brand Guidelines Compliance
+- Follow [brand-theme-guidelines.md](mdc:brand-theme-guidelines.md) for all design decisions
+- Maintain clean, minimal, trustworthy aesthetic
+- Ensure WCAG AA contrast ratios
+- Support both light and dark modes

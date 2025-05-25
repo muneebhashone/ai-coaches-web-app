@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Tailwind CSS v4 Usage
+
+## Configuration
+- **CSS-First Config:** All theme customization in [globals.css](mdc:src/app/globals.css) using `@theme` directive
+- **No JavaScript Config:** Avoid `tailwind.config.js` - use CSS variables instead
+- **Theme Variables:** Use `--color-*` format for colors, `--font-*` for fonts
+
+## Color System
+- **OKLCH Format:** All colors defined in OKLCH for better color manipulation
+- **CSS Variables:** Access theme colors via `var(--color-primary)` in custom CSS
+- **Semantic Naming:** Use semantic color names (primary, secondary, accent, etc.)
+
+## Font Integration
+- **Next.js Fonts:** Use `@next/font/google` for font optimization
+- **CSS Variables:** Define fonts in `@theme` block as `--font-sans`
+- **Font Classes:** Apply via `font-sans`, `font-mono` utility classes
+
+## Custom Utilities
+- **Brand Classes:** Use custom utility classes like `.brand-primary`, `.premium-shadow`
+- **Component Classes:** Define reusable component styles in `@layer utilities`
+- **Accessibility:** Include focus states and reduced motion support
+
+## Best Practices
+- **No Arbitrary Values:** Use theme variables instead of arbitrary CSS values
+- **Consistent Spacing:** Use standard Tailwind spacing scale
+- **Dark Mode:** Ensure all custom colors have dark mode variants
+- **Performance:** Leverage CSS variable inheritance for better performance

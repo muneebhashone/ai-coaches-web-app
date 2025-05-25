@@ -197,7 +197,7 @@ export function SignUpForm({
               </Button>
               <div className="mt-4 text-center text-sm">
                 {t("alreadyHaveAccount")}{" "}
-                <Link href="/login" className="underline underline-offset-4">
+                <Link href="/login" className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">
                   {t("login")}
                 </Link>
               </div>

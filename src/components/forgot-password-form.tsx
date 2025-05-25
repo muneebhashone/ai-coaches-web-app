@@ -132,7 +132,7 @@ export function ForgotPasswordForm({
         <CardFooter className="flex justify-center">
           <div className="text-sm">
             {t("rememberPassword")}{" "}
-            <Link href="/login" className="underline underline-offset-4">
+            <Link href="/login" className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">
               {tCommon("back")} to {t("login").toLowerCase()}
             </Link>
           </div>

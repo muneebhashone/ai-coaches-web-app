@@ -2,58 +2,104 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
+## Development Commands
 
-- `npm run dev` - Start development server with turbopack
+- `npm run dev` - Start development server with Turbopack
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
-## Code Style Guidelines
+## Architecture Overview
 
-- **Imports**: Group imports (React, external libs, internal) with blank line between groups
-- **Formatting**: Use TypeScript/Next.js auto-formatting, indentation 2 spaces
-- **Types**: Use explicit types for props, functions, and state. Use React.FC for functional components
-- **Components**: Use named exports, client components with "use client" directive when needed
-- **File Structure**: Feature-based organization, UI components in /ui directory
-- **Styling**: Use Tailwind CSS with cn utility for class merging
-- **Naming**: PascalCase for components, camelCase for functions/variables
-- **Error Handling**: Use try/catch blocks with appropriate error messaging
-- **State Management**: React hooks for local state, consider context for shared state
+This is a Next.js 15 AI coaching dashboard with internationalization (English/Korean) support. The app uses Next.js App Router with locale-based routing.
 
-### PROJECT PROGRESS
+### Routing Structure
+- All routes are prefixed with locale: `/[locale]/...`
+- Supported locales: `en` (default), `ko`
+- Root redirects to `/en/login`
+- Dashboard routes redirect to localized versions
 
-## Admin Dashboard Implementation
+### Authentication Flow
+- Middleware handles auth for all non-public routes
+- Public routes: login, signup, forgot-password, reset-password
+- Uses cookie-based authentication with `accessToken`
+- Backend validation via `/auth/me` endpoint
+- Unauthorized users redirect to login
 
-### Overview
+### Key Directories
+- `src/app/[locale]/` - App Router pages with locale support
+- `src/components/` - Reusable components (includes shadcn/ui)
+- `src/services/` - API service layers organized by domain
+- `src/i18n/` - Internationalization configuration
+- `src/lib/` - Utilities and API client setup
+- `src/stores/` - Zustand state management
 
-We developed a comprehensive admin dashboard layer for the AI Coaches platform that provides system-wide management capabilities.
+### Core Technologies
+- Next.js 15 with App Router
+- React 19 with TypeScript
+- next-intl for internationalization
+- Tailwind CSS v4 with CSS-first configuration
+- shadcn/ui components
+- Zustand for state management
+- React Query for data fetching
+- Zod for schema validation
 
-### Key Components
+### API Integration
+- Backend URL configured via `BACKEND_URL` (server) / `NEXT_PUBLIC_API_URL` (client)
+- API routes proxy to backend via rewrites: `/api/v2/*` → `${BACKEND_URL}/api/*`
+- Axios-based API client with automatic base URL detection
 
-- Admin layout and sidebar navigation structure
-- Coach overview and management tables
-- User reassignment tools
-- Program management interface
-- Message template system
-- Advanced analytics dashboards
-- Audit logs and monitoring tools
+## Brand Theme System
 
-### Features
+### Design Guidelines
+- Follow `brand-theme-guidelines.md` for all design decisions
+- Clean, minimal, trustworthy aesthetic with Noto Sans typography
+- Brand colors: Teal Green (#2CB1A0), Jet Black (#1C1C1C), Coral Orange (#FF6B57)
 
-- Full bilingual support (English/Korean)
-- Rich data visualizations
-- CRUD operations for programs and templates
-- Comprehensive filtering and search capabilities
+### Tailwind CSS v4 Usage
+- **CSS-first configuration** in `src/app/globals.css` using `@theme` directive
+- **OKLCH color format** for better color manipulation and consistency
+- **Semantic color variables**: Use `text-primary`, `bg-card`, etc. instead of arbitrary values
+- **Font system**: Noto Sans with Pretendard fallback via Next.js font optimization
 
-### Technical Notes
+### Color Usage Rules
+- **NEVER use arbitrary colors** (e.g., `text-red-500`, `bg-blue-600`)
+- **ALWAYS use semantic theme variables**:
+  - Primary: `text-primary` / `bg-primary` (Teal Green)
+  - Secondary: `text-secondary` / `bg-secondary` (Jet Black)
+  - Accent: `text-accent` / `bg-accent` (Coral Orange)
+  - Success: `text-success` / `bg-success` (Emerald Green)
+  - Warning: `text-warning` / `bg-warning` (Amber Yellow)
+  - Error: `text-destructive` / `bg-destructive` (Tomato Red)
 
-- Ensured proper value assignment for all SelectItem components to prevent UI issues
-- Maintained consistent design language while implementing admin-specific functionality
+### Component Styling Patterns
+- **Links**: `text-primary hover:text-primary/80 transition-colors`
+- **Cards**: `bg-card text-card-foreground` with `card` utility class
+- **Backgrounds**: `bg-background` for page containers
+- **Focus states**: `focus-visible:ring-2 focus-visible:ring-primary/50`
 
-### Platform Architecture
+## Development Guidelines
 
-The platform now consists of two complete layers:
+### Cursor Rules
+Comprehensive development rules are available in `.cursor/rules/`:
+- `brand-theme-system.mdc` - Brand color and typography guidelines
+- `auth-module-patterns.mdc` - Authentication form patterns
+- `tailwind-v4-usage.mdc` - Tailwind CSS v4 best practices
+- `project-structure.mdc` - File organization and architecture
+- `accessibility-standards.mdc` - WCAG compliance and a11y patterns
+- `code-quality-standards.mdc` - TypeScript and React best practices
 
-- Coach dashboard for day-to-day operations
-- Admin dashboard for system-wide oversight and management
+### Important Patterns
+- All components follow shadcn/ui patterns with brand theme integration
+- Forms use react-hook-form with Zod validation and translated messages
+- Services are organized by domain (auth, user, etc.)
+- TypeScript strict mode enabled
+- Path alias `@/*` maps to `src/*`
+- Accessibility-first approach with WCAG AA compliance
+- Internationalization with `useTranslations` hook for all user-facing text
+
+### Auth Module Patterns
+- Consistent form structure with language switcher
+- Brand-consistent link styling and error handling
+- Proper loading states and form validation
+- Follow patterns from `src/components/login-form.tsx`

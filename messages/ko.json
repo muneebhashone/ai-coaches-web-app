@@ -64,7 +64,112 @@
     "welcome": "다시 오신 것을 환영합니다!",
     "overview": "개요",
     "analytics": "분석",
-    "recentActivity": "최근 활동"
+    "recentActivity": "최근 활동",
+    "userManagement": {
+      "title": "사용자 관리",
+      "description": "고객에 대한 모든 것을 관리하세요",
+      "filters": {
+        "searchPlaceholder": "이름, 이메일 또는 프로그램으로 검색...",
+        "filterByStage": "단계별 필터",
+        "filterByStatus": "상태별 필터",
+        "allStages": "모든 단계",
+        "allStatuses": "모든 상태"
+      },
+      "table": {
+        "name": "이름",
+        "currentStage": "현재 단계",
+        "attendanceRate": "출석률",
+        "chatbotMatch": "챗봇 매칭",
+        "recentActivity": "최근 활동",
+        "riskIndicators": "위험 지표",
+        "actions": "작업",
+        "view": "보기",
+        "edit": "편집"
+      },
+      "detail": {
+        "scheduleInfo": "일정 정보",
+        "plannedTotalSessions": "계획된 총 세션",
+        "currentSession": "현재 세션",
+        "dateScheduled": "예정된 날짜",
+        "cloneCoachSchedule": "클론 코치 일정",
+        "uploadSessionAudio": "세션 오디오 파일 업로드",
+        "lastWeekSummary": "지난 주 세션 요약",
+        "overallSummaries": "전체 세션 요약",
+        "specialNotes": "특별 사례 메모",
+        "chatbotInstructions": "챗봇이 해야 할 일",
+        "importantNotes": "기억해야 할 중요한 메모"
+      }
+    },
+    "cloneCoachTraining": {
+      "title": "클론 코치 훈련",
+      "description": "개인화된 AI 챗봇을 관리하고 훈련하세요",
+      "knowledgeBase": {
+        "title": "지식 베이스",
+        "coachStyle": "코치 스타일",
+        "programContent": "프로그램 콘텐츠",
+        "uploadDocument": "문서 업로드",
+        "manageFiles": "파일 관리"
+      },
+      "promptConfiguration": {
+        "title": "프롬프트 구성",
+        "listChatbots": "챗봇 목록",
+        "createChatbot": "챗봇 생성",
+        "selectedChatbot": "선택된 챗봇",
+        "prompts": "프롬프트",
+        "persona": "페르소나"
+      },
+      "preview": {
+        "title": "챗봇 미리보기",
+        "selectChatbot": "미리볼 챗봇 선택",
+        "testMessage": "테스트 메시지를 입력하세요...",
+        "send": "전송"
+      },
+      "chatbotList": {
+        "name": "이름",
+        "linkedUsers": "연결된 사용자",
+        "trainingStatus": "훈련 상태",
+        "lastUsed": "마지막 사용",
+        "actions": "작업",
+        "retrain": "재훈련",
+        "preview": "미리보기",
+        "reassign": "재할당"
+      }
+    },
+    "messengerManagement": {
+      "title": "메신저 관리",
+      "description": "고객과의 모든 커뮤니케이션을 감독하세요",
+      "kakaoIntegration": {
+        "title": "카카오톡 연동",
+        "connectionStatus": "연결 상태",
+        "connected": "연결됨",
+        "disconnected": "연결 안됨",
+        "connect": "계정 연결",
+        "disconnect": "연결 해제",
+        "profileName": "프로필 이름",
+        "profilePhoto": "프로필 사진",
+        "sendTestMessage": "테스트 메시지 전송",
+        "enableLinkage": "카카오톡 ID를 통한 챗봇-사용자 연결 활성화",
+        "configureAssignments": "챗봇-사용자 할당 구성"
+      },
+      "messageManagement": {
+        "title": "메시지 관리",
+        "scheduledMessages": "예약된 메시지",
+        "manualMessage": "수동 메시지",
+        "messageTemplates": "메시지 템플릿",
+        "chatLogs": "채팅 로그",
+        "downloadLogs": "전체 채팅 로그 다운로드",
+        "scheduleMessage": "메시지 예약",
+        "sendMessage": "메시지 전송"
+      },
+      "connections": {
+        "title": "고객 연결",
+        "client": "고객",
+        "chatbot": "챗봇",
+        "status": "상태",
+        "lastMessage": "마지막 메시지",
+        "actions": "작업"
+      }
+    }
   },
   "chatbot": {
     "title": "챗봇",

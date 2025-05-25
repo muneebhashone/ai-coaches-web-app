@@ -21,7 +21,7 @@ export default function AdminLayout({
         } as React.CSSProperties
       }
     >
-      <AdminSidebar variant="inset" />
+      <AdminSidebar />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col p-4 md:p-6 gap-6">
