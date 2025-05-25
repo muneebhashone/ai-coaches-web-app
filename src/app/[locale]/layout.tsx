@@ -20,8 +20,8 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: "AI Coaching Dashboard",
-  description: "AI-powered coaching dashboard with bilingual support",
+  title: "Julia Coaching Lab",
+  description: "AI-based coach cloning platform",
 };
 
 export default async function LocaleLayout({ children, params }: Props) {
