@@ -1,0 +1,17 @@
+Project Name: Julia AI Coaches
+Purpose: To provide a platform to coaches where they can build their AI Clones who can tackle their clients
+
+What coaches needs to do
+    Create a program (each program will be consist of multiple sessions)
+        Mandatory Inputs
+            - Program Name
+            - Program Purpose
+            - Program Goals
+            - Success Metrics
+            - Program Timeline (There will be dates for each session)
+                Session Inputs:
+                    - Session Name
+                    - Session Purpose (Optional)
+                    - Session Goals (Optional)
+                    - Session Duration (in minutes)
+                        

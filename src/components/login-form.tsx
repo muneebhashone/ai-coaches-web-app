@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import * as z from "zod";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,6 @@ export function LoginForm({
   const tErrors = useTranslations("errors");
   const tValidation = useTranslations("validation");
   const tCommon = useTranslations("common");
-  const locale = useLocale();
 
   const router = useRouter();
   const [isFormDisabled, setIsFormDisabled] = useState(false);
@@ -131,7 +130,7 @@ export function LoginForm({
                       <FormLabel>{t("password")}</FormLabel>
                       <Link
                         href={"/forgot-password" as any}
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                        className="ml-auto inline-block text-sm text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
                       >
                         {t("forgotPassword")}?
                       </Link>
@@ -162,7 +161,7 @@ export function LoginForm({
                 {t("dontHaveAccount")}{" "}
                 <Link
                   href={"/signup" as any}
-                  className="underline underline-offset-4"
+                  className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
                 >
                   {t("signup")}
                 </Link>

@@ -64,7 +64,112 @@
     "welcome": "Welcome back!",
     "overview": "Overview",
     "analytics": "Analytics",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "userManagement": {
+      "title": "User Management",
+      "description": "Manage everything about your clients",
+      "filters": {
+        "searchPlaceholder": "Search by name, email, or program...",
+        "filterByStage": "Filter by Stage",
+        "filterByStatus": "Filter by Status",
+        "allStages": "All Stages",
+        "allStatuses": "All Statuses"
+      },
+      "table": {
+        "name": "Name",
+        "currentStage": "Current Stage",
+        "attendanceRate": "Attendance Rate",
+        "chatbotMatch": "Chatbot Match",
+        "recentActivity": "Recent Activity",
+        "riskIndicators": "Risk Indicators",
+        "actions": "Actions",
+        "view": "View",
+        "edit": "Edit"
+      },
+      "detail": {
+        "scheduleInfo": "Schedule Information",
+        "plannedTotalSessions": "Planned Total Sessions",
+        "currentSession": "Current Session",
+        "dateScheduled": "Date Scheduled",
+        "cloneCoachSchedule": "Clone Coach Schedule",
+        "uploadSessionAudio": "Upload Session Audio File",
+        "lastWeekSummary": "Last Week Session Summary",
+        "overallSummaries": "Overall Session Summaries",
+        "specialNotes": "Notes of Special Cases",
+        "chatbotInstructions": "What chatbot needs to do",
+        "importantNotes": "Notes that are necessary to remember"
+      }
+    },
+    "cloneCoachTraining": {
+      "title": "Clone Coach Training",
+      "description": "Manage and train your personalized AI chatbot",
+      "knowledgeBase": {
+        "title": "Knowledge Base",
+        "coachStyle": "Coach Style",
+        "programContent": "Program Content",
+        "uploadDocument": "Upload Document",
+        "manageFiles": "Manage Files"
+      },
+      "promptConfiguration": {
+        "title": "Prompt Configuration",
+        "listChatbots": "List of Chatbots",
+        "createChatbot": "Create Chatbot",
+        "selectedChatbot": "Selected Chatbot",
+        "prompts": "Prompts",
+        "persona": "Persona"
+      },
+      "preview": {
+        "title": "Preview Chatbot",
+        "selectChatbot": "Select chatbot to preview",
+        "testMessage": "Type a test message...",
+        "send": "Send"
+      },
+      "chatbotList": {
+        "name": "Name",
+        "linkedUsers": "Linked Users",
+        "trainingStatus": "Training Status",
+        "lastUsed": "Last Used",
+        "actions": "Actions",
+        "retrain": "Retrain",
+        "preview": "Preview",
+        "reassign": "Reassign"
+      }
+    },
+    "messengerManagement": {
+      "title": "Messenger Management",
+      "description": "Oversee all communications with your clients",
+      "kakaoIntegration": {
+        "title": "KakaoTalk Integration",
+        "connectionStatus": "Connection Status",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "connect": "Connect Account",
+        "disconnect": "Disconnect",
+        "profileName": "Profile Name",
+        "profilePhoto": "Profile Photo",
+        "sendTestMessage": "Send Test Message",
+        "enableLinkage": "Enable chatbot-user linkage via KakaoTalk ID",
+        "configureAssignments": "Configure chatbot-to-user assignments"
+      },
+      "messageManagement": {
+        "title": "Message Management",
+        "scheduledMessages": "Scheduled Messages",
+        "manualMessage": "Manual Message",
+        "messageTemplates": "Message Templates",
+        "chatLogs": "Chat Logs",
+        "downloadLogs": "Download Complete Chat Logs",
+        "scheduleMessage": "Schedule Message",
+        "sendMessage": "Send Message"
+      },
+      "connections": {
+        "title": "Client Connections",
+        "client": "Client",
+        "chatbot": "Chatbot",
+        "status": "Status",
+        "lastMessage": "Last Message",
+        "actions": "Actions"
+      }
+    }
   },
   "chatbot": {
     "title": "Chatbot",

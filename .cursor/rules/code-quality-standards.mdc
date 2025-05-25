@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Code Quality Standards
+
+## TypeScript Usage
+- **Strict Types:** Use proper TypeScript types, avoid `any`
+- **Component Props:** Define proper prop interfaces for all components
+- **API Types:** Use generated or defined types for API responses
+- **Form Types:** Define form value types as shown in auth components
+
+## React Best Practices
+- **Hooks:** Use custom hooks for business logic separation
+- **State Management:** Use Zustand for global state, useState for local state
+- **Error Boundaries:** Implement proper error handling
+- **Performance:** Use React.memo, useMemo, useCallback when appropriate
+
+## Code Organization
+- **Single Responsibility:** Each component should have a single, clear purpose
+- **Separation of Concerns:** Separate UI, business logic, and data fetching
+- **Reusability:** Create reusable components following [component-structure.mdc](mdc:.cursor/rules/component-structure.mdc)
+- **Consistent Patterns:** Follow established patterns from existing components
+
+## Import Organization
+- **Order:** React imports, third-party libraries, internal imports, relative imports
+- **Aliases:** Use `@/` path aliases for clean imports
+- **Named Exports:** Prefer named exports over default exports for utilities
+
+## Error Handling
+- **User Feedback:** Use toast notifications for user feedback
+- **Form Validation:** Implement proper form validation with translated messages
+- **API Errors:** Handle API errors gracefully with fallback UI
+- **Loading States:** Always provide loading states for async operations
+
+## Performance
+- **Bundle Size:** Keep bundle size optimized, lazy load when appropriate
+- **Image Optimization:** Use Next.js Image component for images
+- **Font Loading:** Use Next.js font optimization as in [layout.tsx](mdc:src/app/[locale]/layout.tsx)
+- **CSS Performance:** Leverage CSS variables for better performance

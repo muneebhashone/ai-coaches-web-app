@@ -6,8 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import * as z from "zod";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/lib/navigation";
-import { Link } from "@/lib/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -120,7 +119,7 @@ export function ResetPasswordForm({
         <CardContent>
           {missingParams ? (
             <div className="text-center py-4">
-              <p className="text-red-500 mb-4">{t("resetLinkExpired")}</p>
+              <p className="text-destructive mb-4">{t("resetLinkExpired")}</p>
               <Button
                 onClick={() => router.push("/forgot-password")}
                 className="w-full"
@@ -185,7 +184,7 @@ export function ResetPasswordForm({
                     : t("resetPassword")}
                 </Button>
                 <div className="mt-4 text-center text-sm">
-                  <Link href="/login" className="underline underline-offset-4">
+                  <Link href="/login" className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">
                     {tCommon("back")} to {t("login").toLowerCase()}
                   </Link>
                 </div>

@@ -1,0 +1,33 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Project Structure & Organization
+
+## App Router Structure
+- **Locale-based routing:** All pages under `src/app/[locale]/` for i18n support
+- **Route Groups:** Use `(auth)` for authentication pages, `(dashboard)` for protected routes
+- **Layout Hierarchy:** Root layout in [layout.tsx](mdc:src/app/[locale]/layout.tsx), dashboard layout in [dashboard/layout.tsx](mdc:src/app/[locale]/dashboard/layout.tsx)
+
+## Component Organization
+- **UI Components:** Reusable components in `src/components/ui/` (shadcn/ui)
+- **Feature Components:** Business logic components in `src/components/`
+- **Form Components:** Auth forms like [login-form.tsx](mdc:src/components/login-form.tsx) in components root
+- **Layout Components:** Navigation and layout components in components root
+
+## Services & Hooks
+- **API Services:** Organized by feature in `src/services/` (auth, user, common)
+- **Custom Hooks:** Service-specific hooks in respective service directories
+- **State Management:** Zustand stores in `src/stores/`
+
+## Internationalization
+- **Routing:** Use `@/i18n/navigation` for locale-aware navigation
+- **Translations:** Use `useTranslations` hook for all user-facing text
+- **Language Support:** English and Korean as defined in [language-switcher.tsx](mdc:src/components/language-switcher.tsx)
+
+## File Naming Conventions
+- **kebab-case:** For file and directory names
+- **PascalCase:** For component names and types
+- **camelCase:** For functions and variables
+- **Descriptive Names:** Use clear, descriptive names that indicate purpose
