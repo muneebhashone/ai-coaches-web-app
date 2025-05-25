@@ -125,11 +125,7 @@ export function AppSidebar({
       </SidebarHeader>
       
       <SidebarContent className="px-2 py-4">
-        <div className="mb-3">
-          <h2 className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-            Navigation
-          </h2>
-        </div>
+        
         <SidebarMenu className="space-y-1">
           {navMain.map((item) => {
             const isActive = pathname === item.url;
