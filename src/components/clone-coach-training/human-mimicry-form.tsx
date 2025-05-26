@@ -1,135 +1,117 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { X, Save, User } from "lucide-react";
+import {
+  PersonalityApproachSchema,
+  PersonalityStyleSchema,
+  PersonalityToneSchema,
+  type CreateHumanMimicryDataSchemaType,
+} from "@/services/human-mimicry/human-mimicry.schema";
 
-interface HumanMimicryFormData {
-  name: string;
-  description: string;
-  toneExample: string;
-  styleExample: string;
-  writingExample: string;
-  transcripts: string;
-  personality: {
-    tone: string;
-    style: string;
-    approach: string;
-  };
-}
+// Extended schema for form validation, including personality (which might be stripped for API)
+const humanMimicryFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  toneExample: z.string().optional(),
+  styleExample: z.string().optional(),
+  writingExample: z.string().optional(),
+  transcripts: z.string().optional(), // This field is in the form but not in API schema
+  personality: z.object({
+    tone: PersonalityToneSchema.min(1, "Tone is required"),
+    style: PersonalityStyleSchema.min(1, "Style is required"),
+    approach: PersonalityApproachSchema.min(1, "Approach is required"),
+  }),
+});
+
+export type HumanMimicryFormValues = z.infer<typeof humanMimicryFormSchema>;
+
+// This type represents the data structure the API expects for create/update
+// (excluding personality as per current API schema)
+export type HumanMimicryApiData = CreateHumanMimicryDataSchemaType;
+
 
 interface HumanMimicryFormProps {
   editingId: string | null;
-  existingData?: {
-    id: string;
-    name: string;
-    description: string;
-    toneExample: string;
-    styleExample: string;
-    writingExample: string;
-    personality: {
-      tone: string;
-      style: string;
-      approach: string;
-    };
-  };
+  existingData?: Partial<HumanMimicryFormValues> & { id?: string }; // Allow partial for create
   onClose: () => void;
-  onSave: (data: HumanMimicryFormData) => void;
+  onSave: (data: HumanMimicryApiData, id?: string) => void; // id is present for updates
+  isLoading?: boolean;
 }
 
-const toneOptions = [
-  "professional", "empathetic", "casual", "authoritative", "supportive"
-];
-
-const styleOptions = [
-  "structured", "conversational", "analytical", "creative", "direct"
-];
-
-const approachOptions = [
-  "consultative", "directive", "collaborative", "person-centered", "solution-focused"
-];
+const toneOptions = PersonalityToneSchema.options;
+const styleOptions = PersonalityStyleSchema.options;
+const approachOptions = PersonalityApproachSchema.options;
 
 export function HumanMimicryForm({
   editingId,
   existingData,
   onClose,
-  onSave
+  onSave,
+  isLoading = false,
 }: HumanMimicryFormProps) {
-  const [formData, setFormData] = useState<HumanMimicryFormData>({
-    name: existingData?.name || "",
-    description: existingData?.description || "",
-    toneExample: existingData?.toneExample || "",
-    styleExample: existingData?.styleExample || "",
-    writingExample: existingData?.writingExample || "",
-    transcripts: "",
-    personality: {
-      tone: existingData?.personality.tone || "",
-      style: existingData?.personality.style || "",
-      approach: existingData?.personality.approach || ""
-    }
+  const t = useTranslations("dashboard.cloneCoachTraining.knowledgeBase.mimicryForm");
+  const tValidation = useTranslations("validation");
+
+
+  const form = useForm<HumanMimicryFormValues>({
+    resolver: zodResolver(humanMimicryFormSchema),
+    defaultValues: {
+      name: existingData?.name || "",
+      description: existingData?.description || "",
+      toneExample: existingData?.toneExample || "",
+      styleExample: existingData?.styleExample || "",
+      writingExample: existingData?.writingExample || "",
+      transcripts: existingData?.transcripts || "", // Not in API schema, form-only
+      personality: {
+        tone: existingData?.personality?.tone || "",
+        style: existingData?.personality?.style || "",
+        approach: existingData?.personality?.approach || "",
+      },
+    },
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ""
-      }));
-    }
-  };
-
-  const handlePersonalityChange = (field: keyof HumanMimicryFormData['personality'], value: string) => {
-    setFormData(prev => ({
-      ...prev,
+  useEffect(() => {
+    form.reset({
+      name: existingData?.name || "",
+      description: existingData?.description || "",
+      toneExample: existingData?.toneExample || "",
+      styleExample: existingData?.styleExample || "",
+      writingExample: existingData?.writingExample || "",
+      transcripts: existingData?.transcripts || "",
       personality: {
-        ...prev.personality,
-        [field]: value
-      }
-    }));
-  };
+        tone: existingData?.personality?.tone || "",
+        style: existingData?.personality?.style || "",
+        approach: existingData?.personality?.approach || "",
+      },
+    });
+  }, [existingData, form]);
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.personality.tone) {
-      newErrors.tone = "Tone is required";
-    }
-
-    if (!formData.personality.style) {
-      newErrors.style = "Style is required";
-    }
-
-    if (!formData.personality.approach) {
-      newErrors.approach = "Approach is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      onSave(formData);
-    }
+  const onSubmit = (values: HumanMimicryFormValues) => {
+    // COMMENT: Personality is part of the form but not the API create/update schema.
+    // For now, we collect it in the form. If the API were to support it,
+    // it would be included here. Otherwise, it's stripped.
+    // The current HumanMimicryApiData type reflects this by omitting personality.
+    const apiData: HumanMimicryApiData = {
+      name: values.name,
+      description: values.description,
+      toneExample: values.toneExample,
+      styleExample: values.styleExample,
+      writingExample: values.writingExample,
+      transcripts: values.transcripts, // This field is also not in the provided API schema for create/update
+    };
+    onSave(apiData, editingId || undefined);
   };
 
   return (
@@ -138,173 +120,198 @@ export function HumanMimicryForm({
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <User className="h-5 w-5 mr-2 text-primary" />
-            {editingId ? "Edit Human Mimicry Style" : "Add New Human Mimicry Style"}
+            {editingId ? t("editTitle") : t("addTitle")}
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} disabled={isLoading}>
             <X className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Basic Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="e.g., Executive Communication Style"
-                className={errors.name ? "border-destructive" : ""}
-              />
-              {errors.name && (
-                <p className="text-xs text-destructive">{errors.name}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
-                placeholder="Brief description of this style"
-              />
-            </div>
-          </div>
-
-          {/* Personality Configuration */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Personality Configuration *</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="tone">Tone</Label>
-                <Select
-                  value={formData.personality.tone}
-                  onValueChange={(value) => handlePersonalityChange("tone", value)}
-                >
-                  <SelectTrigger className={errors.tone ? "border-destructive" : ""}>
-                    <SelectValue placeholder="Select tone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {toneOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.tone && (
-                  <p className="text-xs text-destructive">{errors.tone}</p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("nameLabel")} *</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("namePlaceholder")} {...field} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="style">Style</Label>
-                <Select
-                  value={formData.personality.style}
-                  onValueChange={(value) => handlePersonalityChange("style", value)}
-                >
-                  <SelectTrigger className={errors.style ? "border-destructive" : ""}>
-                    <SelectValue placeholder="Select style" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {styleOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.style && (
-                  <p className="text-xs text-destructive">{errors.style}</p>
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("descriptionLabel")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("descriptionPlaceholder")} {...field} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="approach">Approach</Label>
-                <Select
-                  value={formData.personality.approach}
-                  onValueChange={(value) => handlePersonalityChange("approach", value)}
-                >
-                  <SelectTrigger className={errors.approach ? "border-destructive" : ""}>
-                    <SelectValue placeholder="Select approach" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {approachOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.approach && (
-                  <p className="text-xs text-destructive">{errors.approach}</p>
+            {/* Personality Configuration */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">{t("personalityLabel")} *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="personality.tone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("toneLabel")}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("tonePlaceholder")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {toneOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {t(`toneOptions.${option}` as any, option)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="personality.style"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("styleLabel")}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("stylePlaceholder")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {styleOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {t(`styleOptions.${option}` as any, option)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="personality.approach"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("approachLabel")}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("approachPlaceholder")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {approachOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {t(`approachOptions.${option}` as any, option)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Examples */}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="toneExample"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("toneExampleLabel")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("toneExamplePlaceholder")} {...field} rows={2} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </div>
-          </div>
-
-          {/* Examples */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="toneExample">Tone Example</Label>
-              <Textarea
-                id="toneExample"
-                value={formData.toneExample}
-                onChange={(e) => handleInputChange("toneExample", e.target.value)}
-                placeholder="Describe the tone characteristics..."
-                rows={2}
+              />
+              <FormField
+                control={form.control}
+                name="styleExample"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("styleExampleLabel")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("styleExamplePlaceholder")} {...field} rows={2} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="writingExample"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("writingExampleLabel")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("writingExamplePlaceholder")} {...field} rows={3} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* COMMENT: 'transcripts' field is not in the API schema for create/update HumanMimicryData.
+                  It's included here as it was in the original form.
+                  If it's needed, the API schema would need to be updated.
+              */}
+              <FormField
+                control={form.control}
+                name="transcripts"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("transcriptsLabel")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("transcriptsPlaceholder")} {...field} rows={3} disabled={isLoading} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="styleExample">Style Example</Label>
-              <Textarea
-                id="styleExample"
-                value={formData.styleExample}
-                onChange={(e) => handleInputChange("styleExample", e.target.value)}
-                placeholder="Describe the communication style..."
-                rows={2}
-              />
+            {/* Form Actions */}
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+                {t("cancelButton")}
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                <Save className="h-4 w-4 mr-2" />
+                {isLoading ? t("savingButton") : (editingId ? t("updateButton") : t("createButton"))}
+              </Button>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="writingExample">Writing Example</Label>
-              <Textarea
-                id="writingExample"
-                value={formData.writingExample}
-                onChange={(e) => handleInputChange("writingExample", e.target.value)}
-                placeholder="Provide a sample response in this style..."
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="transcripts">Sample Transcripts</Label>
-              <Textarea
-                id="transcripts"
-                value={formData.transcripts}
-                onChange={(e) => handleInputChange("transcripts", e.target.value)}
-                placeholder="Coach: ... Client: ... Coach: ..."
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Form Actions */}
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              <Save className="h-4 w-4 mr-2" />
-              {editingId ? "Update Style" : "Create Style"}
-            </Button>
-          </div>
-        </form>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );
-} 
+}
