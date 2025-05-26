@@ -26,6 +26,7 @@ interface HumanMimicryListProps {
   onToggleSelection: (styleId: string) => void;
   onEdit: (styleId: string) => void;
   onDelete: (styleId: string) => void;
+  isLoading?: boolean; // To disable actions during global loading (e.g., a delete operation)
 }
 
 export function HumanMimicryList({
@@ -33,7 +34,8 @@ export function HumanMimicryList({
   selectedStyles,
   onToggleSelection,
   onEdit,
-  onDelete
+  onDelete,
+  isLoading = false,
 }: HumanMimicryListProps) {
   const handleKeyDown = (event: React.KeyboardEvent, action: () => void) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -62,9 +64,9 @@ export function HumanMimicryList({
               ? "bg-primary/10 border-primary"
               : "hover:bg-muted/50"
           }`}
-          onClick={() => onToggleSelection(style.id)}
-          onKeyDown={(e) => handleKeyDown(e, () => onToggleSelection(style.id))}
-          tabIndex={0}
+          onClick={() => !isLoading && onToggleSelection(style.id)}
+          onKeyDown={(e) => !isLoading && handleKeyDown(e, () => onToggleSelection(style.id))}
+          tabIndex={isLoading ? -1 : 0}
           role="button"
           aria-pressed={selectedStyles.includes(style.id)}
         >
@@ -85,9 +87,10 @@ export function HumanMimicryList({
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={isLoading}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(style.id);
+                    if (!isLoading) onEdit(style.id);
                   }}
                 >
                   <Edit className="h-4 w-4" />
@@ -95,9 +98,10 @@ export function HumanMimicryList({
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={isLoading}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(style.id);
+                    if (!isLoading) onDelete(style.id);
                   }}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
