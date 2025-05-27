@@ -1,7 +1,7 @@
 import validator from "validator";
 import z from "zod";
 import { passwordValidationSchema } from "../common/common.schema";
-import { baseCreateUser } from "../user/user.schema";
+import { CreateUserSchema } from "../users/user.schema";
 
 export const resetPasswordSchema = z.object({
   userId: z
@@ -33,7 +33,7 @@ export const registerUserByEmailSchema = z
     name: z.string({ required_error: "Name is required" }).min(1),
     confirmPassword: passwordValidationSchema("Confirm Password"),
   })
-  .merge(baseCreateUser)
+  .merge(CreateUserSchema)
   .strict()
   .refine(({ password, confirmPassword }) => {
     if (password !== confirmPassword) {
@@ -49,7 +49,7 @@ export const registerCoachByEmailSchema = z
     bio: z.string({ required_error: "Bio is required" }).min(1),
     confirmPassword: passwordValidationSchema("Confirm Password"),
   })
-  .merge(baseCreateUser)
+  .merge(CreateUserSchema)
   .strict()
   .refine(({ password, confirmPassword }) => {
     if (password !== confirmPassword) {

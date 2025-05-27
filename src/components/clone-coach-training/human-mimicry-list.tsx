@@ -3,29 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Trash2, User } from "lucide-react";
-
-interface HumanMimicryStyle {
-  id: string;
-  name: string;
-  description: string;
-  toneExample: string;
-  styleExample: string;
-  writingExample: string;
-  personality: {
-    tone: string;
-    style: string;
-    approach: string;
-  };
-  createdAt: string;
-}
+import { Edit, Trash2, User, Loader2 } from "lucide-react";
+import type { IHumanMimicry } from "@/services/human-mimicry/human-mimicry.types";
 
 interface HumanMimicryListProps {
-  styles: HumanMimicryStyle[];
+  styles: IHumanMimicry[];
   selectedStyles: string[];
   onToggleSelection: (styleId: string) => void;
   onEdit: (styleId: string) => void;
   onDelete: (styleId: string) => void;
+  isLoading?: boolean;
 }
 
 export function HumanMimicryList({
@@ -33,7 +20,8 @@ export function HumanMimicryList({
   selectedStyles,
   onToggleSelection,
   onEdit,
-  onDelete
+  onDelete,
+  isLoading = false
 }: HumanMimicryListProps) {
   const handleKeyDown = (event: React.KeyboardEvent, action: () => void) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -41,6 +29,15 @@ export function HumanMimicryList({
       action();
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <Loader2 className="h-8 w-8 mx-auto mb-4 animate-spin" />
+        <p className="text-sm">Loading human mimicry styles...</p>
+      </div>
+    );
+  }
 
   if (styles.length === 0) {
     return (
@@ -56,17 +53,17 @@ export function HumanMimicryList({
     <div className="space-y-3">
       {styles.map((style) => (
         <Card
-          key={style.id}
+          key={style._id}
           className={`transition-colors cursor-pointer ${
-            selectedStyles.includes(style.id)
+            selectedStyles.includes(style._id)
               ? "bg-primary/10 border-primary"
               : "hover:bg-muted/50"
           }`}
-          onClick={() => onToggleSelection(style.id)}
-          onKeyDown={(e) => handleKeyDown(e, () => onToggleSelection(style.id))}
+          onClick={() => onToggleSelection(style._id)}
+          onKeyDown={(e) => handleKeyDown(e, () => onToggleSelection(style._id))}
           tabIndex={0}
           role="button"
-          aria-pressed={selectedStyles.includes(style.id)}
+          aria-pressed={selectedStyles.includes(style._id)}
         >
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
@@ -87,7 +84,7 @@ export function HumanMimicryList({
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(style.id);
+                    onEdit(style._id);
                   }}
                 >
                   <Edit className="h-4 w-4" />
@@ -97,7 +94,7 @@ export function HumanMimicryList({
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(style.id);
+                    onDelete(style._id);
                   }}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -107,41 +104,35 @@ export function HumanMimicryList({
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-3">
-              {/* Personality traits */}
+              {/* Style badge */}
               <div className="flex flex-wrap gap-1">
                 <Badge variant="secondary" className="text-xs">
-                  {style.personality.tone}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {style.personality.style}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {style.personality.approach}
+                  {style?.style?.toLowerCase()}
                 </Badge>
               </div>
 
-              {/* Tone example */}
-              {style.toneExample && (
+              {/* Examples */}
+              {style.examples && style.examples.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Tone Example:</p>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {style.toneExample}
-                  </p>
-                </div>
-              )}
-
-              {/* Writing example */}
-              {style.writingExample && (
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Writing Example:</p>
-                  <p className="text-xs text-muted-foreground line-clamp-3 italic">
-                    &quot;{style.writingExample}&quot;
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Examples:</p>
+                  <div className="space-y-1">
+                    {style.examples.slice(0, 2).map((example) => (
+                      <p key={example.slice(0, 50)} className="text-xs text-muted-foreground line-clamp-2 italic">
+                        &quot;{example}&quot;
+                      </p>
+                    ))}
+                    {style.examples.length > 2 && (
+                      <p className="text-xs text-muted-foreground">
+                        +{style.examples.length - 2} more examples
+                      </p>
+                    )}
+                  </div>
                 </div>
               )}
 
               <div className="flex justify-between items-center text-xs text-muted-foreground">
-                <span>Created: {style.createdAt}</span>
+                <span>Created: {new Date(style.createdAt).toLocaleDateString()}</span>
+                <span>{style.examples?.length || 0} examples</span>
               </div>
             </div>
           </CardContent>

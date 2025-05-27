@@ -5,9 +5,11 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare, Send, Bot, User } from "lucide-react";
+import { TrainingCenterPanel } from "./training-center-panel";
+import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
+import { Label } from "@radix-ui/react-label";
 
 // Mock chatbots for selection
 const mockChatbots = [
@@ -39,11 +41,13 @@ const mockMessages = [
 
 export function ChatbotPreviewPanel() {
   const t = useTranslations("dashboard.cloneCoachTraining.preview");
-  const [selectedChatbotId, setSelectedChatbotId] = useState("1");
   const [messages, setMessages] = useState(mockMessages);
   const [inputMessage, setInputMessage] = useState("");
 
-  const selectedChatbot = mockChatbots.find(bot => bot.id === selectedChatbotId);
+  
+  const { selectedChatbot: flowChatbot } = useChatbotFlowStore();
+
+  const selectedMockChatbot = mockChatbots.find(bot => bot.id === flowChatbot?._id);
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
@@ -71,38 +75,19 @@ export function ChatbotPreviewPanel() {
   };
 
   return (
-    <Card className="h-fit">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <MessageSquare className="h-5 w-5 mr-2 text-primary" />
-          {t("title")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-6">
+      <Card className="h-fit">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <MessageSquare className="h-5 w-5 mr-2 text-primary" />
+            {t("title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
         {/* Chatbot Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t("selectChatbot")}</label>
-          <Select value={selectedChatbotId} onValueChange={setSelectedChatbotId}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {mockChatbots.map((chatbot) => (
-                <SelectItem key={chatbot.id} value={chatbot.id}>
-                  <div className="flex items-center space-x-2">
-                    <span>{chatbot.name}</span>
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      chatbot.status === "Trained" 
-                        ? "bg-success/20 text-success" 
-                        : "bg-warning/20 text-warning"
-                    }`}>
-                      {chatbot.status}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label className="text-sm font-medium">{t("selectChatbot")}</Label>
+      
         </div>
 
         {/* Chat Interface */}
@@ -116,7 +101,7 @@ export function ChatbotPreviewPanel() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium">{selectedChatbot?.name}</p>
+                <p className="text-sm font-medium">{flowChatbot?.name || selectedMockChatbot?.name}</p>
                 <p className="text-xs text-muted-foreground">AI Coach Assistant</p>
               </div>
             </div>
@@ -194,7 +179,11 @@ export function ChatbotPreviewPanel() {
             Export Test Log
           </Button>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Training Center Panel */}
+      <TrainingCenterPanel />
+    </div>
   );
 }

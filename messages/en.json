@@ -6,6 +6,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saving": "Saving...",
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
@@ -115,8 +116,21 @@
         "listChatbots": "List of Chatbots",
         "createChatbot": "Create Chatbot",
         "selectedChatbot": "Selected Chatbot",
+        "editChatbot": "Edit Chatbot",
         "prompts": "Prompts",
-        "persona": "Persona"
+        "persona": "Persona",
+        "form": {
+          "name": "Chatbot Name",
+          "namePlaceholder": "Enter chatbot name",
+          "description": "Description",
+          "descriptionPlaceholder": "Enter chatbot description",
+          "descriptionHelper": "Optional description to help identify this chatbot",
+          "systemPrompt": "System Prompt",
+          "systemPromptPlaceholder": "Enter the system prompt that defines the chatbot's behavior and personality",
+          "systemPromptHelper": "This prompt will guide how the chatbot responds and behaves in conversations",
+          "active": "Active Status",
+          "activeHelper": "Enable or disable this chatbot"
+        }
       },
       "preview": {
         "title": "Preview Chatbot",

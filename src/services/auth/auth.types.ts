@@ -1,5 +1,5 @@
 import type { IAPIResponse } from "../common/common.types";
-import type { IUser } from "@/services/user/user.types";
+import type { IUser } from "@/services/users/user.types";
 
 export type IRegisterUserByEmailResponse = IAPIResponse<IUser>;
 

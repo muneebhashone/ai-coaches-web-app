@@ -4,52 +4,23 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, FileText, Folder, Trash2, Download, Plus, User } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FileText, Folder, Trash2, Download, Plus, User, Lock, AlertCircle } from "lucide-react";
 import { HumanMimicryList } from "./human-mimicry-list";
 import { HumanMimicryForm } from "./human-mimicry-form";
-
-// Mock human mimicry data
-const mockHumanMimicryStyles = [
-  {
-    id: "1",
-    name: "Executive Communication Style",
-    description: "Professional communication patterns for executive-level coaching",
-    toneExample: "Confident, direct, yet empathetic. Uses strategic vocabulary and speaks with authority while maintaining approachability.",
-    styleExample: "Structured responses with clear frameworks. Often uses analogies and real-world examples to illustrate points.",
-    writingExample: "Let's examine this challenge through a strategic lens. Consider three key factors: market dynamics, team capabilities, and resource allocation. How might we approach each of these systematically?",
-    personality: {
-      tone: "professional",
-      style: "structured",
-      approach: "consultative"
-    },
-    createdAt: "2025-05-20"
-  },
-  {
-    id: "2",
-    name: "Empathetic Mentor Style",
-    description: "Warm, supportive communication patterns for personal development coaching",
-    toneExample: "Warm, encouraging, patient. Uses inclusive language and validates emotions while gently challenging growth areas.",
-    styleExample: "Reflective questions, active listening responses, and gentle guidance. Often acknowledges feelings before offering solutions.",
-    writingExample: "I hear that this situation is really weighing on you. It's completely understandable to feel overwhelmed when facing such significant changes. What would feel like the most supportive next step for you right now?",
-    personality: {
-      tone: "empathetic",
-      style: "supportive",
-      approach: "person-centered"
-    },
-    createdAt: "2025-05-18"
-  }
-];
-
-// Mock program content files (keeping existing structure)
-const mockProgramContentFiles = [
-  { id: "4", name: "Stress_Management_Guide.pdf", size: "5.2 MB", uploadedAt: "2025-05-22" },
-  { id: "5", name: "Wellness_Exercises.docx", size: "3.1 MB", uploadedAt: "2025-05-20" },
-  { id: "6", name: "Goal_Setting_Framework.xlsx", size: "890 KB", uploadedAt: "2025-05-17" },
-  { id: "7", name: "Mindfulness_Scripts.txt", size: "1.2 MB", uploadedAt: "2025-05-14" },
-];
+import { FileUploadZone } from "./file-upload-zone";
+import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
+import { 
+  useHumanMimicries, 
+  useCreateHumanMimicry, 
+  useUpdateHumanMimicry, 
+  useDeleteHumanMimicry 
+} from "@/services/human-mimicry/human-mimicry.hooks";
+import type { CreateHumanMimicrySchemaType, UpdateHumanMimicrySchemaType } from "@/services/human-mimicry/human-mimicry.schema";
+import { useDeleteDocument } from "@/services/documents/document.hooks";
 
 export function KnowledgeBasePanel() {
   const t = useTranslations("dashboard.cloneCoachTraining.knowledgeBase");
@@ -58,13 +29,48 @@ export function KnowledgeBasePanel() {
   const [showMimicryForm, setShowMimicryForm] = useState(false);
   const [editingMimicryId, setEditingMimicryId] = useState<string | null>(null);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      // Handle file upload logic here
-      console.log("Uploading files:", files);
-    }
+  const {mutateAsync: deleteDocument} = useDeleteDocument();
+
+  const {
+    selectedChatbot,
+    selectedKnowledgeBase,
+    documents,
+    // humanMimicryStyles,
+    // flowSteps,
+    canAccessStep,
+    // addDocument,
+    removeDocument,
+    // addHumanMimicryStyle,
+    // removeHumanMimicryStyle,
+  } = useChatbotFlowStore();
+
+  const handleDeleteDocument = async (documentId: string) => {
+    await deleteDocument({
+      knowledgeBaseId: selectedKnowledgeBase?._id || "",
+      documentId: documentId
+    });
+
+    removeDocument(documentId);
   };
+
+  // API hooks
+  const { data: humanMimicryData, isLoading: isLoadingMimicry } = useHumanMimicries(
+    selectedChatbot?._id || "",
+    { page: 1, limit: 100 }
+  );
+  const createMimicryMutation = useCreateHumanMimicry();
+  const updateMimicryMutation = useUpdateHumanMimicry();
+  const deleteMimicryMutation = useDeleteHumanMimicry();
+
+  const humanMimicryStyles = humanMimicryData?.data?.results || [];
+
+  // Check if this panel should be accessible
+  const canAccessKnowledgeBase = canAccessStep('knowledge-base');
+  const canAccessDocuments = canAccessStep('documents');
+  const canAccessHumanMimicry = canAccessStep('human-mimicry');
+  
+  const isLocked = !selectedChatbot;
+
 
   const toggleFileSelection = (fileId: string) => {
     setSelectedFiles(prev => 
@@ -82,14 +88,14 @@ export function KnowledgeBasePanel() {
     );
   };
 
-
-
   const handleAddMimicryStyle = () => {
+    if (!canAccessHumanMimicry) return;
     setEditingMimicryId(null);
     setShowMimicryForm(true);
   };
 
   const handleEditMimicryStyle = (styleId: string) => {
+    if (!canAccessHumanMimicry) return;
     setEditingMimicryId(styleId);
     setShowMimicryForm(true);
   };
@@ -99,26 +105,77 @@ export function KnowledgeBasePanel() {
     setEditingMimicryId(null);
   };
 
-  const FileList = ({ files }: { files: typeof mockProgramContentFiles }) => (
+  const handleMimicryFormSave = async (data: any) => {
+    if (!selectedChatbot?._id) return;
+
+    try {
+      if (editingMimicryId) {
+        // Handle edit
+        const updateData: UpdateHumanMimicrySchemaType = {
+          name: data.name,
+          description: data.description,
+          style: data.style,
+          examples: data.examples
+        };
+
+        await updateMimicryMutation.mutateAsync({
+          chatbotId: selectedChatbot._id,
+          humanMimicryId: editingMimicryId,
+          data: updateData
+        });
+      } else {
+        // Handle create
+        const createData: CreateHumanMimicrySchemaType = {
+          name: data.name,
+          description: data.description,
+          style: data.style,
+          examples: data.examples,
+        };
+
+        await createMimicryMutation.mutateAsync({
+          chatbotId: selectedChatbot._id,
+          data: createData
+        });
+      }
+      handleMimicryFormClose();
+    } catch (error) {
+      console.error("Error saving mimicry style:", error);
+    }
+  };
+
+  const handleDeleteMimicryStyle = async (styleId: string) => {
+    if (!selectedChatbot?._id) return;
+
+    try {
+      await deleteMimicryMutation.mutateAsync({
+        chatbotId: selectedChatbot._id,
+        humanMimicryId: styleId
+      });
+    } catch (error) {
+      console.error("Error deleting mimicry style:", error);
+    }
+  };
+
+  const FileList = ({ files }: { files: typeof documents }) => (
     <div className="space-y-2">
       {files.map((file) => (
         <button
-          key={file.id}
+          key={file._id}
           type="button"
           className={`flex items-center justify-between p-3 rounded-md border transition-colors cursor-pointer w-full text-left ${
-            selectedFiles.includes(file.id) 
+            selectedFiles.includes(file._id) 
               ? "bg-primary/10 border-primary" 
               : "bg-card hover:bg-muted/50"
           }`}
-          onClick={() => toggleFileSelection(file.id)}
-          aria-pressed={selectedFiles.includes(file.id)}
+          onClick={() => toggleFileSelection(file._id)}
+          aria-pressed={selectedFiles.includes(file._id)}
         >
           <div className="flex items-center space-x-3">
             <FileText className="h-5 w-5 text-primary" />
             <div>
               <p className="text-sm font-medium">{file.name}</p>
               <p className="text-xs text-muted-foreground">
-                {file.size} • {file.uploadedAt}
+                {Math.round(file.fileSize / 1024)}KB • {new Date(file.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -126,7 +183,14 @@ export function KnowledgeBasePanel() {
             <Button variant="ghost" size="sm">
               <Download className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteDocument(file._id);
+              }}
+            >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           </div>
@@ -136,18 +200,50 @@ export function KnowledgeBasePanel() {
   );
 
   return (
-    <Card className="h-fit">
+    <Card className={`h-fit ${isLocked ? 'opacity-60' : ''}`}>
       <CardHeader>
         <CardTitle className="flex items-center">
           <Folder className="h-5 w-5 mr-2 text-primary" />
           {t("title")}
+          {isLocked && <Lock className="h-4 w-4 ml-2 text-muted-foreground" />}
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Locked State */}
+        {isLocked && (
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Select a chatbot to configure knowledge base settings.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Knowledge Base Not Ready State */}
+        {!isLocked && !canAccessKnowledgeBase && (
+          <Alert className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Complete chatbot and program setup to access knowledge base configuration.
+            </AlertDescription>
+          </Alert>
+        )}
         <Tabs defaultValue="coach-style" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="coach-style">{t("coachStyle")}</TabsTrigger>
-            <TabsTrigger value="program-content">{t("programContent")}</TabsTrigger>
+            <TabsTrigger 
+              value="coach-style" 
+              disabled={!canAccessHumanMimicry}
+            >
+              {t("coachStyle")}
+              {!canAccessHumanMimicry && <Lock className="h-3 w-3 ml-1" />}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="program-content"
+              disabled={!canAccessDocuments}
+            >
+              {t("programContent")}
+              {!canAccessDocuments && <Lock className="h-3 w-3 ml-1" />}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="coach-style" className="space-y-4">
@@ -158,38 +254,37 @@ export function KnowledgeBasePanel() {
                   Human Mimicry Styles
                 </h4>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{mockHumanMimicryStyles.length} styles</Badge>
-                  <Button 
+                  <Badge variant="outline">
+                    {isLoadingMimicry ? "..." : humanMimicryStyles.length} styles
+                  </Badge>
+                {humanMimicryStyles.length < 1 && <Button 
                     variant="outline" 
                     size="sm"
                     onClick={handleAddMimicryStyle}
+                    disabled={!canAccessHumanMimicry || createMimicryMutation.isPending}
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Style
-                  </Button>
+                  </Button>}
                 </div>
               </div>
 
               {showMimicryForm && (
                 <HumanMimicryForm
                   editingId={editingMimicryId}
-                  existingData={editingMimicryId ? mockHumanMimicryStyles.find(s => s.id === editingMimicryId) : undefined}
+                  existingData={editingMimicryId ? humanMimicryStyles.find(s => s._id === editingMimicryId) : undefined}
                   onClose={handleMimicryFormClose}
-                  onSave={(data: any) => {
-                    console.log("Saving mimicry style:", data);
-                    handleMimicryFormClose();
-                  }}
+                  onSave={handleMimicryFormSave}
                 />
               )}
 
               <HumanMimicryList
-                styles={mockHumanMimicryStyles}
+                styles={humanMimicryStyles}
                 selectedStyles={selectedMimicryStyles}
                 onToggleSelection={toggleMimicrySelection}
                 onEdit={handleEditMimicryStyle}
-                onDelete={(styleId: string) => {
-                  console.log("Deleting style:", styleId);
-                }}
+                onDelete={handleDeleteMimicryStyle}
+                isLoading={isLoadingMimicry}
               />
             </div>
           </TabsContent>
@@ -198,30 +293,14 @@ export function KnowledgeBasePanel() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-medium">{t("programContent")}</h4>
-                <Badge variant="outline">{mockProgramContentFiles.length} files</Badge>
+                <Badge variant="outline">{documents.length} files</Badge>
               </div>
               
-              <div className="border-2 border-dashed border-muted rounded-lg p-4 text-center">
-                <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  {t("uploadDocument")}
-                </p>
-                <Input
-                  type="file"
-                  multiple
-                  accept=".pdf,.docx,.txt,.xlsx"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="program-content-upload"
-                />
-                <Button variant="outline" size="sm" asChild>
-                  <label htmlFor="program-content-upload" className="cursor-pointer">
-                    Select Files
-                  </label>
-                </Button>
-              </div>
+              <FileUploadZone 
+                disabled={!canAccessDocuments}
+              />
 
-              <FileList files={mockProgramContentFiles} />
+              <FileList files={documents} />
             </div>
           </TabsContent>
         </Tabs>
@@ -250,10 +329,24 @@ export function KnowledgeBasePanel() {
               {selectedMimicryStyles.length} style(s) selected
             </p>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="outline">
+              <Button 
+                size="sm" 
+                variant="outline"
+                disabled={deleteMimicryMutation.isPending}
+              >
                 Manage Styles
               </Button>
-              <Button size="sm" variant="outline">
+              <Button 
+                size="sm" 
+                variant="outline"
+                disabled={deleteMimicryMutation.isPending}
+                onClick={() => {
+                  for (const styleId of selectedMimicryStyles) {
+                    handleDeleteMimicryStyle(styleId);
+                  }
+                  setSelectedMimicryStyles([]);
+                }}
+              >
                 Delete Selected
               </Button>
             </div>
