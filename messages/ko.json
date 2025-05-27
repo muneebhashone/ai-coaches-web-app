@@ -6,6 +6,7 @@
     "cancel": "취소",
     "confirm": "확인",
     "save": "저장",
+    "saving": "저장 중...",
     "edit": "편집",
     "delete": "삭제",
     "add": "추가",
@@ -115,8 +116,21 @@
         "listChatbots": "챗봇 목록",
         "createChatbot": "챗봇 생성",
         "selectedChatbot": "선택된 챗봇",
+        "editChatbot": "챗봇 편집",
         "prompts": "프롬프트",
-        "persona": "페르소나"
+        "persona": "페르소나",
+        "form": {
+          "name": "챗봇 이름",
+          "namePlaceholder": "챗봇 이름을 입력하세요",
+          "description": "설명",
+          "descriptionPlaceholder": "챗봇 설명을 입력하세요",
+          "descriptionHelper": "이 챗봇을 식별하는 데 도움이 되는 선택적 설명",
+          "systemPrompt": "시스템 프롬프트",
+          "systemPromptPlaceholder": "챗봇의 행동과 성격을 정의하는 시스템 프롬프트를 입력하세요",
+          "systemPromptHelper": "이 프롬프트는 챗봇이 대화에서 어떻게 응답하고 행동할지를 안내합니다",
+          "active": "활성 상태",
+          "activeHelper": "이 챗봇을 활성화하거나 비활성화합니다"
+        }
       },
       "preview": {
         "title": "챗봇 미리보기",

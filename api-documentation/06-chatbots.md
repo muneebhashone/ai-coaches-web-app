@@ -71,15 +71,7 @@ Create new chatbot with program and sessions
 - **Body:**
   - name: string (required)
   - description: string (optional)
-  - programName: string (required)
-  - programDescription: string (optional)
-  - programPurpose: string (optional)
-  - programGoals: string (optional)
-  - programSuccessMetrics: string (optional)
-  - sessions: array (optional)
-    - name: string (required)
-    - duration: string (required)
-    - sessionDate: string (required, ISO datetime)
+  - active: boolean (optional)
 
 **Response:**
 - **201 Created**
