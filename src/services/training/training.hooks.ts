@@ -23,7 +23,7 @@ export function useTrainingJobs(params?: GetTrainingJobsQuerySchemaType) {
   return useQuery({
     queryKey: trainingKeys.list(params),
     queryFn: () => getTrainingJobs(params),
-    refetchInterval: 1000,
+    // refetchInterval: 1000,
     enabled: !!params?.chatbotId,
   });
 }
@@ -33,7 +33,7 @@ export function useTrainingJob(id: string) {
     queryKey: trainingKeys.detail(id),
     queryFn: () => getTrainingJob(id),
     enabled: !!id,
-    refetchInterval: 1000,
+    // refetchInterval: 1000,
   });
 }
 

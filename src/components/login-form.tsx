@@ -78,6 +78,7 @@ export function LoginForm({
       }
     },
     onError: (error) => {
+      console.log({error})
       toast.error(error.message || tErrors("networkError"));
       setIsFormDisabled(false);
     },

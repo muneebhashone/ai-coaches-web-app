@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import RootProvider from "./root-provider";
 import { Noto_Sans } from "next/font/google";
+import { Toaster } from "sonner";
 
 const notoSans = Noto_Sans({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <RootProvider>
           <NextIntlClientProvider messages={messages}>
             {children}
+            <Toaster/>
           </NextIntlClientProvider>
         </RootProvider>
       </body>

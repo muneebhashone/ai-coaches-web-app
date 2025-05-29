@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const apiClient = axios.create({
   baseURL:
@@ -6,5 +6,18 @@ const apiClient = axios.create({
       ? process.env.NEXT_PUBLIC_API_URL
       : process.env.BACKEND_URL,
 });
+
+// add interceptor for error
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if(error instanceof AxiosError) {
+      return Promise.reject(error.response?.data);
+    }
+
+
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;

@@ -6,6 +6,7 @@ import {
   sendMessageUnprotected,
   updateChat,
   deleteChat,
+  startChat,
 } from "./chat.service";
 import type {
   SendMessageSchemaType,
@@ -29,6 +30,17 @@ export function useChats(params?: GetChatsQuerySchemaType) {
   });
 }
 
+export function useStartChat() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ clientId, sessionId }: { clientId: string; sessionId: string }) => startChat(clientId, sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chatKeys.lists() });
+    },
+  });
+}
+
 export function useChat(id: string) {
   return useQuery({
     queryKey: chatKeys.detail(id),
@@ -42,14 +54,12 @@ export function useSendMessage() {
 
   return useMutation({
     mutationFn: ({
-      chatbotId,
-      clientId,
-      data,
+        chatId,
+        data,
     }: {
-      chatbotId: string;
-      clientId: string;
+      chatId: string;
       data: SendMessageSchemaType;
-    }) => sendMessage(chatbotId, clientId, data),
+    }) => sendMessage(chatId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.lists() });
     },

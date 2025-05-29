@@ -20,7 +20,7 @@ export interface IChat {
 }
 
 export type IGetChatsResponse = IAPIResponse<{
-  chats: IChat[];
+  results: IChat[];
   pagination: IPagination;
 }>;
 

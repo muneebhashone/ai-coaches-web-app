@@ -177,7 +177,7 @@ export const useChatbotFlowStore = create<ChatbotFlowState>()(
 
       addSession: (session) => {
         set((state) => {
-          const newSessions = [...state.selectedSessions, session];
+          const newSessions = [...state.selectedSessions, session].filter((session, index, sessions) => sessions.findIndex(s => s._id === session._id) === index);
           return {
             selectedSessions: newSessions,
             flowSteps: {
