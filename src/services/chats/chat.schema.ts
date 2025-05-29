@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const SendMessageSchema = z.object({
-  message: z.string().min(1),
-  sessionId: z.string().optional(),
+  content: z.string().min(1),
+  role: z.enum(["client", "coach"]),
 });
 
 export const GetChatsQuerySchema = z.object({

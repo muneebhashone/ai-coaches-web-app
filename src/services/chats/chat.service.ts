@@ -25,24 +25,23 @@ export const getChat = async (id: string): Promise<IGetChatResponse> => {
 };
 
 export const sendMessage = async (
-  chatbotId: string,
-  clientId: string,
+  chatId: string,
   data: SendMessageSchemaType
 ): Promise<ISendMessageResponse> => {
   const response = await apiClient.post(
-    `/chats/${chatbotId}/${clientId}/message`,
+    `/chats/${chatId}/messages`,
     data
   );
   return response.data;
 };
 
 export const sendMessageUnprotected = async (
-  chatbotId: string,
+  chatId: string,
   clientId: string,
   data: SendMessageSchemaType
 ): Promise<ISendMessageResponse> => {
   const response = await apiClient.post(
-    `/chats/unprotected/${chatbotId}/${clientId}/message`,
+    `/chats/unprotected/${chatId}/${clientId}/message`,
     data
   );
   return response.data;
@@ -59,4 +58,11 @@ export const updateChat = async (
 export const deleteChat = async (id: string): Promise<IDeleteChatResponse> => {
   const response = await apiClient.delete(`/chats/${id}`);
   return response.data;
+};
+
+export const startChat = async (clientId: string, sessionId: string): Promise<void> => {
+  await apiClient.post("/chats/start", {
+    clientId,
+    sessionId
+  });
 };
