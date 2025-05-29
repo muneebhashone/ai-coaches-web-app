@@ -72,7 +72,6 @@ export function ChatbotPreviewPanel() {
   // Reset when chatbot changes
   useEffect(() => {
     setMessages([]);
-    setSelectedSession(null);
     setIsInitialized(false);
   }, [selectedChatbot?._id]);
 
