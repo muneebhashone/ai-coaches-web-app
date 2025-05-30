@@ -6,7 +6,7 @@ export const CreateProgramSchema = z.object({
   chatbotId: z.string().min(1),
   goals: z.array(z.string()).optional(),
   metrics: z.record(z.string(), z.any()).optional(),
-  isActive: z.boolean().default(true),
+  active: z.boolean().default(true),
 });
 
 export const UpdateProgramSchema = z.object({
@@ -14,7 +14,7 @@ export const UpdateProgramSchema = z.object({
   description: z.string().optional(),
   goals: z.array(z.string()).optional(),
   metrics: z.record(z.string(), z.any()).optional(),
-  isActive: z.boolean().optional(),
+  active: z.boolean().optional(),
 });
 
 export const GetProgramsQuerySchema = z.object({
@@ -22,7 +22,7 @@ export const GetProgramsQuerySchema = z.object({
   limit: z.number().min(1).max(100).default(10),
   search: z.string().optional(),
   chatbotId: z.string().optional(),
-  isActive: z.boolean().optional(),
+  active: z.boolean().optional(),
 });
 
 export type CreateProgramSchemaType = z.infer<typeof CreateProgramSchema>;
