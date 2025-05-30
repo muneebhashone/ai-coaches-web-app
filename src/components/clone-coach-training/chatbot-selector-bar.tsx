@@ -97,7 +97,7 @@ export function ChatbotSelectorBar({
     [trainingData?.data?.results]
   );
 
-  const program = programData?.data;
+  const program = useMemo(() => programData?.data, [programData?.data]);
   const sessions = useMemo(
     () => sessionsData?.data?.results || [],
     [sessionsData?.data?.results]
@@ -110,8 +110,8 @@ export function ChatbotSelectorBar({
 
   const completedFlowSteps = useMemo((): Record<FlowStepsType, boolean> => {
     return {
-      chatbot: !!selectedChatbot,
-      program: !!program,
+      chatbot: !!selectedChatbot?._id,
+      program: !!program?._id,
       sessions: sessions.length > 0,
       "knowledge-base": !!knowledgeBase?._id,
       documents: !!documentData?.data?.results?.length,
