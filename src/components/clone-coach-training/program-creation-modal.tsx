@@ -84,7 +84,7 @@ export function ProgramCreationModal({
       form.setValue("goals", program.data.goals?.split(",") || []);
       form.setValue("active", program.data.active);
     }
-  }, [program, form, chatbotId]);
+  }, [program, form]);
 
   const handleSubmit = async (data: any) => {
     if (!selectedChatbot) return;
