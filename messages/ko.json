@@ -104,6 +104,56 @@
     "cloneCoachTraining": {
       "title": "클론 코치 훈련",
       "description": "개인화된 AI 챗봇을 관리하고 훈련하세요",
+      "training": {
+        "title": "훈련 센터",
+        "status": {
+          "completed": "훈련 완료",
+          "failed": "훈련 실패",
+          "running": "훈련 진행 중",
+          "pending": "훈련 대기 중",
+          "notStarted": "훈련 준비 완료"
+        },
+        "actions": {
+          "startTraining": "훈련 시작",
+          "retryTraining": "훈련 재시도",
+          "cancelTraining": "훈련 취소",
+          "logs": "로그"
+        },
+        "prerequisites": {
+          "title": "전제 조건",
+          "chatbotConfigured": "챗봇 구성됨",
+          "knowledgeBaseCreated": "지식 베이스 생성됨",
+          "documentsUploaded": "문서 업로드됨",
+          "humanMimicryStyles": "인간 모방 스타일",
+          "configured": "구성됨",
+          "optional": "선택사항"
+        },
+        "progress": {
+          "indexingDocuments": "문서 색인 중...",
+          "eta": "예상 시간: 약 {minutes}분",
+          "lastTrained": "마지막 훈련: {time}",
+          "never": "없음"
+        },
+        "details": {
+          "title": "훈련 세부 정보",
+          "started": "시작:",
+          "completed": "완료:",
+          "status": "상태:",
+          "progress": "진행률:",
+          "error": "오류:"
+        },
+        "messages": {
+          "trainingFailed": "훈련 실패: {error}",
+          "documentsUpdated": "마지막 훈련 이후 문서가 업데이트되었습니다. 변경사항을 적용하려면 재훈련하세요.",
+          "lastChange": "마지막 변경: {timestamp}",
+          "completePrerequisites": "훈련을 활성화하려면 위의 전제 조건을 완료하세요. 훈련은 업로드된 모든 문서를 벡터 저장소에 색인하여 의미론적 검색을 수행합니다."
+        },
+        "time": {
+          "daysAgo": "{count}일 전",
+          "hoursAgo": "{count}시간 전",
+          "lessThanHour": "1시간 이내"
+        }
+      },
       "knowledgeBase": {
         "title": "지식 베이스",
         "coachStyle": "코치 스타일",

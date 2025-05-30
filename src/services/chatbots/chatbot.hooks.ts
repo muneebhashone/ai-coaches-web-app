@@ -55,14 +55,14 @@ export function useUpdateChatbot() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateChatbotSchemaType }) =>
       updateChatbot(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: chatbotKeys.detail(id) });
-      queryClient.invalidateQueries({ queryKey: chatbotKeys.lists() });
+    onSuccess: async (_, { id }) => {
+      await queryClient.invalidateQueries({ queryKey: chatbotKeys.detail(id) });
+      await queryClient.invalidateQueries({ queryKey: chatbotKeys.lists() });
     },
   });
 }
 
-export function useDeleteChatbot() {
+export function useDeleteChatbot() {  
   const queryClient = useQueryClient();
 
   return useMutation({

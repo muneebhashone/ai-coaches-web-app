@@ -1,6 +1,6 @@
 "use client";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,55 +25,91 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Database, Loader2 } from "lucide-react";
 import { CreateKnowledgeBaseSchema } from "@/services/knowledge-bases/knowledge-base.schema";
-import { useCreateKnowledgeBase } from "@/services/knowledge-bases/knowledge-base.hooks";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
+import {
+  useCreateKnowledgeBase,
+  useKnowledgeBasesByChatbotId,
+  useUpdateKnowledgeBase,
+} from "@/services/knowledge-bases/knowledge-base.hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useChatbot } from "@/services/chatbots/chatbot.hooks";
+import { useProgramByChatbotId } from "@/services/programs/program.hooks";
+import { useSessions } from "@/services/sessions/session.hooks";
 
 interface KnowledgeBaseCreationModalProps {
+  chatbotId: string;
   isOpen: boolean;
   onClose: () => void;
-  onExplicitClose: () => void;
 }
 
-export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }: KnowledgeBaseCreationModalProps) {
+export function KnowledgeBaseCreationModal({
+  isOpen,
+  onClose,
+  chatbotId,
+}: KnowledgeBaseCreationModalProps) {
   const [isCreating, setIsCreating] = useState(false);
-  
-  const { selectedSessions, selectedChatbot, setSelectedKnowledgeBase } = useChatbotFlowStore();
+
   const createKnowledgeBaseMutation = useCreateKnowledgeBase();
+  const updateKnowledgeBaseMutation = useUpdateKnowledgeBase();
+
+  const { data: chatbot } = useChatbot(chatbotId);
+
+  const selectedChatbot = chatbot?.data;
+
+  const { data: programData } = useProgramByChatbotId(chatbotId);
+
+  const { data: sessions } = useSessions({
+    programId: programData?.data?._id || "",
+    page: 1,
+    limit: 100,
+  });
+
+  const { data: knowledgeBase } = useKnowledgeBasesByChatbotId(chatbotId);
+
+  const selectedSessions = sessions?.data?.results || [];
 
   const form = useForm({
     resolver: zodResolver(CreateKnowledgeBaseSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      chatbotId: selectedChatbot?._id || "",
+      name: knowledgeBase?.data?.name || "",
+      description: knowledgeBase?.data?.description || "",
+      chatbotId: chatbotId,
     },
   });
 
   useEffect(() => {
-    if (selectedChatbot) {
-      form.setValue("chatbotId", selectedChatbot._id);
+    if (chatbotId) {
+      form.setValue("chatbotId", chatbotId);
     }
-  }, [selectedChatbot, form]);
+
+    if (knowledgeBase?.data) {
+      form.setValue("name", knowledgeBase.data.name);
+      form.setValue("description", knowledgeBase.data.description);
+    }
+  }, [chatbotId, form, knowledgeBase?.data]);
 
   const handleSubmit = async (data: any) => {
-    if (!selectedChatbot) return;
+    if (!chatbotId) return;
 
     setIsCreating(true);
 
     try {
-      const result = await createKnowledgeBaseMutation.mutateAsync(data);
-      
+      let result: any;
+
+      if (knowledgeBase?.data) {
+        result = await updateKnowledgeBaseMutation.mutateAsync({
+          ...data,
+          _id: knowledgeBase.data._id,
+        });
+      } else {
+        result = await createKnowledgeBaseMutation.mutateAsync(data);
+      }
+
       if (result.success && result.data) {
-        // Set the newly created knowledge base in the flow store
-        setSelectedKnowledgeBase(result.data);
-        
-        // Reset form and close modal
         form.reset();
         onClose();
       }
     } catch (error) {
-      console.error('Failed to create knowledge base:', error);
+      console.error("Failed to create knowledge base:", error);
     } finally {
       setIsCreating(false);
     }
@@ -86,36 +122,36 @@ export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }:
     }
   };
 
-  const handleExplicitClose = () => {
-    onExplicitClose();
-  };
-
-  if (!selectedChatbot) {
-    return null;
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <Database className="h-6 w-6 mr-2 text-primary" />
-            Create Knowledge Base
+            {knowledgeBase?.data ? "Edit" : "Create"} Knowledge Base
           </DialogTitle>
           <DialogDescription>
-            Create a knowledge base to store documents and information that your chatbot can reference during conversations.
+            Create a knowledge base to store documents and information that your
+            chatbot can reference during conversations.
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               {/* Context Info */}
               <div className="bg-muted/50 p-3 rounded-lg space-y-1">
-                <p className="text-sm font-medium">For Chatbot: {selectedChatbot.name}</p>
+                <p className="text-sm font-medium">
+                  For Chatbot: {selectedChatbot?.name}
+                </p>
                 {selectedSessions.length > 0 && (
                   <p className="text-xs text-muted-foreground">
-                    This knowledge base will be linked to your chatbot and {selectedSessions.length} session{selectedSessions.length !== 1 ? 's' : ''}.
+                    This knowledge base will be linked to your chatbot and{" "}
+                    {selectedSessions.length} session
+                    {selectedSessions.length !== 1 ? "s" : ""}.
                   </p>
                 )}
               </div>
@@ -158,7 +194,8 @@ export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }:
                       />
                     </FormControl>
                     <FormDescription>
-                      Optional description of the knowledge base content and purpose.
+                      Optional description of the knowledge base content and
+                      purpose.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -168,7 +205,9 @@ export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }:
               {/* Info Note */}
               <div className="bg-primary/10 border border-primary/20 rounded-md p-3">
                 <p className="text-sm text-primary">
-                  📚 <strong>Next Steps:</strong> After creating this knowledge base, you&apos;ll be able to upload documents and configure human mimicry styles.
+                  📚 <strong>Next Steps:</strong> After creating this knowledge
+                  base, you&apos;ll be able to upload documents and configure
+                  human mimicry styles.
                 </p>
               </div>
 
@@ -186,7 +225,7 @@ export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }:
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={handleExplicitClose}
+                  onClick={handleClose}
                   disabled={isCreating}
                 >
                   Cancel
@@ -195,8 +234,10 @@ export function KnowledgeBaseCreationModal({ isOpen, onClose, onExplicitClose }:
                   type="submit"
                   disabled={isCreating || !form.formState.isValid}
                 >
-                  {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create Knowledge Base
+                  {isCreating && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
+                  {knowledgeBase?.data ? "Update" : "Create"} Knowledge Base
                 </Button>
               </div>
             </form>

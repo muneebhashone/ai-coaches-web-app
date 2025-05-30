@@ -1,50 +1,74 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
-import { Settings, Lock, AlertCircle, Edit, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Settings,
+  Lock,
+  AlertCircle,
+  Edit,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ChatbotUpdateForm } from "./chatbot-update-form";
+import { useChatbot } from "@/services/chatbots/chatbot.hooks";
+import { useKnowledgeBasesByChatbotId } from "@/services/knowledge-bases/knowledge-base.hooks";
+import { useHumanMimicries } from "@/services/human-mimicry/human-mimicry.hooks";
+import { useProgramByChatbotId } from "@/services/programs/program.hooks";
+import { useTrainingJobs } from "@/services/training/training.hooks";
 
-export function PromptConfigurationPanel() {
+type PromptConfigurationPanelProps = {
+  chatbotId: string;
+};
+
+export function PromptConfigurationPanel({
+  chatbotId,
+}: PromptConfigurationPanelProps) {
   const t = useTranslations("dashboard.cloneCoachTraining.promptConfiguration");
-  const { 
-    selectedChatbot, 
-    selectedKnowledgeBase,
-    selectedProgram,
-    humanMimicryStyles,
-    canAccessStep,
-    updateFlowStep 
-  } = useChatbotFlowStore();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const canAccessPrompts = canAccessStep('prompts');
+  const { data: chatbot } = useChatbot(chatbotId);
+  const { data: knowledgeBase } = useKnowledgeBasesByChatbotId(chatbotId);
+  const { data: humanMimicry } = useHumanMimicries(chatbotId);
+  const { data: program } = useProgramByChatbotId(chatbotId);
+
+  const { data: trainingData } = useTrainingJobs({
+    chatbotId,
+    page: 1,
+    limit: 1,
+  });
+
+  const training = trainingData?.data?.results?.[0];
+
+  const selectedKnowledgeBase = knowledgeBase?.data;
+
+  const selectedChatbot = chatbot?.data;
+
+  const canAccessPrompts = !!selectedChatbot;
   const isLocked = !selectedChatbot;
 
-  const hasHumanMimicry = humanMimicryStyles[0];
-
-  // Mark step as completed when chatbot is configured
-  useEffect(() => {
-    if (selectedChatbot && canAccessPrompts) {
-      updateFlowStep('prompts', { 
-        completed: true,
-        hasData: true,
-      });
-    }
-  }, [selectedChatbot, canAccessPrompts, updateFlowStep]);
+  const hasHumanMimicry = humanMimicry?.data?.results?.length || 0 > 0;
+  const selectedProgram = program?.data;
 
   const handleFormSuccess = () => {
     setIsFormOpen(false);
   };
 
   return (
-    <Card className={`h-fit ${isLocked ? 'opacity-60' : ''}`}>
+    <Card
+      className={`h-fit ${isLocked ? "opacity-60" : ""}`}
+      id="prompt-configuration-panel"
+    >
       <CardHeader>
         <CardTitle className="flex items-center">
           <Settings className="h-5 w-5 mr-2 text-primary" />
@@ -72,11 +96,13 @@ export function PromptConfigurationPanel() {
             </AlertDescription>
           </Alert>
         )}
-        
+
         {/* Current Chatbot Info */}
         {selectedChatbot && (
           <div className="space-y-2">
-            <Label className="text-sm font-medium">{t("selectedChatbot")}</Label>
+            <Label className="text-sm font-medium">
+              {t("selectedChatbot")}
+            </Label>
             <div className="bg-muted/50 p-3 rounded">
               <p className="font-medium">{selectedChatbot.name}</p>
               {selectedChatbot.description && (
@@ -85,11 +111,22 @@ export function PromptConfigurationPanel() {
                 </p>
               )}
               <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                <p><strong>Status:</strong> {selectedChatbot.active ? 'Active' : 'Inactive'}</p>
-                <p><strong>Knowledge Base:</strong> {selectedKnowledgeBase?.name || 'Not linked'}</p>
-                <p><strong>Human Mimicry:</strong> {hasHumanMimicry ? 'Configured' : 'Not configured'}</p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {selectedChatbot.active ? "Active" : "Inactive"}
+                </p>
+                <p>
+                  <strong>Knowledge Base:</strong>{" "}
+                  {selectedKnowledgeBase?.name || "Not linked"}
+                </p>
+                <p>
+                  <strong>Human Mimicry:</strong>{" "}
+                  {hasHumanMimicry ? "Configured" : "Not configured"}
+                </p>
                 {selectedChatbot.prompt && (
-                  <p><strong>System Prompt:</strong> Configured</p>
+                  <p>
+                    <strong>System Prompt:</strong> Configured
+                  </p>
                 )}
               </div>
             </div>
@@ -114,8 +151,8 @@ export function PromptConfigurationPanel() {
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-4 pt-4">
-                <ChatbotUpdateForm 
-                  chatbot={selectedChatbot} 
+                <ChatbotUpdateForm
+                  chatbot={selectedChatbot}
                   onSuccess={handleFormSuccess}
                 />
               </CollapsibleContent>
@@ -131,14 +168,25 @@ export function PromptConfigurationPanel() {
                 ✓ Chatbot configuration completed. Ready for next steps.
               </p>
             </div>
-            
+
             <div className="text-sm text-muted-foreground">
-              <p><strong>Next Steps:</strong></p>
+              <p>
+                <strong>Next Steps:</strong>
+              </p>
               <ul className="list-disc list-inside mt-1 space-y-1">
-                {!selectedProgram && <li>Create a program for training sessions</li>}
-                {!selectedKnowledgeBase && <li>Set up knowledge base with documents</li>}
+                {!selectedProgram && (
+                  <li>Create a program for training sessions</li>
+                )}
+                {!selectedKnowledgeBase && (
+                  <li>Set up knowledge base with documents</li>
+                )}
                 {!hasHumanMimicry && <li>Configure human mimicry styles</li>}
-                {selectedChatbot && selectedKnowledgeBase && hasHumanMimicry && selectedProgram && <li>Start training your AI coach</li>}
+                {selectedChatbot &&
+                  selectedKnowledgeBase &&
+                  hasHumanMimicry &&
+                  selectedProgram &&
+                  !training && <li>Start training your AI coach</li>}
+                {training && <li>Start testing your AI coach</li>}
               </ul>
             </div>
           </div>

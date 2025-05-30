@@ -8,56 +8,68 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Folder, Trash2, Download, Plus, User, Lock, AlertCircle } from "lucide-react";
+import {
+  FileText,
+  Folder,
+  Trash2,
+  Download,
+  Plus,
+  User,
+  Lock,
+  AlertCircle,
+} from "lucide-react";
 import { HumanMimicryList } from "./human-mimicry-list";
 import { HumanMimicryForm } from "./human-mimicry-form";
 import { FileUploadZone } from "./file-upload-zone";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
-import { 
-  useHumanMimicries, 
-  useCreateHumanMimicry, 
-  useUpdateHumanMimicry, 
-  useDeleteHumanMimicry 
+import {
+  useHumanMimicries,
+  useCreateHumanMimicry,
+  useUpdateHumanMimicry,
+  useDeleteHumanMimicry,
 } from "@/services/human-mimicry/human-mimicry.hooks";
-import type { CreateHumanMimicrySchemaType, UpdateHumanMimicrySchemaType } from "@/services/human-mimicry/human-mimicry.schema";
-import { useDeleteDocument } from "@/services/documents/document.hooks";
+import type {
+  CreateHumanMimicrySchemaType,
+  UpdateHumanMimicrySchemaType,
+} from "@/services/human-mimicry/human-mimicry.schema";
+import {
+  useDeleteDocument,
+  useDocuments,
+} from "@/services/documents/document.hooks";
+import { useKnowledgeBasesByChatbotId } from "@/services/knowledge-bases/knowledge-base.hooks";
+import { useChatbot } from "@/services/chatbots/chatbot.hooks";
+import { IDocument } from "@/services/documents/document.types";
+import { IKnowledgeBase } from "@/services/knowledge-bases/knowledge-base.types";
+import { TrainingCenterPanel } from "./training-center-panel";
 
-export function KnowledgeBasePanel() {
+export function KnowledgeBasePanel({ chatbotId }: { chatbotId: string }) {
   const t = useTranslations("dashboard.cloneCoachTraining.knowledgeBase");
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-  const [selectedMimicryStyles, setSelectedMimicryStyles] = useState<string[]>([]);
+  const [selectedMimicryStyles, setSelectedMimicryStyles] = useState<string[]>(
+    []
+  );
   const [showMimicryForm, setShowMimicryForm] = useState(false);
   const [editingMimicryId, setEditingMimicryId] = useState<string | null>(null);
 
-  const {mutateAsync: deleteDocument} = useDeleteDocument();
+  const { mutateAsync: deleteDocument } = useDeleteDocument();
+  const { data: chatbot } = useChatbot(chatbotId);
+  const { data: knowledgeBases } = useKnowledgeBasesByChatbotId(chatbotId);
 
-  const {
-    selectedChatbot,
-    selectedKnowledgeBase,
-    documents,
-    // humanMimicryStyles,
-    // flowSteps,
-    canAccessStep,
-    // addDocument,
-    removeDocument,
-    // addHumanMimicryStyle,
-    // removeHumanMimicryStyle,
-  } = useChatbotFlowStore();
+  const selectedChatbot = chatbot?.data;
+
+  const selectedKnowledgeBase = knowledgeBases?.data;
+
+  const { data: documents } = useDocuments(selectedKnowledgeBase?._id || "");
 
   const handleDeleteDocument = async (documentId: string) => {
     await deleteDocument({
       knowledgeBaseId: selectedKnowledgeBase?._id || "",
-      documentId: documentId
+      documentId: documentId,
     });
-
-    removeDocument(documentId);
   };
 
   // API hooks
-  const { data: humanMimicryData, isLoading: isLoadingMimicry } = useHumanMimicries(
-    selectedChatbot?._id || "",
-    { page: 1, limit: 100 }
-  );
+  const { data: humanMimicryData, isLoading: isLoadingMimicry } =
+    useHumanMimicries(selectedChatbot?._id || "", { page: 1, limit: 100 });
   const createMimicryMutation = useCreateHumanMimicry();
   const updateMimicryMutation = useUpdateHumanMimicry();
   const deleteMimicryMutation = useDeleteHumanMimicry();
@@ -65,25 +77,24 @@ export function KnowledgeBasePanel() {
   const humanMimicryStyles = humanMimicryData?.data?.results || [];
 
   // Check if this panel should be accessible
-  const canAccessKnowledgeBase = canAccessStep('knowledge-base');
-  const canAccessDocuments = canAccessStep('documents');
-  const canAccessHumanMimicry = canAccessStep('human-mimicry');
-  
+  const canAccessKnowledgeBase = !!selectedChatbot;
+  const canAccessDocuments = !!selectedKnowledgeBase;
+  const canAccessHumanMimicry = !!selectedKnowledgeBase;
+
   const isLocked = !selectedChatbot;
 
-
   const toggleFileSelection = (fileId: string) => {
-    setSelectedFiles(prev => 
-      prev.includes(fileId) 
-        ? prev.filter(id => id !== fileId)
+    setSelectedFiles((prev) =>
+      prev.includes(fileId)
+        ? prev.filter((id) => id !== fileId)
         : [...prev, fileId]
     );
   };
 
   const toggleMimicrySelection = (styleId: string) => {
-    setSelectedMimicryStyles(prev => 
-      prev.includes(styleId) 
-        ? prev.filter(id => id !== styleId)
+    setSelectedMimicryStyles((prev) =>
+      prev.includes(styleId)
+        ? prev.filter((id) => id !== styleId)
         : [...prev, styleId]
     );
   };
@@ -115,13 +126,13 @@ export function KnowledgeBasePanel() {
           name: data.name,
           description: data.description,
           style: data.style,
-          examples: data.examples
+          examples: data.examples,
         };
 
         await updateMimicryMutation.mutateAsync({
           chatbotId: selectedChatbot._id,
           humanMimicryId: editingMimicryId,
-          data: updateData
+          data: updateData,
         });
       } else {
         // Handle create
@@ -134,7 +145,7 @@ export function KnowledgeBasePanel() {
 
         await createMimicryMutation.mutateAsync({
           chatbotId: selectedChatbot._id,
-          data: createData
+          data: createData,
         });
       }
       handleMimicryFormClose();
@@ -149,22 +160,22 @@ export function KnowledgeBasePanel() {
     try {
       await deleteMimicryMutation.mutateAsync({
         chatbotId: selectedChatbot._id,
-        humanMimicryId: styleId
+        humanMimicryId: styleId,
       });
     } catch (error) {
       console.error("Error deleting mimicry style:", error);
     }
   };
 
-  const FileList = ({ files }: { files: typeof documents }) => (
+  const FileList = ({ files }: { files: IDocument[] }) => (
     <div className="space-y-2">
       {files.map((file) => (
         <button
           key={file._id}
           type="button"
           className={`flex items-center justify-between p-3 rounded-md border transition-colors cursor-pointer w-full text-left ${
-            selectedFiles.includes(file._id) 
-              ? "bg-primary/10 border-primary" 
+            selectedFiles.includes(file._id)
+              ? "bg-primary/10 border-primary"
               : "bg-card hover:bg-muted/50"
           }`}
           onClick={() => toggleFileSelection(file._id)}
@@ -175,7 +186,8 @@ export function KnowledgeBasePanel() {
             <div>
               <p className="text-sm font-medium">{file.name}</p>
               <p className="text-xs text-muted-foreground">
-                {Math.round(file.fileSize / 1024)}KB • {new Date(file.createdAt).toLocaleDateString()}
+                {Math.round(file.fileSize / 1024)}KB •{" "}
+                {new Date(file.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -183,8 +195,8 @@ export function KnowledgeBasePanel() {
             <Button variant="ghost" size="sm">
               <Download className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
@@ -200,159 +212,185 @@ export function KnowledgeBasePanel() {
   );
 
   return (
-    <Card className={`h-fit ${isLocked ? 'opacity-60' : ''}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Folder className="h-5 w-5 mr-2 text-primary" />
-          {t("title")}
-          {isLocked && <Lock className="h-4 w-4 ml-2 text-muted-foreground" />}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* Locked State */}
-        {isLocked && (
-          <Alert className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Select a chatbot to configure knowledge base settings.
-            </AlertDescription>
-          </Alert>
-        )}
+    <div className="space-y-6" id="knowledge-base-panel">
+      <Card className={`h-fit ${isLocked ? "opacity-60" : ""}`}>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Folder className="h-5 w-5 mr-2 text-primary" />
+            {t("title")}
+            {isLocked && (
+              <Lock className="h-4 w-4 ml-2 text-muted-foreground" />
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Locked State */}
+          {isLocked && (
+            <Alert className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Select a chatbot to configure knowledge base settings.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {/* Knowledge Base Not Ready State */}
-        {!isLocked && !canAccessKnowledgeBase && (
-          <Alert className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Complete chatbot and program setup to access knowledge base configuration.
-            </AlertDescription>
-          </Alert>
-        )}
-        <Tabs defaultValue="coach-style" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger 
-              value="coach-style" 
-              disabled={!canAccessHumanMimicry}
-            >
-              {t("coachStyle")}
-              {!canAccessHumanMimicry && <Lock className="h-3 w-3 ml-1" />}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="program-content"
-              disabled={!canAccessDocuments}
-            >
-              {t("programContent")}
-              {!canAccessDocuments && <Lock className="h-3 w-3 ml-1" />}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="coach-style" className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium flex items-center">
-                  <User className="h-4 w-4 mr-2" />
-                  Human Mimicry Styles
-                </h4>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline">
-                    {isLoadingMimicry ? "..." : humanMimicryStyles.length} styles
-                  </Badge>
-                {humanMimicryStyles.length < 1 && <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleAddMimicryStyle}
-                    disabled={!canAccessHumanMimicry || createMimicryMutation.isPending}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Style
-                  </Button>}
-                </div>
-              </div>
-
-              {showMimicryForm && (
-                <HumanMimicryForm
-                  editingId={editingMimicryId}
-                  existingData={editingMimicryId ? humanMimicryStyles.find(s => s._id === editingMimicryId) : undefined}
-                  onClose={handleMimicryFormClose}
-                  onSave={handleMimicryFormSave}
-                />
-              )}
-
-              <HumanMimicryList
-                styles={humanMimicryStyles}
-                selectedStyles={selectedMimicryStyles}
-                onToggleSelection={toggleMimicrySelection}
-                onEdit={handleEditMimicryStyle}
-                onDelete={handleDeleteMimicryStyle}
-                isLoading={isLoadingMimicry}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="program-content" className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium">{t("programContent")}</h4>
-                <Badge variant="outline">{documents.length} files</Badge>
-              </div>
-              
-              <FileUploadZone 
+          {/* Knowledge Base Not Ready State */}
+          {!isLocked && !canAccessKnowledgeBase && (
+            <Alert className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Complete chatbot and program setup to access knowledge base
+                configuration.
+              </AlertDescription>
+            </Alert>
+          )}
+          <Tabs defaultValue="coach-style" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="coach-style"
+                disabled={!canAccessHumanMimicry}
+                className="coach-style-tab-trigger"
+              >
+                {t("coachStyle")}
+                {!canAccessHumanMimicry && <Lock className="h-3 w-3 ml-1" />}
+              </TabsTrigger>
+              <TabsTrigger
+                value="program-content"
                 disabled={!canAccessDocuments}
-              />
-
-              <FileList files={documents} />
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Selection actions for files */}
-        {selectedFiles.length > 0 && (
-          <div className="mt-4 p-3 bg-primary/10 rounded-md">
-            <p className="text-sm text-primary font-medium">
-              {selectedFiles.length} file(s) selected
-            </p>
-            <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="outline">
-                {t("manageFiles")}
-              </Button>
-              <Button size="sm" variant="outline">
-                Delete Selected
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Selection actions for mimicry styles */}
-        {selectedMimicryStyles.length > 0 && (
-          <div className="mt-4 p-3 bg-primary/10 rounded-md">
-            <p className="text-sm text-primary font-medium">
-              {selectedMimicryStyles.length} style(s) selected
-            </p>
-            <div className="flex gap-2 mt-2">
-              <Button 
-                size="sm" 
-                variant="outline"
-                disabled={deleteMimicryMutation.isPending}
+                className="program-content-tab-trigger"
               >
-                Manage Styles
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline"
-                disabled={deleteMimicryMutation.isPending}
-                onClick={() => {
-                  for (const styleId of selectedMimicryStyles) {
-                    handleDeleteMimicryStyle(styleId);
+                {t("programContent")}
+                {!canAccessDocuments && <Lock className="h-3 w-3 ml-1" />}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="coach-style" className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium flex items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    Human Mimicry Styles
+                  </h4>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                      {isLoadingMimicry ? "..." : humanMimicryStyles.length}{" "}
+                      styles
+                    </Badge>
+                    {humanMimicryStyles.length < 1 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddMimicryStyle}
+                        disabled={
+                          !canAccessHumanMimicry ||
+                          createMimicryMutation.isPending
+                        }
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Style
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {showMimicryForm && (
+                  <HumanMimicryForm
+                    editingId={editingMimicryId}
+                    existingData={
+                      editingMimicryId
+                        ? humanMimicryStyles.find(
+                            (s) => s._id === editingMimicryId
+                          )
+                        : undefined
+                    }
+                    onClose={handleMimicryFormClose}
+                    onSave={handleMimicryFormSave}
+                  />
+                )}
+
+                <HumanMimicryList
+                  styles={humanMimicryStyles}
+                  selectedStyles={selectedMimicryStyles}
+                  onToggleSelection={toggleMimicrySelection}
+                  onEdit={handleEditMimicryStyle}
+                  onDelete={handleDeleteMimicryStyle}
+                  isLoading={isLoadingMimicry}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="program-content" className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">{t("programContent")}</h4>
+                  <Badge variant="outline">
+                    {documents?.data?.pagination?.totalItems} files
+                  </Badge>
+                </div>
+
+                <FileUploadZone
+                  disabled={!canAccessDocuments}
+                  selectedKnowledgeBase={
+                    selectedKnowledgeBase || ({} as IKnowledgeBase)
                   }
-                  setSelectedMimicryStyles([]);
-                }}
-              >
-                Delete Selected
-              </Button>
+                />
+
+                <FileList files={documents?.data?.results || []} />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Selection actions for files */}
+          {selectedFiles.length > 0 && (
+            <div className="mt-4 p-3 bg-primary/10 rounded-md">
+              <p className="text-sm text-primary font-medium">
+                {selectedFiles.length} file(s) selected
+              </p>
+              <div className="flex gap-2 mt-2">
+                <Button size="sm" variant="outline">
+                  {t("manageFiles")}
+                </Button>
+                <Button size="sm" variant="outline">
+                  Delete Selected
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+
+          {/* Selection actions for mimicry styles */}
+          {selectedMimicryStyles.length > 0 && (
+            <div className="mt-4 p-3 bg-primary/10 rounded-md">
+              <p className="text-sm text-primary font-medium">
+                {selectedMimicryStyles.length} style(s) selected
+              </p>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={deleteMimicryMutation.isPending}
+                >
+                  Manage Styles
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={deleteMimicryMutation.isPending}
+                  onClick={() => {
+                    for (const styleId of selectedMimicryStyles) {
+                      handleDeleteMimicryStyle(styleId);
+                    }
+                    setSelectedMimicryStyles([]);
+                  }}
+                >
+                  Delete Selected
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      {/* Training Center Panel */}
+      <TrainingCenterPanel chatbotId={chatbotId} />
+    </div>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogBody,
@@ -26,34 +25,63 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Target, Loader2, Plus, X } from "lucide-react";
-// import { CreateProgramSchema, type CreateProgramSchemaType } from "@/services/programs/program.schema";
-import { useCreateProgram } from "@/services/programs/program.hooks";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
+import {
+  useCreateProgram,
+  useProgramByChatbotId,
+  useUpdateProgram,
+} from "@/services/programs/program.hooks";
+import { useChatbot } from "@/services/chatbots/chatbot.hooks";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateProgramSchema } from "@/services/programs/program.schema";
+import { ICreateProgramResponse } from "@/services/programs/program.types";
+import { IUpdateProgramResponse } from "@/services/programs/program.types";
 
 interface ProgramCreationModalProps {
   isOpen: boolean;
+  chatbotId: string;
   onClose: () => void;
-  onExplicitClose: () => void;
 }
 
-export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: ProgramCreationModalProps) {
+export function ProgramCreationModal({
+  isOpen,
+  onClose,
+  chatbotId,
+}: ProgramCreationModalProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [goals, setGoals] = useState<string[]>([]);
   const [newGoal, setNewGoal] = useState("");
-  
-  const { selectedChatbot, setSelectedProgram } = useChatbotFlowStore();
+
   const createProgramMutation = useCreateProgram();
+  const updateProgramMutation = useUpdateProgram();
+
+  const { data: selectedChatbot } = useChatbot(chatbotId);
+
+  const { data: program } = useProgramByChatbotId(chatbotId);
 
   const form = useForm({
-    // resolver: zodResolver(CreateProgramSchema),
+    resolver: zodResolver(CreateProgramSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      chatbotId: selectedChatbot?._id || "",
-      goals: [],
-      isActive: true,
+      name: program?.data?.name || "",
+      description: program?.data?.description || "",
+      chatbotId: chatbotId,
+      goals: program?.data?.goals?.split(",") || [],
+      isActive: program?.data?.isActive || true,
     },
   });
+
+  const isEdit = !!program?.data?._id;
+
+  useEffect(() => {
+    if (program) {
+      setGoals(program.data.goals?.split(",") || []);
+
+      form.setValue("name", program.data.name);
+      form.setValue("description", program.data.description || "");
+      form.setValue("goals", program.data.goals?.split(",") || []);
+      form.setValue("chatbotId", program.data.chatbotId);
+      form.setValue("isActive", program.data.isActive);
+    }
+  }, [program, form]);
 
   const handleSubmit = async (data: any) => {
     if (!selectedChatbot) return;
@@ -61,25 +89,23 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
     setIsCreating(true);
 
     try {
-      const programData = {
-        ...data,
-        chatbotId: selectedChatbot._id,
-        goals: goals.join(","),
-      };
+      let result: ICreateProgramResponse | IUpdateProgramResponse;
+      if (isEdit) {
+        result = await updateProgramMutation.mutateAsync({
+          id: program?.data?._id,
+          data,
+        });
+      } else {
+        result = await createProgramMutation.mutateAsync(data);
+      }
 
-      const result = await createProgramMutation.mutateAsync(programData);
-      
       if (result.success && result.data) {
-        // Set the newly created program in the flow store
-        setSelectedProgram(result.data);
-        
-        // Reset form and close modal
         form.reset();
         setGoals([]);
         onClose();
       }
     } catch (error) {
-      console.error('Failed to create program:', error);
+      console.error("Failed to create program:", error);
     } finally {
       setIsCreating(false);
     }
@@ -93,7 +119,7 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
   };
 
   const removeGoal = (goalToRemove: string) => {
-    setGoals(goals.filter(goal => goal !== goalToRemove));
+    setGoals(goals.filter((goal) => goal !== goalToRemove));
   };
 
   const handleClose = () => {
@@ -103,10 +129,6 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
       setNewGoal("");
       onClose();
     }
-  };
-
-  const handleExplicitClose = () => {
-    onExplicitClose();
   };
 
   if (!selectedChatbot) {
@@ -119,16 +141,21 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <Target className="h-6 w-6 mr-2 text-primary" />
-            Create Program for {selectedChatbot.name}
+            {isEdit ? "Update Program" : "Create Program"} for{" "}
+            {selectedChatbot.data.name}
           </DialogTitle>
           <DialogDescription>
-            Create a coaching program that will define the structure and goals for this chatbot&apos;s sessions.
+            Create a coaching program that will define the structure and goals
+            for this chatbot&apos;s sessions.
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               {/* Program Name */}
               <FormField
                 control={form.control}
@@ -144,7 +171,8 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
                       />
                     </FormControl>
                     <FormDescription>
-                      Give your program a descriptive name that reflects its purpose.
+                      Give your program a descriptive name that reflects its
+                      purpose.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -167,7 +195,8 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
                       />
                     </FormControl>
                     <FormDescription>
-                      Optional description of the program&apos;s objectives and approach.
+                      Optional description of the program&apos;s objectives and
+                      approach.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -177,7 +206,7 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
               {/* Goals Section */}
               <div className="space-y-3">
                 <FormLabel>Program Goals</FormLabel>
-                
+
                 {/* Add Goal Input */}
                 <div className="flex gap-2">
                   <Input
@@ -242,9 +271,7 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Active Status
-                      </FormLabel>
+                      <FormLabel className="text-base">Active Status</FormLabel>
                       <FormDescription>
                         Enable this program for immediate use.
                       </FormDescription>
@@ -274,7 +301,7 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={handleExplicitClose}
+                  onClick={handleClose}
                   disabled={isCreating}
                 >
                   Cancel
@@ -283,8 +310,10 @@ export function ProgramCreationModal({ isOpen, onClose, onExplicitClose }: Progr
                   type="submit"
                   disabled={isCreating || !form.formState.isValid}
                 >
-                  {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create Program
+                  {isCreating && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
+                  {isEdit ? "Update Program" : "Create Program"}
                 </Button>
               </div>
             </form>

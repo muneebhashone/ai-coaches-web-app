@@ -104,6 +104,56 @@
     "cloneCoachTraining": {
       "title": "Clone Coach Training",
       "description": "Manage and train your personalized AI chatbot",
+      "training": {
+        "title": "Training Center",
+        "status": {
+          "completed": "Training Completed",
+          "failed": "Training Failed",
+          "running": "Training in Progress",
+          "pending": "Training Queued",
+          "notStarted": "Ready to Train"
+        },
+        "actions": {
+          "startTraining": "Start Training",
+          "retryTraining": "Retry Training",
+          "cancelTraining": "Cancel Training",
+          "logs": "Logs"
+        },
+        "prerequisites": {
+          "title": "Prerequisites",
+          "chatbotConfigured": "Chatbot configured",
+          "knowledgeBaseCreated": "Knowledge base created", 
+          "documentsUploaded": "Documents uploaded",
+          "humanMimicryStyles": "Human mimicry styles",
+          "configured": "Configured",
+          "optional": "Optional"
+        },
+        "progress": {
+          "indexingDocuments": "Indexing documents...",
+          "eta": "ETA: ~{minutes} minutes",
+          "lastTrained": "Last trained: {time}",
+          "never": "Never"
+        },
+        "details": {
+          "title": "Training Details",
+          "started": "Started:",
+          "completed": "Completed:",
+          "status": "Status:",
+          "progress": "Progress:",
+          "error": "Error:"
+        },
+        "messages": {
+          "trainingFailed": "Training failed: {error}",
+          "documentsUpdated": "Documents have been updated since last training. Retrain to apply changes.",
+          "lastChange": "Last change: {timestamp}",
+          "completePrerequisites": "Complete the prerequisites above to enable training. Training will index all uploaded documents into the vector store for semantic search."
+        },
+        "time": {
+          "daysAgo": "{count} day ago|{count} days ago",
+          "hoursAgo": "{count} hour ago|{count} hours ago", 
+          "lessThanHour": "Less than an hour ago"
+        }
+      },
       "knowledgeBase": {
         "title": "Knowledge Base",
         "coachStyle": "Coach Style",

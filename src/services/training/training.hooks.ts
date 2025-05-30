@@ -23,8 +23,10 @@ export function useTrainingJobs(params?: GetTrainingJobsQuerySchemaType) {
   return useQuery({
     queryKey: trainingKeys.list(params),
     queryFn: () => getTrainingJobs(params),
-    // refetchInterval: 1000,
     enabled: !!params?.chatbotId,
+    refetchInterval: (query) => {
+      return query.state.data?.data.results.some(trainingJob => trainingJob.status === "completed") ? false : 1000;
+    },
   });
 }
 
@@ -33,7 +35,12 @@ export function useTrainingJob(id: string) {
     queryKey: trainingKeys.detail(id),
     queryFn: () => getTrainingJob(id),
     enabled: !!id,
-    // refetchInterval: 1000,
+    refetchInterval: (query) => {
+      if (query.state.data?.data.status === "completed") {
+        return false;
+      }
+      return 1000;
+    },
   });
 }
 

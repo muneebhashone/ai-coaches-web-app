@@ -5,7 +5,7 @@ export interface IProgram {
   name: string;
   description?: string;
   chatbotId: string;
-  goals?: string[];
+  goals?: string;
   metrics?: Record<string, any>;
   isActive: boolean;
   createdAt: string;
