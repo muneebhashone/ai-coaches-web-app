@@ -78,10 +78,10 @@ export function ProgramCreationModal({
       form.setValue("name", program.data.name);
       form.setValue("description", program.data.description || "");
       form.setValue("goals", program.data.goals?.split(",") || []);
-      form.setValue("chatbotId", program.data.chatbotId);
+      form.setValue("chatbotId", chatbotId);
       form.setValue("active", program.data.active);
     }
-  }, [program, form]);
+  }, [program, form, chatbotId]);
 
   const handleSubmit = async (data: any) => {
     if (!selectedChatbot) return;
