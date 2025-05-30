@@ -26,9 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Bot, Loader2 } from "lucide-react";
-// import { CreateChatbotSchema, type CreateChatbotSchemaType } from "@/services/chatbots/chatbot.schema";
+
 import { useCreateChatbot } from "@/services/chatbots/chatbot.hooks";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
 import { CreateChatbotSchema } from "@/services/chatbots/chatbot.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -37,11 +36,13 @@ interface ChatbotCreationModalProps {
   onClose: () => void;
 }
 
-export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalProps) {
+export function ChatbotCreationModal({
+  isOpen,
+  onClose,
+}: ChatbotCreationModalProps) {
   // const t = useTranslations("dashboard.cloneCoachTraining.createChatbot");
   const [isCreating, setIsCreating] = useState(false);
-  
-  const { setSelectedChatbot, setIsCreating: setFlowCreating } = useChatbotFlowStore();
+
   const createChatbotMutation = useCreateChatbot();
 
   const form = useForm({
@@ -55,7 +56,6 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
 
   const handleSubmit = async (data: any) => {
     setIsCreating(true);
-    setFlowCreating(true);
 
     try {
       // Clean up empty optional fields
@@ -64,23 +64,19 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
         description: data.description?.trim() || undefined,
         prompt: data.prompt?.trim() || undefined,
       };
-      
+
       const result = await createChatbotMutation.mutateAsync(cleanData);
-      
+
       if (result.success && result.data) {
-        // Set the newly created chatbot in the flow store
-        setSelectedChatbot(result.data);
-        
         // Reset form and close modal
         form.reset();
         onClose();
       }
     } catch (error) {
-      console.error('Failed to create chatbot:', error);
+      console.error("Failed to create chatbot:", error);
       // Error handling will be shown via form state
     } finally {
       setIsCreating(false);
-      setFlowCreating(false);
     }
   };
 
@@ -100,13 +96,17 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
             Create New Chatbot
           </DialogTitle>
           <DialogDescription>
-            Create a new AI coaching chatbot. You can configure advanced settings later in the training flow.
+            Create a new AI coaching chatbot. You can configure advanced
+            settings later in the training flow.
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               {/* Chatbot Name */}
               <FormField
                 control={form.control}
@@ -122,7 +122,8 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
                       />
                     </FormControl>
                     <FormDescription>
-                      Give your chatbot a descriptive name that reflects its purpose.
+                      Give your chatbot a descriptive name that reflects its
+                      purpose.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -145,14 +146,13 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
                       />
                     </FormControl>
                     <FormDescription>
-                      Optional description to help you remember this chatbot&apos;s purpose.
+                      Optional description to help you remember this
+                      chatbot&apos;s purpose.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-            
 
               {/* Active Status */}
               <FormField
@@ -161,9 +161,7 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Active Status
-                      </FormLabel>
+                      <FormLabel className="text-base">Active Status</FormLabel>
                       <FormDescription>
                         Enable this chatbot for use immediately after creation.
                       </FormDescription>
@@ -202,7 +200,9 @@ export function ChatbotCreationModal({ isOpen, onClose }: ChatbotCreationModalPr
                   type="submit"
                   disabled={isCreating || !form.formState.isValid}
                 >
-                  {isCreating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {isCreating && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
                   Create Chatbot
                 </Button>
               </div>

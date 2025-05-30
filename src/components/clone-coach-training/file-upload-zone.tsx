@@ -7,30 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Upload, 
-  FileText, 
-  X, 
-  CheckCircle, 
+import {
+  Upload,
+  FileText,
+  X,
+  CheckCircle,
   AlertCircle,
   RotateCcw,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { useFileUpload, type FileUploadProgress } from "@/hooks/useFileUpload";
-import { useChatbotFlowStore } from "@/stores/useChatbotFlowStore";
+import { IKnowledgeBase } from "@/services/knowledge-bases/knowledge-base.types";
 
 interface FileUploadZoneProps {
   disabled?: boolean;
   className?: string;
+  selectedKnowledgeBase: IKnowledgeBase;
 }
 
-export function FileUploadZone({ disabled = false, className = "" }: FileUploadZoneProps) {
-  const { 
-    selectedKnowledgeBase, 
-    addDocument,
-    onDocumentChange 
-  } = useChatbotFlowStore();
-
+export function FileUploadZone({
+  disabled = false,
+  className = "",
+  selectedKnowledgeBase,
+}: FileUploadZoneProps) {
   const {
     uploading,
     uploads,
@@ -39,65 +38,63 @@ export function FileUploadZone({ disabled = false, className = "" }: FileUploadZ
     retryUpload,
     clearUploads,
   } = useFileUpload({
-    knowledgeBaseId: selectedKnowledgeBase?._id || '',
+    knowledgeBaseId: selectedKnowledgeBase?._id || "",
     onProgress: () => {
-      // Optional: Could show progress in UI
-    },
-    onComplete: (documents) => {
-      // Add completed documents to store
-      documents.forEach(doc => addDocument(doc));
-      onDocumentChange();
-      
-      // Clear uploads after successful completion
-      setTimeout(() => clearUploads(), 2000);
+      setTimeout(() => {}, 2000);
     },
     onError: (error) => {
-      console.error('Upload error:', error);
+      console.log(error);
     },
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (disabled || !selectedKnowledgeBase) return;
-    uploadFiles(acceptedFiles);
-  }, [uploadFiles, disabled, selectedKnowledgeBase]);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (disabled || !selectedKnowledgeBase) return;
+      uploadFiles(acceptedFiles);
+    },
+    [uploadFiles, disabled, selectedKnowledgeBase]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'application/pdf': ['.pdf'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      "application/pdf": [".pdf"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
+      "text/plain": [".txt"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
     },
     multiple: true,
     disabled: disabled || uploading || !selectedKnowledgeBase,
   });
 
-  const getStatusIcon = (status: FileUploadProgress['status']) => {
+  const getStatusIcon = (status: FileUploadProgress["status"]) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="h-4 w-4 text-success" />;
-      case 'error':
+      case "error":
         return <AlertCircle className="h-4 w-4 text-destructive" />;
-      case 'uploading':
-      case 'processing':
+      case "uploading":
+      case "processing":
         return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
       default:
         return <FileText className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
-  const getStatusColor = (status: FileUploadProgress['status']) => {
+  const getStatusColor = (status: FileUploadProgress["status"]) => {
     switch (status) {
-      case 'completed':
-        return 'border-success bg-success/10';
-      case 'error':
-        return 'border-destructive bg-destructive/10';
-      case 'uploading':
-      case 'processing':
-        return 'border-primary bg-primary/10';
+      case "completed":
+        return "border-success bg-success/10";
+      case "error":
+        return "border-destructive bg-destructive/10";
+      case "uploading":
+      case "processing":
+        return "border-primary bg-primary/10";
       default:
-        return 'border-muted';
+        return "border-muted";
     }
   };
 
@@ -115,24 +112,32 @@ export function FileUploadZone({ disabled = false, className = "" }: FileUploadZ
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Upload Drop Zone */}
-      <Card 
-        {...getRootProps()} 
+      <Card
+        {...getRootProps()}
         className={`
           transition-colors cursor-pointer border-2 border-dashed
-          ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary/50'}
+          ${isDragActive ? "border-primary bg-primary/5" : "border-muted"}
+          ${
+            disabled
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:border-primary/50"
+          }
         `}
       >
         <CardContent className="p-6 text-center">
           <input {...getInputProps()} />
           <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
-          
+
           {isDragActive ? (
-            <p className="text-primary font-medium">Drop files here to upload</p>
+            <p className="text-primary font-medium">
+              Drop files here to upload
+            </p>
           ) : (
             <div className="space-y-2">
               <p className="font-medium">
-                {disabled ? 'Upload disabled' : 'Drop files here or click to browse'}
+                {disabled
+                  ? "Upload disabled"
+                  : "Drop files here or click to browse"}
               </p>
               <p className="text-sm text-muted-foreground">
                 Supports PDF, DOCX, TXT, XLSX files
@@ -157,12 +162,14 @@ export function FileUploadZone({ disabled = false, className = "" }: FileUploadZ
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <div className="space-y-3">
               {uploads.map((upload, index) => (
-                <div 
+                <div
                   key={`${upload.file.name}-${index}`}
-                  className={`border rounded-lg p-3 ${getStatusColor(upload.status)}`}
+                  className={`border rounded-lg p-3 ${getStatusColor(
+                    upload.status
+                  )}`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
@@ -176,19 +183,28 @@ export function FileUploadZone({ disabled = false, className = "" }: FileUploadZ
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant={upload.status === 'completed' ? 'default' : 'secondary'}
+                      <Badge
+                        variant={
+                          upload.status === "completed"
+                            ? "default"
+                            : "secondary"
+                        }
                         className="text-xs"
                       >
-                        {upload.status === 'uploading' ? 'Uploading' : 
-                         upload.status === 'processing' ? 'Processing' :
-                         upload.status === 'completed' ? 'Done' :
-                         upload.status === 'error' ? 'Failed' : 'Pending'}
+                        {upload.status === "uploading"
+                          ? "Uploading"
+                          : upload.status === "processing"
+                          ? "Processing"
+                          : upload.status === "completed"
+                          ? "Done"
+                          : upload.status === "error"
+                          ? "Failed"
+                          : "Pending"}
                       </Badge>
-                      
-                      {upload.status === 'error' && (
+
+                      {upload.status === "error" && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -197,25 +213,26 @@ export function FileUploadZone({ disabled = false, className = "" }: FileUploadZ
                           <RotateCcw className="h-3 w-3" />
                         </Button>
                       )}
-                      
+
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => removeUpload(index)}
-                        disabled={upload.status === 'uploading'}
+                        disabled={upload.status === "uploading"}
                       >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
-                  
+
                   {/* Progress Bar */}
-                  {(upload.status === 'uploading' || upload.status === 'processing') && (
+                  {(upload.status === "uploading" ||
+                    upload.status === "processing") && (
                     <Progress value={upload.progress} className="h-1" />
                   )}
-                  
+
                   {/* Error Message */}
-                  {upload.status === 'error' && upload.error && (
+                  {upload.status === "error" && upload.error && (
                     <p className="text-xs text-destructive mt-1">
                       {upload.error}
                     </p>

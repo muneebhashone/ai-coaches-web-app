@@ -3,7 +3,7 @@ import type { IAPIResponse, IPagination } from "../common/common.types";
 export interface IMessage {
   _id: string;
   content: string;
-  sender: "client" | "chatbot";
+  role: "client" | "assistant";
   timestamp: string;
 }
 
