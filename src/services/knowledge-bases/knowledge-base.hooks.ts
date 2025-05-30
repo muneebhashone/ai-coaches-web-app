@@ -20,7 +20,8 @@ export const knowledgeBaseKeys = {
     [...knowledgeBaseKeys.lists(), params] as const,
   details: () => [...knowledgeBaseKeys.all, "detail"] as const,
   detail: (id: string) => [...knowledgeBaseKeys.details(), id] as const,
-  chatbot: (chatbotId: string) => [...knowledgeBaseKeys.all, "chatbot", chatbotId] as const,
+  chatbot: (chatbotId: string) =>
+    [...knowledgeBaseKeys.all, "chatbot", chatbotId] as const,
 };
 
 export function useKnowledgeBasesByChatbotId(chatbotId: string) {
@@ -50,9 +51,13 @@ export function useCreateKnowledgeBase() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateKnowledgeBaseSchemaType) => createKnowledgeBase(data),
-    onSuccess: () => {
+    mutationFn: (data: CreateKnowledgeBaseSchemaType) =>
+      createKnowledgeBase(data),
+    onSuccess: (_, data) => {
       queryClient.invalidateQueries({ queryKey: knowledgeBaseKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: knowledgeBaseKeys.chatbot(data.chatbotId),
+      });
     },
   });
 }
@@ -61,8 +66,13 @@ export function useUpdateKnowledgeBase() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateKnowledgeBaseSchemaType }) =>
-      updateKnowledgeBase(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateKnowledgeBaseSchemaType;
+    }) => updateKnowledgeBase(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: knowledgeBaseKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: knowledgeBaseKeys.lists() });
