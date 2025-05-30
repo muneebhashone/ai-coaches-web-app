@@ -259,7 +259,7 @@ export function ChatbotSelectorBar({
                   onValueChange={handleChatbotSelect}
                 >
                   <SelectTrigger className="w-[250px]">
-                    <SelectValue />
+                    <SelectValue placeholder="Select Chatbot" />
                   </SelectTrigger>
                   <SelectContent>
                     {chatbots.map((chatbot) => (
