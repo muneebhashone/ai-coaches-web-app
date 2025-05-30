@@ -65,7 +65,7 @@ export function ProgramCreationModal({
       description: program?.data?.description || "",
       chatbotId: chatbotId,
       goals: program?.data?.goals?.split(",") || [],
-      isActive: program?.data?.isActive || true,
+      active: program?.data?.active || true,
     },
   });
 
@@ -79,7 +79,7 @@ export function ProgramCreationModal({
       form.setValue("description", program.data.description || "");
       form.setValue("goals", program.data.goals?.split(",") || []);
       form.setValue("chatbotId", program.data.chatbotId);
-      form.setValue("isActive", program.data.isActive);
+      form.setValue("active", program.data.active);
     }
   }, [program, form]);
 
@@ -267,7 +267,7 @@ export function ProgramCreationModal({
               {/* Active Status */}
               <FormField
                 control={form.control}
-                name="isActive"
+                name="active"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
@@ -306,10 +306,7 @@ export function ProgramCreationModal({
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isCreating || !form.formState.isValid}
-                >
+                <Button type="submit" disabled={isCreating}>
                   {isCreating && (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   )}
