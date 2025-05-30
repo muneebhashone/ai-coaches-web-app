@@ -30,6 +30,8 @@ import { Bot, Loader2 } from "lucide-react";
 import { useCreateChatbot } from "@/services/chatbots/chatbot.hooks";
 import { CreateChatbotSchema } from "@/services/chatbots/chatbot.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface ChatbotCreationModalProps {
   isOpen: boolean;
@@ -42,6 +44,8 @@ export function ChatbotCreationModal({
 }: ChatbotCreationModalProps) {
   // const t = useTranslations("dashboard.cloneCoachTraining.createChatbot");
   const [isCreating, setIsCreating] = useState(false);
+  const params = useParams();
+  const router = useRouter();
 
   const createChatbotMutation = useCreateChatbot();
 
@@ -72,6 +76,12 @@ export function ChatbotCreationModal({
         form.reset();
         onClose();
       }
+
+      const locale = params.locale as string;
+
+      router.push(
+        `/${locale}/dashboard/clone-coach-training?chatbotId=${result.data._id}`
+      );
     } catch (error) {
       console.error("Failed to create chatbot:", error);
       // Error handling will be shown via form state
