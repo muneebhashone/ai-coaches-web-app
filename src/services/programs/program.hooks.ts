@@ -20,7 +20,8 @@ export const programKeys = {
     [...programKeys.lists(), params] as const,
   details: () => [...programKeys.all, "detail"] as const,
   detail: (id: string) => [...programKeys.details(), id] as const,
-  chatbot: (chatbotId: string) => [...programKeys.all, "chatbot", chatbotId] as const,
+  chatbot: (chatbotId: string) =>
+    [...programKeys.all, "chatbot", chatbotId] as const,
 };
 
 export function useProgramByChatbotId(chatbotId: string) {
@@ -30,7 +31,6 @@ export function useProgramByChatbotId(chatbotId: string) {
     enabled: !!chatbotId,
   });
 }
-
 
 export function usePrograms(params?: GetProgramsQuerySchemaType) {
   return useQuery({
@@ -52,8 +52,11 @@ export function useCreateProgram() {
 
   return useMutation({
     mutationFn: (data: CreateProgramSchemaType) => createProgram(data),
-    onSuccess: () => {
+    onSuccess: (_, data) => {
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: programKeys.chatbot(data.chatbotId),
+      });
     },
   });
 }
