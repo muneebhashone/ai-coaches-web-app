@@ -115,7 +115,7 @@ export function ChatbotSelectorBar({
       sessions: sessions.length > 0,
       "knowledge-base": !!knowledgeBase,
       documents: !!documentData,
-      "human-mimicry": !!humanMimicryData,
+      "human-mimicry": !!humanMimicryData?.data?.results?.length,
       prompts: !!selectedChatbot?.prompt,
       training: trainings.length > 0,
     };
