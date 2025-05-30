@@ -93,10 +93,16 @@ export function ProgramCreationModal({
       if (isEdit) {
         result = await updateProgramMutation.mutateAsync({
           id: program?.data?._id,
-          data,
+          data: {
+            ...data,
+            goals: goals.join(","),
+          },
         });
       } else {
-        result = await createProgramMutation.mutateAsync(data);
+        result = await createProgramMutation.mutateAsync({
+          ...data,
+          goals: goals.join(","),
+        });
       }
 
       if (result.success && result.data) {
