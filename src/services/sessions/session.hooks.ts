@@ -27,6 +27,7 @@ export function useSessions(params?: GetSessionsQuerySchemaType) {
   return useQuery({
     queryKey: sessionKeys.list(params),
     queryFn: () => getSessions(params),
+    enabled: !!params?.programId,
   });
 }
 
@@ -53,7 +54,8 @@ export function useCreateMultipleSessions() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateMultipleSessionsSchemaType) => createMultipleSessions(data),
+    mutationFn: (data: CreateMultipleSessionsSchemaType) =>
+      createMultipleSessions(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() });
     },
