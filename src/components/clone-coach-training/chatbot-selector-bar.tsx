@@ -68,7 +68,7 @@ export function ChatbotSelectorBar({
     "session" | "knowledge-base" | "program" | null
   >(null);
 
-  const { data: chatbotsData, isLoading: chatbotsLoading } = useChatbots({
+  const { data: chatbotsData } = useChatbots({
     page: 1,
     limit: 50,
     active: true,
@@ -278,13 +278,6 @@ export function ChatbotSelectorBar({
                 </Select>
 
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsListModalOpen(true)}
-                    disabled={chatbotsLoading}
-                  >
-                    {selectedChatbot ? "Switch Chatbot" : "Select Chatbot"}
-                  </Button>
                   <Button onClick={() => setIsCreationModalOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create New

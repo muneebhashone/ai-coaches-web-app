@@ -28,6 +28,7 @@ import { useTranslations } from "next-intl";
 import { useChatbot } from "@/services/chatbots/chatbot.hooks";
 import { useDocuments } from "@/services/documents/document.hooks";
 import { useHumanMimicries } from "@/services/human-mimicry/human-mimicry.hooks";
+import { useKnowledgeBasesByChatbotId } from "@/services/knowledge-bases/knowledge-base.hooks";
 
 interface TrainingCenterPanelProps {
   className?: string;
@@ -42,9 +43,8 @@ export function TrainingCenterPanel({
   const [showLogs, setShowLogs] = useState(false);
 
   const { data: selectedChatbot } = useChatbot(chatbotId);
-  const { data: documents } = useDocuments(
-    selectedChatbot?.data.knowledgeBaseId || ""
-  );
+  const { data: knowledgeBase } = useKnowledgeBasesByChatbotId(chatbotId);
+  const { data: documents } = useDocuments(knowledgeBase?.data?._id || "");
   const { data: humanMimicryStyles } = useHumanMimicries(
     selectedChatbot?.data._id || ""
   );
@@ -62,8 +62,8 @@ export function TrainingCenterPanel({
 
   // Calculate prerequisites
   const hasDocuments = (documents?.data.results?.length || 0) > 0;
-  const hasChatbot = !!selectedChatbot;
-  const hasKnowledgeBase = !!selectedChatbot?.data.knowledgeBaseId;
+  const hasChatbot = !!selectedChatbot?.data?._id;
+  const hasKnowledgeBase = !!knowledgeBase?.data?._id;
 
   const canTrain =
     hasChatbot &&
