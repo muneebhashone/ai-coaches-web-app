@@ -71,7 +71,7 @@ export function ChatbotPreviewPanel({ chatbotId }: { chatbotId: string }) {
           id: message._id,
           role: message.role === "client" ? "user" : "assistant",
           content: message.content,
-          timestamp: message.timestamp,
+          timestamp: message.createdAt,
         }))
       );
     }
