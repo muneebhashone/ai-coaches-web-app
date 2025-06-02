@@ -27,7 +27,7 @@ export function useSessions(params?: GetSessionsQuerySchemaType) {
   return useQuery({
     queryKey: sessionKeys.list(params),
     queryFn: () => getSessions(params),
-    enabled: !!params?.programId,
+    enabled: !!params?.programId || !!params?.clientId,
   });
 }
 

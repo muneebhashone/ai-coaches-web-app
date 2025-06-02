@@ -7,12 +7,18 @@ import {
   updateChat,
   deleteChat,
   startChat,
+  createChatsForClient,
 } from "./chat.service";
 import type {
   SendMessageSchemaType,
   GetChatsQuerySchemaType,
   UpdateChatSchemaType,
 } from "./chat.schema";
+import type {
+  IMessage,
+  IGetChatsResponse,
+  ISendMessageResponse,
+} from "./chat.types";
 
 export const chatKeys = {
   all: ["chats"] as const,
@@ -34,7 +40,13 @@ export function useStartChat() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ clientId, sessionId }: { clientId: string; sessionId: string }) => startChat(clientId, sessionId),
+    mutationFn: ({
+      clientId,
+      sessionId,
+    }: {
+      clientId: string;
+      sessionId: string;
+    }) => startChat(clientId, sessionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.lists() });
     },
@@ -54,13 +66,123 @@ export function useSendMessage() {
 
   return useMutation({
     mutationFn: ({
-        chatId,
-        data,
+      chatId,
+      data,
     }: {
       chatId: string;
       data: SendMessageSchemaType;
     }) => sendMessage(chatId, data),
-    onSuccess: () => {
+
+    // Optimistic update
+    onMutate: async ({ chatId, data }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: chatKeys.lists() });
+
+      // Get all relevant query keys that might contain this chat
+      const queryKeys = queryClient
+        .getQueryCache()
+        .getAll()
+        .map((query) => query.queryKey)
+        .filter(
+          (key) =>
+            key[0] === "chats" &&
+            key[1] === "list" &&
+            key[2] &&
+            typeof key[2] === "object"
+        );
+
+      // Snapshot the previous value for rollback
+      const previousData: Array<{ key: any; data: any }> = [];
+
+      // Create optimistic message
+      const optimisticMessage: IMessage = {
+        _id: `temp-${Date.now()}`, // Temporary ID
+        content: data.content,
+        role: data.role === "client" ? "client" : "assistant",
+        createdAt: new Date().toISOString(),
+      };
+
+      // Update each relevant query cache
+      for (const queryKey of queryKeys) {
+        const oldData = queryClient.getQueryData<IGetChatsResponse>(queryKey);
+        if (oldData?.data?.results) {
+          previousData.push({ key: queryKey, data: oldData });
+
+          // Find the chat to update
+          const updatedResults = oldData.data.results.map((chat) => {
+            if (chat._id === chatId) {
+              return {
+                ...chat,
+                messages: [...chat.messages, optimisticMessage],
+              };
+            }
+            return chat;
+          });
+
+          // Update cache
+          queryClient.setQueryData<IGetChatsResponse>(queryKey, {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              results: updatedResults,
+            },
+          });
+        }
+      }
+
+      return { previousData, optimisticMessage };
+    },
+
+    // Handle success
+    onSuccess: (response: ISendMessageResponse, variables) => {
+      // Update cache with real message data from the updated chat
+      const queryKeys = queryClient
+        .getQueryCache()
+        .getAll()
+        .map((query) => query.queryKey)
+        .filter(
+          (key) =>
+            key[0] === "chats" &&
+            key[1] === "list" &&
+            key[2] &&
+            typeof key[2] === "object"
+        );
+
+      for (const queryKey of queryKeys) {
+        const currentData =
+          queryClient.getQueryData<IGetChatsResponse>(queryKey);
+        if (currentData?.data?.results && response.data?.chat) {
+          const updatedResults = currentData.data.results.map((chat) => {
+            if (chat._id === variables.chatId) {
+              // Replace with the updated chat from the response
+              return response.data.chat;
+            }
+            return chat;
+          });
+
+          queryClient.setQueryData<IGetChatsResponse>(queryKey, {
+            ...currentData,
+            data: {
+              ...currentData.data,
+              results: updatedResults,
+            },
+          });
+        }
+      }
+    },
+
+    // Handle error - rollback optimistic updates
+    onError: (err, variables, context) => {
+      if (context?.previousData) {
+        // Restore previous data for all affected queries
+        context.previousData.forEach(({ key, data }) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+    },
+
+    // Always refetch in the background to ensure consistency
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.lists() });
     },
   });
@@ -81,6 +203,23 @@ export function useSendMessageUnprotected() {
     }) => sendMessageUnprotected(chatbotId, clientId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.lists() });
+    },
+  });
+}
+
+export function useCreateChatsForClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (chatbotId: string) => createChatsForClient(chatbotId),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: chatKeys.list({
+          clientId: variables,
+          page: 1,
+          limit: 100,
+        }),
+      });
     },
   });
 }

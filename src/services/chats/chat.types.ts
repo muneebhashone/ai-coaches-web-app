@@ -1,10 +1,12 @@
 import type { IAPIResponse, IPagination } from "../common/common.types";
+import { IProgram } from "../programs/program.types";
+import { ISession } from "../sessions/session.types";
 
 export interface IMessage {
   _id: string;
   content: string;
   role: "client" | "assistant";
-  timestamp: string;
+  createdAt: string;
 }
 
 export interface IChat {
@@ -12,8 +14,9 @@ export interface IChat {
   sessionId?: string;
   clientId: string;
   chatbotId: string;
+  session: ISession;
   messages: IMessage[];
-  isVisible: boolean;
+  program: IProgram;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +28,8 @@ export type IGetChatsResponse = IAPIResponse<{
 }>;
 
 export type IGetChatResponse = IAPIResponse<IChat>;
+
+export type ICreateChatsForClientResponse = IAPIResponse<IChat[]>;
 
 export type ISendMessageResponse = IAPIResponse<{
   chat: IChat;

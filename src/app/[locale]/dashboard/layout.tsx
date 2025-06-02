@@ -1,16 +1,11 @@
-"use client"
-
-import { SiteHeader } from "@/components/site-header"
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import { SiteHeader } from "@/components/site-header";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <SidebarProvider
@@ -29,5 +24,5 @@ export default function DashboardLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
-} 
+  );
+}

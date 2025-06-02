@@ -10,6 +10,7 @@ import type {
   ISendMessageResponse,
   IUpdateChatResponse,
   IDeleteChatResponse,
+  ICreateChatsForClientResponse,
 } from "./chat.types";
 
 export const getChats = async (
@@ -24,14 +25,20 @@ export const getChat = async (id: string): Promise<IGetChatResponse> => {
   return response.data;
 };
 
+export const createChatsForClient = async (
+  chatbotId: string
+): Promise<ICreateChatsForClientResponse> => {
+  const response = await apiClient.post("/chats/create-for-client", {
+    chatbotId,
+  });
+  return response.data;
+};
+
 export const sendMessage = async (
   chatId: string,
   data: SendMessageSchemaType
 ): Promise<ISendMessageResponse> => {
-  const response = await apiClient.post(
-    `/chats/${chatId}/messages`,
-    data
-  );
+  const response = await apiClient.post(`/chats/${chatId}/messages`, data);
   return response.data;
 };
 
@@ -60,9 +67,12 @@ export const deleteChat = async (id: string): Promise<IDeleteChatResponse> => {
   return response.data;
 };
 
-export const startChat = async (clientId: string, sessionId: string): Promise<void> => {
+export const startChat = async (
+  clientId: string,
+  sessionId: string
+): Promise<void> => {
   await apiClient.post("/chats/start", {
     clientId,
-    sessionId
+    sessionId,
   });
 };
