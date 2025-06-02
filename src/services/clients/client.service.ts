@@ -41,7 +41,9 @@ export const updateClient = async (
   return response.data;
 };
 
-export const deleteClient = async (id: string): Promise<IDeleteClientResponse> => {
+export const deleteClient = async (
+  id: string
+): Promise<IDeleteClientResponse> => {
   const response = await apiClient.delete(`/clients/${id}`);
   return response.data;
 };

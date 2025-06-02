@@ -1,5 +1,3 @@
-"use client";
-
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardMetricsCards } from "@/components/dashboard/dashboard-metrics-cards";
 

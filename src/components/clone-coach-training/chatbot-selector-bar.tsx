@@ -13,7 +13,14 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Plus, ChevronRight, Circle, CheckCircle } from "lucide-react";
+import {
+  Bot,
+  Plus,
+  ChevronRight,
+  Circle,
+  CheckCircle,
+  Copy,
+} from "lucide-react";
 import { ChatbotListModal } from "./chatbot-list-modal";
 import { ChatbotCreationModal } from "./chatbot-creation-modal";
 import { useChatbots } from "@/services/chatbots/chatbot.hooks";
@@ -26,6 +33,8 @@ import { useTrainingJobs } from "@/services/training/training.hooks";
 import { SessionCreationModal } from "./session-creation-modal";
 import { KnowledgeBaseCreationModal } from "./knowledge-base-creation-modal";
 import { ProgramCreationModal } from "./program-creation-modal";
+import { toast } from "sonner";
+import { useLocale } from "next-intl";
 
 export const FlowSteps = {
   chatbot: "chatbot",
@@ -63,6 +72,8 @@ export function ChatbotSelectorBar({
   // const t = useTranslations("dashboard.cloneCoachTraining");
   const [isListModalOpen, setIsListModalOpen] = useState(false);
   const [isCreationModalOpen, setIsCreationModalOpen] = useState(false);
+
+  const locale = useLocale();
 
   const [openModal, setOpenModal] = useState<
     "session" | "knowledge-base" | "program" | null
@@ -245,6 +256,22 @@ export function ChatbotSelectorBar({
                     Chatbot Training Flow
                   </h2>
                 </div>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => {
+                    if (selectedChatbot?._id) {
+                      const urlToCopy = `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/client/sessions/${selectedChatbot._id}`;
+                      navigator.clipboard.writeText(urlToCopy);
+                      toast.success("Chatbot URL copied to clipboard");
+                    }
+                  }}
+                >
+                  <Copy className="h-3 w-3 mr-1" />
+                  Copy Link
+                </Button>
 
                 {selectedChatbot && (
                   <Badge variant="outline" className="bg-primary/10">

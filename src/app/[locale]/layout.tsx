@@ -42,11 +42,14 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning className={notoSans.className}>
-      <body className={`${notoSans.variable} font-sans antialiased`}>
+      <body
+        className={`${notoSans.variable} font-sans antialiased`}
+        cz-shortcut-listen="true"
+      >
         <RootProvider>
           <NextIntlClientProvider messages={messages}>
             {children}
-            <Toaster/>
+            <Toaster />
           </NextIntlClientProvider>
         </RootProvider>
       </body>

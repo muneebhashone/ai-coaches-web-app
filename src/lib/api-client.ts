@@ -7,14 +7,12 @@ const apiClient = axios.create({
       : process.env.BACKEND_URL,
 });
 
-// add interceptor for error
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if(error instanceof AxiosError) {
+    if (error instanceof AxiosError) {
       return Promise.reject(error.response?.data);
     }
-
 
     return Promise.reject(error);
   }
