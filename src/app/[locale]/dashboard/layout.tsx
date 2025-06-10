@@ -24,10 +24,10 @@ export default function DashboardLayout({
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
-        <div className="flex flex-1 flex-col p-4 md:p-6 gap-6">
+        <div className="responsive-container flex flex-1 flex-col p-4 md:p-6 gap-6">
           {children}
         </div>
       </SidebarInset>
     </SidebarProvider>
   )
-} 
+}

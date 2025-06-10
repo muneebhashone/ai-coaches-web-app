@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import * as z from "zod";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,6 @@ export function LoginForm({
   const tErrors = useTranslations("errors");
   const tValidation = useTranslations("validation");
   const tCommon = useTranslations("common");
-  const locale = useLocale();
 
   const router = useRouter();
   const [isFormDisabled, setIsFormDisabled] = useState(false);

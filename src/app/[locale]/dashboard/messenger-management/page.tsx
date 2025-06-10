@@ -17,7 +17,7 @@ import { ChatbotManager } from "@/components/messenger-management/chatbot-manage
 
 export default function MessengerManagementPage() {
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="responsive-container py-6 space-y-6">
       <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
