@@ -26,7 +26,7 @@ export default async function ConversationDetailPage({ params }: PageProps) {
 
   if (!conversation) {
     return (
-      <Card className="container max-w-4xl mx-auto my-12 p-6">
+      <Card className="responsive-container max-w-4xl my-12 p-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-semibold">Conversation not found</h2>
           <p className="text-muted-foreground">
@@ -39,7 +39,7 @@ export default async function ConversationDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-6 h-[calc(100vh-80px)] flex flex-col">
+    <div className="responsive-container max-w-4xl py-6 h-[calc(100vh-80px)] flex flex-col">
       <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between">
           <div>

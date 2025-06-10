@@ -191,6 +191,12 @@
     @apply bg-background/80 dark:bg-background/70 backdrop-blur-md backdrop-saturate-150;
   }
 
+  /* Generic responsive container */
+  .responsive-container {
+    @apply mx-auto w-full px-4 sm:px-6 lg:px-8;
+    max-width: 100%;
+  }
+
   .subtle-glow {
     @apply after:absolute after:inset-0 after:rounded-lg after:opacity-0 after:transition-opacity after:duration-500 hover:after:opacity-100 after:shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)] dark:after:shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)];
   }
